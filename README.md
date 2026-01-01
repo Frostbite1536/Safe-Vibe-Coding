@@ -208,14 +208,62 @@ Your job is to provide:
 
 Do that, and vibe coding becomes not just productive, but **safe**.
 
+### 13. Generate Checkpoint Summaries After Major Changes
+
+After completing significant features or changes, create a checkpoint summary. This builds a rolling audit trail that prevents long-term context loss.
+
+**Ask the LLM to produce**:
+- A 5-bullet summary of what changed
+- Any new assumptions introduced
+- Any risks or trade-offs added
+
+**Why this matters**:
+- Creates a searchable history of decisions
+- Helps you (or future developers) understand why things are the way they are
+- Catches drift before it compounds
+- Makes it easier to resume work after breaks
+
+**Example checkpoint**:
+
+```
+## Checkpoint: Added OAuth Authentication (2024-01-15)
+
+### What Changed
+- Added OAuth 2.0 support for Google and GitHub
+- Created new OAuthController and token validation middleware
+- Updated User model to support optional password field
+- Added OAuth configuration to environment variables
+- Migrated database to add oauth_provider and oauth_id columns
+
+### New Assumptions
+- OAuth providers return verified email addresses
+- OAuth tokens are validated on every request (no local caching)
+- Users can have either password OR OAuth, not both
+- Google/GitHub APIs remain stable and available
+
+### Risks & Trade-offs
+- OAuth provider outages prevent login (mitigation: support multiple providers)
+- Token validation adds latency to every request (acceptable for our scale)
+- Email uniqueness now depends on OAuth provider behavior (documented in INVARIANTS.md)
+```
+
+Store checkpoints in:
+- A `CHANGELOG.md` or `DECISIONS.md` file in `/docs`
+- Commit messages (for smaller changes)
+- PR descriptions
+- Architecture document updates
+
+**Treat checkpoints as future documentation**. When you return to the project in 6 months, these summaries are invaluable.
+
 ---
 
 ## Getting Started
 
-1. **Use the templates** in [`/docs/templates`](./docs/templates) to set up your project documentation
-2. **Browse example prompts** in [`/prompts`](./prompts) to see how to communicate effectively with LLMs
-3. **Start with the product conversation** before writing any code
-4. **Establish your invariants early** and refer to them often
+1. **Review the [quick-reference checklist](./CHECKLIST.md)** - Print it and keep it handy
+2. **Use the templates** in [`/docs/templates`](./docs/templates) to set up your project documentation
+3. **Browse example prompts** in [`/prompts`](./prompts) to see how to communicate effectively with LLMs
+4. **Start with the product conversation** before writing any code
+5. **Establish your invariants early** and refer to them often
 
 ---
 

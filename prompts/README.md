@@ -12,6 +12,10 @@ This directory contains reusable prompts for working with LLMs on software proje
   - Use when: Building new features, writing production code
   - Focus: Maintainability, modularity, security, respecting architecture
 
+- **[architecture-aware-feature.md](./architecture-aware-feature.md)** - Add features safely while respecting architecture
+  - Use when: Extending existing systems with new functionality
+  - Focus: Architecture alignment, invariant compliance, minimal surface area
+
 - **[modularity-review.md](./modularity-review.md)** - Review code for modularity issues and recommend restructuring
   - Use when: Files are growing large (> 1,500 lines) or becoming hard to understand
   - Focus: File size, single responsibility, interface clarity, AI-compatibility
@@ -22,9 +26,25 @@ This directory contains reusable prompts for working with LLMs on software proje
 
 ### Quality & Testing
 
-- **[bug-hunt.md](./bug-hunt.md)** - Proactive bug detection after changes
+- **[bug-hunt.md](./bug-hunt.md)** - General proactive bug detection after changes
   - Use when: After implementing features or significant changes
   - Focus: Logic errors, edge cases, security, invariant violations
+
+- **[backend-bug-hunt.md](./backend-bug-hunt.md)** - Backend-specific bug detection
+  - Use when: After backend/API changes
+  - Focus: Data integrity, auth, SQL injection, race conditions, API contracts
+
+- **[frontend-bug-hunt.md](./frontend-bug-hunt.md)** - Frontend-specific bug detection
+  - Use when: After UI/client-side changes
+  - Focus: State management, forms, async operations, accessibility, UX
+
+- **[bug-fixing.md](./bug-fixing.md)** - Surgical bug fixes without scope creep
+  - Use when: Fixing specific bugs
+  - Focus: Minimal changes, root cause fixes, no refactoring
+
+- **[invariant-check.md](./invariant-check.md)** - Verify changes against system invariants
+  - Use when: Before merging significant changes
+  - Focus: Contract compliance, detecting violations, maintaining guarantees
 
 - **[performance-review.md](./performance-review.md)** - Identify performance bottlenecks and optimization opportunities
   - Use when: Performance issues suspected or pre-launch optimization
