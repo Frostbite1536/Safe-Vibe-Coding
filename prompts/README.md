@@ -10,7 +10,11 @@ This directory contains reusable prompts for working with LLMs on software proje
 
 - **[engineering-prompt.md](./engineering-prompt.md)** - Production-grade code with conservative, proven patterns
   - Use when: Building new features, writing production code
-  - Focus: Maintainability, security, respecting architecture
+  - Focus: Maintainability, modularity, security, respecting architecture
+
+- **[modularity-review.md](./modularity-review.md)** - Review code for modularity issues and recommend restructuring
+  - Use when: Files are growing large (> 1,500 lines) or becoming hard to understand
+  - Focus: File size, single responsibility, interface clarity, AI-compatibility
 
 - **[refactor-for-clarity.md](./refactor-for-clarity.md)** - Improve code readability without changing behavior
   - Use when: Code works but is hard to understand
