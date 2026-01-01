@@ -104,7 +104,64 @@ Tell the LLM explicitly:
 
 This single instruction prevents a large class of long-term maintenance problems.
 
-### 8. Run Frequent Bug Hunts
+### 8. Favor Modularity as a First-Class Constraint
+
+Favor modularity aggressively. Keep files small, focused, and single-purpose. As a practical guideline, **avoid scripts or files longer than ~1,500 lines**. This is not an arbitrary style preference—it is a reliability constraint when collaborating with LLMs.
+
+**LLMs reason best over code they can fully and clearly "see."** Large, monolithic files reduce the model's ability to understand context, increase hallucinations, and make subtle bugs more likely. Smaller modules improve correctness, review quality, and iteration speed.
+
+#### Design for Comprehension, Not Just Execution
+
+A program that runs is not necessarily a program that can be safely modified. Code should be structured so that both humans and LLMs can understand it in isolation.
+
+Each module should:
+- Have a single responsibility
+- Expose a clear interface
+- Hide internal implementation details
+- Be understandable without reading the entire codebase
+
+**If a file requires scrolling constantly or holding many concepts in your head at once, it is doing too much.**
+
+#### Prefer Composition Over Growth
+
+When adding features, resist the temptation to extend existing large files. Instead:
+- Extract new behavior into new modules
+- Introduce clear boundaries between concerns
+- Keep changes localized
+
+Growth should increase the number of small, understandable pieces—not inflate a few central ones.
+
+#### Modular Boundaries Improve AI Collaboration
+
+Modularity creates natural checkpoints for AI-assisted work:
+- The LLM can reason about a single module at a time
+- Bug hunts can target specific components
+- Refactors become safer and more predictable
+- Tests can map cleanly to modules
+
+This also makes it easier to give the LLM precise instructions: "Modify this module only" or "Add a new module that implements X."
+
+#### File Size as a Soft Safety Limit
+
+Treat ~1,500 lines as a soft upper bound, not a strict rule. Hitting that limit is a signal to pause and ask:
+- Can this be split?
+- Are responsibilities mixed?
+- Is there a missing abstraction?
+
+Smaller files are easier to test, easier to document, and easier to reason about—especially across long sessions or future revisits.
+
+#### Modularity Reinforces Other Guardrails
+
+Good modularity directly supports:
+- Strong System Invariants (enforced at boundaries)
+- Cleaner architecture documents
+- More targeted tests
+- Reduced regression risk
+- Faster and safer LLM iteration
+
+**In short: modular code is not just cleaner—it is more AI-compatible.**
+
+### 9. Run Frequent Bug Hunts
 
 In addition to automated tests, regularly ask the LLM to:
 - Review recent changes for bugs
@@ -113,7 +170,7 @@ In addition to automated tests, regularly ask the LLM to:
 
 This can be done incrementally—after each feature or group of changes. Treat bug hunts as routine hygiene, not emergency response.
 
-### 9. Maintain a Prompt Library Inside the Codebase
+### 10. Maintain a Prompt Library Inside the Codebase
 
 Keep a `/prompts` folder in the repository containing reusable, role-specific prompts. These act as tools you can invoke consistently.
 
@@ -130,7 +187,7 @@ These prompts reduce variance and help you re-enter the correct mindset instantl
 
 See [`/prompts`](./prompts) for examples.
 
-### 10. Keep Documentation in Sync with Reality
+### 11. Keep Documentation in Sync with Reality
 
 As the system changes:
 - Update the README
@@ -139,7 +196,7 @@ As the system changes:
 
 **Drift between code and documentation is one of the fastest ways to lose control of an AI-assisted project.**
 
-### 11. Treat the LLM as a Junior Engineer with Infinite Stamina
+### 12. Treat the LLM as a Junior Engineer with Infinite Stamina
 
 The LLM is fast, tireless, and helpful—but it lacks long-term judgment unless you supply it.
 
