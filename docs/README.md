@@ -1,6 +1,52 @@
 # Documentation
 
-This directory contains documentation templates and guidelines for safe vibe coding projects.
+This directory contains documentation templates and essential guides for safe vibe coding projects.
+
+---
+
+## Essential Guides
+
+These documents cover critical practices for successful AI-assisted development:
+
+### [Context Management](./CONTEXT_MANAGEMENT.md)
+How to maintain coherent context across LLM sessions. Covers:
+- Starting new sessions with proper warm-up
+- Preventing context pollution
+- Managing context window limits
+- Session continuity patterns
+- When to start fresh vs. continue
+
+**Read this to**: Avoid confusion and maintain productive AI collaboration across sessions.
+
+### [Code Review for AI-Generated Code](./CODE_REVIEW_AI.md)
+How to review AI outputs effectively. Covers:
+- AI-specific code review checklist
+- Security review requirements
+- Human review checkpoints (non-negotiable)
+- AI code smells and red flags
+- Iterative refinement techniques
+
+**Read this to**: Catch AI mistakes before they reach production.
+
+### [Anti-Patterns & Warning Signs](./ANTI_PATTERNS.md)
+When AI development goes wrong and how to recover. Covers:
+- Recognizing when LLM is leading you astray
+- Common anti-patterns (Framework Fever, Testing Theater, etc.)
+- Course correction strategies
+- When AI is the wrong tool
+- Emergency procedures
+
+**Read this to**: Avoid common failure modes and know when to course-correct.
+
+### [Version Control Best Practices](./VERSION_CONTROL.md)
+Git workflow for AI-assisted development. Covers:
+- Atomic commits with AI code
+- Reviewing diffs before committing
+- Branching strategies for experiments
+- Commit message templates
+- Handling failed AI attempts
+
+**Read this to**: Use git effectively as a safety net for AI development.
 
 ---
 

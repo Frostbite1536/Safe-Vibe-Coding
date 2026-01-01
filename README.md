@@ -257,13 +257,48 @@ Store checkpoints in:
 
 ---
 
+## Essential Reading
+
+Before you start vibe coding, read these critical documents. They address common failure modes and essential practices:
+
+### 📖 Core Guides
+
+- **[Context Management](./docs/CONTEXT_MANAGEMENT.md)** - How to maintain coherent context across sessions
+  - When to start fresh conversations
+  - Preventing context pollution
+  - Managing context window limits
+  - Session continuity patterns
+
+- **[Code Review for AI](./docs/CODE_REVIEW_AI.md)** - How to review AI-generated code
+  - AI-specific code smells
+  - Security review checklist
+  - Human review checkpoints (non-negotiable)
+  - Iterative refinement techniques
+
+- **[Anti-Patterns & Warning Signs](./docs/ANTI_PATTERNS.md)** - When AI development goes wrong
+  - Recognizing when LLM is leading you astray
+  - Common anti-patterns (Framework Fever, The God File, etc.)
+  - Course correction strategies
+  - When AI is the wrong tool
+
+- **[Version Control Best Practices](./docs/VERSION_CONTROL.md)** - Git workflow for AI-assisted development
+  - Atomic commits with AI code
+  - Reviewing diffs before committing
+  - Branching for experiments
+  - Commit message templates
+
+**Start here**: If you only read one, read [Anti-Patterns & Warning Signs](./docs/ANTI_PATTERNS.md). It will save you from the most common mistakes.
+
+---
+
 ## Getting Started
 
 1. **Review the [quick-reference checklist](./CHECKLIST.md)** - Print it and keep it handy
-2. **Use the templates** in [`/docs/templates`](./docs/templates) to set up your project documentation
-3. **Browse example prompts** in [`/prompts`](./prompts) to see how to communicate effectively with LLMs
-4. **Start with the product conversation** before writing any code
-5. **Establish your invariants early** and refer to them often
+2. **Read [Essential Reading](#essential-reading)** - Understand critical practices and failure modes
+3. **Use the templates** in [`/docs/templates`](./docs/templates) to set up your project documentation
+4. **Browse example prompts** in [`/prompts`](./prompts) to see how to communicate effectively with LLMs
+5. **Start with the product conversation** before writing any code
+6. **Establish your invariants early** and refer to them often
 
 ---
 
