@@ -42,6 +42,34 @@ A comprehensive automation setup includes:
 7. **Code coverage** - Ensure tests actually test the code
 8. **Verification loops** - Give Claude ways to verify its own work
 
+```mermaid
+graph LR
+    subgraph Local ["Local Development"]
+        A([Code Change]) --> B[Pre-commit Hooks]
+        B --> C[Claude Code Hooks]
+    end
+
+    subgraph CI ["CI/CD Pipeline"]
+        C --> D{Lint & Type Check}
+        D -- Pass --> E{Run Tests}
+        E -- Pass --> F{Security Scan}
+        F -- Pass --> G{Build}
+        G -- Pass --> H([Deploy])
+        D -- Fail --> I([Fix & Retry])
+        E -- Fail --> I
+        F -- Fail --> I
+        G -- Fail --> I
+    end
+
+    style A fill:#e1f5fe,stroke:#01579b
+    style D fill:#fff9c4,stroke:#fbc02d
+    style E fill:#fff9c4,stroke:#fbc02d
+    style F fill:#fff9c4,stroke:#fbc02d
+    style G fill:#fff9c4,stroke:#fbc02d
+    style H fill:#c8e6c9,stroke:#2e7d32
+    style I fill:#ffcdd2,stroke:#c62828
+```
+
 ---
 
 ## Pre-Commit Hooks
@@ -1255,6 +1283,24 @@ Before code can be merged, ensure all gates pass:
 **The single most important thing for getting great results from AI coding: give Claude a way to verify its work.**
 
 If Claude has a feedback loop to check its own work, it will 2-3x the quality of the final result. Without verification, Claude is coding blind.
+
+```mermaid
+graph TD
+    A([Start Task]) --> B[Claude Writes Code]
+    B --> C{Run Tests & Lints}
+    C -- Fail --> D[Analyze Errors]
+    D --> E[Fix Issues]
+    E --> B
+    C -- Pass --> F{Build Succeeds?}
+    F -- No --> D
+    F -- Yes --> G([Ready for Review])
+
+    style A fill:#e1f5fe,stroke:#01579b
+    style C fill:#fff9c4,stroke:#fbc02d
+    style F fill:#fff9c4,stroke:#fbc02d
+    style G fill:#c8e6c9,stroke:#2e7d32
+    style D fill:#ffcdd2,stroke:#c62828
+```
 
 ### Why Verification Matters
 

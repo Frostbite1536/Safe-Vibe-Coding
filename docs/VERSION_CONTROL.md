@@ -24,6 +24,33 @@ AI-generated code requires careful version control practices. Because code appea
 
 ## The Commit Workflow
 
+```mermaid
+graph TD
+    A([AI Generates Code]) --> B{Tests Pass?}
+    B -- No --> C[Fix Code]
+    C --> B
+    B -- Yes --> D{Linter Clean?}
+    D -- No --> E[Run Linter Fix]
+    E --> D
+    D -- Yes --> F[Review Diff]
+    F --> G{Understand All Changes?}
+    G -- No --> H[Investigate Code]
+    H --> G
+    G -- Yes --> I{Secure & Correct?}
+    I -- No --> J[Make Corrections]
+    J --> B
+    I -- Yes --> K([Commit])
+
+    style A fill:#e1f5fe,stroke:#01579b
+    style B fill:#fff9c4,stroke:#fbc02d
+    style D fill:#fff9c4,stroke:#fbc02d
+    style G fill:#fff9c4,stroke:#fbc02d
+    style I fill:#fff9c4,stroke:#fbc02d
+    style K fill:#c8e6c9,stroke:#2e7d32
+    style C fill:#ffcdd2,stroke:#c62828
+    style J fill:#ffcdd2,stroke:#c62828
+```
+
 ### Before Committing
 
 #### 1. Run Tests

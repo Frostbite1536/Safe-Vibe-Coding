@@ -1086,21 +1086,23 @@ After each fix round:
 
 The prompts work as a **closed loop**:
 
-```
-┌─────────────────────────────────────────────────────┐
-│                                                     │
-│  1. 🔍 Bug Discovery (read-only, adversarial)       │
-│     ↓                                               │
-│  2. 📋 Select bugs to fix                           │
-│     ↓                                               │
-│  3. 🛠 Bug Fixing (surgical, minimal)               │
-│     ↓                                               │
-│  4. 🧠 Confidence Sweep (validating)                │
-│     ↓                                               │
-│  └─→ If issues found, go to step 2                  │
-│      If stable, you're done ✓                       │
-│                                                     │
-└─────────────────────────────────────────────────────┘
+```mermaid
+graph TD
+    A([Start]) --> B[Bug Discovery]
+    B --> C[Select Bugs to Fix]
+    C --> D[Bug Fixing]
+    D --> E[Confidence Sweep]
+    E --> F{Issues Found?}
+    F -- Yes --> C
+    F -- No --> G([Done])
+
+    style A fill:#e1f5fe,stroke:#01579b
+    style B fill:#e3f2fd,stroke:#1565c0
+    style C fill:#fff3e0,stroke:#ef6c00
+    style D fill:#fce4ec,stroke:#c2185b
+    style E fill:#f3e5f5,stroke:#7b1fa2
+    style F fill:#fff9c4,stroke:#fbc02d
+    style G fill:#c8e6c9,stroke:#2e7d32
 ```
 
 **Key principle**: Keep discovery and fixing separate. This prevents infinite bug loops and AI paranoia.
