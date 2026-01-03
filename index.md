@@ -86,7 +86,15 @@ Regularly ask the LLM to review changes, check edge cases, and find regressions.
 
 ### 10. Give Claude Verification
 **The most important pattern**: Give Claude a way to verify its work. This 2-3x the quality of output.
-
+```mermaid
+graph TD
+    A[Define Constraints & Invariants] --> B[Generate Code]
+    B --> C{Automated Verification}
+    C -->|Fail| D[Refactor based on Error]
+    D --> B
+    C -->|Pass| E[Merge & Maintain Velocity]
+    style C fill:#f9f,stroke:#333,stroke-width:2px
+    
 ---
 
 ## Quick Links
