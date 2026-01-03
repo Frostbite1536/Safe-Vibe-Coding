@@ -680,6 +680,8 @@ pip-audit
 
 **CodeQL** (GitHub's built-in security scanner):
 
+> **Note**: CodeQL is **free for public repositories** but requires **GitHub Advanced Security** (paid enterprise feature) for private repositories. See [free alternatives below](#free-sast-alternatives-for-private-repos) if you're on a private repo.
+
 ```yaml
 # .github/workflows/codeql.yml
 name: CodeQL
@@ -722,7 +724,7 @@ jobs:
           category: "/language:${{ matrix.language }}"
 ```
 
-**Semgrep** (fast, customizable SAST):
+**Semgrep** (fast, customizable SAST - **free for all repos**):
 
 ```yaml
 # .github/workflows/semgrep.yml
@@ -747,6 +749,84 @@ jobs:
             p/security-audit
             p/secrets
             p/owasp-top-ten
+```
+
+### Free SAST Alternatives for Private Repos
+
+If you're using a **private repository** and don't have GitHub Advanced Security, use these free alternatives instead of CodeQL:
+
+| Tool | Best For | Setup Complexity |
+|------|----------|------------------|
+| **Semgrep** | All languages, highly customizable | Easy |
+| **Bandit** | Python security | Easy |
+| **Brakeman** | Ruby on Rails | Easy |
+| **ESLint security plugins** | JavaScript/TypeScript | Easy |
+| **Trivy** | Container & dependency scanning | Medium |
+
+**Recommended: Semgrep** (shown above) - It's free, fast, supports most languages, and has excellent security rules out of the box.
+
+**ESLint Security Plugin** (JavaScript/TypeScript):
+
+```bash
+npm install --save-dev eslint-plugin-security
+```
+
+Add to your ESLint config:
+```javascript
+// eslint.config.js
+import security from 'eslint-plugin-security';
+
+export default [
+  // ... your config
+  {
+    plugins: { security },
+    rules: {
+      'security/detect-object-injection': 'warn',
+      'security/detect-non-literal-regexp': 'warn',
+      'security/detect-unsafe-regex': 'error',
+      'security/detect-buffer-noassert': 'error',
+      'security/detect-eval-with-expression': 'error',
+      'security/detect-no-csrf-before-method-override': 'error',
+      'security/detect-possible-timing-attacks': 'warn',
+    },
+  },
+];
+```
+
+**Bandit** (Python):
+
+```yaml
+# Add to your CI workflow
+- name: Run Bandit Security Scan
+  run: |
+    pip install bandit
+    bandit -r src/ -ll -ii
+```
+
+**Trivy** (containers, filesystems, git repos):
+
+```yaml
+# .github/workflows/trivy.yml
+name: Trivy Security Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  trivy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          severity: 'HIGH,CRITICAL'
 ```
 
 ### Secret Detection
@@ -1382,7 +1462,7 @@ Getting started with automation:
 ### Recommended (Do Soon)
 5. [ ] Add PostToolUse hook for auto-formatting
 6. [ ] Enable Dependabot for dependency updates
-7. [ ] Enable CodeQL for security scanning
+7. [ ] Add security scanning (Semgrep for all repos, or CodeQL for public repos)
 8. [ ] Configure coverage thresholds
 9. [ ] Set up branch protection rules
 10. [ ] Pre-allow safe commands in `.claude/settings.json`
