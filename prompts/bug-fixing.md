@@ -1,3 +1,10 @@
+---
+layout: default
+title: Bug Fixing
+parent: Prompts Library
+nav_order: 5
+---
+
 # Bug Fixing Prompt
 
 Use this prompt when fixing bugs to ensure surgical, focused fixes without scope creep.

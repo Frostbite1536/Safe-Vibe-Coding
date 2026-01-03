@@ -1,3 +1,11 @@
+---
+layout: default
+title: Context Management
+nav_order: 2
+parent: Guides
+description: "Strategies for maintaining coherent context across LLM sessions."
+---
+
 # Context Management: Working with LLMs Across Sessions
 
 One of the biggest challenges in AI-assisted development is maintaining coherent context across long projects and multiple sessions. LLMs have no memory between conversations, and even within a conversation, context can become polluted or confused.

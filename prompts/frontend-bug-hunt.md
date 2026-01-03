@@ -1,3 +1,10 @@
+---
+layout: default
+title: Frontend Bug Hunt
+parent: Prompts Library
+nav_order: 4
+---
+
 # Frontend Bug Hunt Prompt
 
 Use this prompt after implementing frontend changes to proactively find client-side bugs.

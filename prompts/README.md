@@ -1,3 +1,12 @@
+---
+layout: default
+title: Prompts Library
+nav_order: 4
+has_children: true
+description: "Reusable prompts for working with LLMs on software projects."
+permalink: /prompts/
+---
+
 # Prompt Library
 
 This directory contains reusable prompts for working with LLMs on software projects. Each prompt is designed to invoke a specific mode or perspective from the LLM.

@@ -1,3 +1,11 @@
+---
+layout: default
+title: Automation & Testing
+nav_order: 6
+parent: Guides
+description: "CI/CD, hooks, static analysis, security scanning, and verification loops for AI-assisted development."
+---
+
 # Automation & Testing for AI-Assisted Development
 
 AI-generated code requires robust automated quality gates. Manual review is essential but insufficient—automated checks catch issues humans miss and provide consistent enforcement. This document covers setting up comprehensive automation pipelines for safe vibe coding.

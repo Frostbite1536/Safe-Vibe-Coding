@@ -1,3 +1,10 @@
+---
+layout: default
+title: Refactor for Clarity
+parent: Prompts Library
+nav_order: 9
+---
+
 # Refactor for Clarity Prompt
 
 Use this prompt when code is working but hard to understand or maintain.

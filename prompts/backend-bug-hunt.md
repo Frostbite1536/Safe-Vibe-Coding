@@ -1,3 +1,10 @@
+---
+layout: default
+title: Backend Bug Hunt
+parent: Prompts Library
+nav_order: 3
+---
+
 # Backend Bug Hunt Prompt
 
 Use this prompt after implementing backend changes to proactively find server-side bugs.

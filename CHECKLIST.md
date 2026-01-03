@@ -1,3 +1,10 @@
+---
+layout: default
+title: Quick Reference Checklist
+nav_order: 2
+description: "Print-friendly checklist for safe AI-assisted development."
+---
+
 # Vibe Coding Checklist: Production-Safe AI Development
 
 Use this as a lightweight guardrail when building with LLMs. Print it, pin it, reference it before each session.

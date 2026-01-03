@@ -1,3 +1,11 @@
+---
+layout: default
+title: Claude Code Setup Guide
+nav_order: 1
+parent: Guides
+description: "Comprehensive beginner guide to setting up Claude Code for safe, effective AI-assisted development."
+---
+
 # Claude Code Setup Guide: From Zero to Productive
 
 A comprehensive, beginner-friendly guide to setting up Claude Code for safe, effective AI-assisted development. This guide is based on practices used by the Claude Code team and will help you get the most out of your vibe coding sessions.

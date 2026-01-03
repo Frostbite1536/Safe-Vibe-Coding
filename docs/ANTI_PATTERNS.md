@@ -1,3 +1,11 @@
+---
+layout: default
+title: Anti-Patterns & Warning Signs
+nav_order: 4
+parent: Guides
+description: "Recognize when AI development goes wrong and how to course-correct."
+---
+
 # Anti-Patterns & Warning Signs: When AI Development Goes Wrong
 
 Not all AI-assisted development is productive. Sometimes the LLM leads you astray, wastes time, or introduces problems faster than it solves them. This document helps you recognize when things are going wrong and how to course-correct.

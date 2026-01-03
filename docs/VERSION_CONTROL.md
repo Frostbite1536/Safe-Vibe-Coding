@@ -1,3 +1,11 @@
+---
+layout: default
+title: Version Control
+nav_order: 5
+parent: Guides
+description: "Git workflow and best practices for AI-assisted development."
+---
+
 # Version Control Best Practices for AI-Assisted Development
 
 AI-generated code requires careful version control practices. Because code appears quickly, it's tempting to commit large batches without proper review. This document outlines how to use git effectively when working with LLMs.

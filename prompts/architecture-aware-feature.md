@@ -1,3 +1,10 @@
+---
+layout: default
+title: Architecture-Aware Feature
+parent: Prompts Library
+nav_order: 7
+---
+
 # Architecture-Aware Feature Prompt
 
 Use this prompt when adding new functionality to an existing system. It ensures the feature aligns with architecture and respects invariants.

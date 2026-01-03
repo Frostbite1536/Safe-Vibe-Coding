@@ -1,3 +1,11 @@
+---
+layout: default
+title: Code Review for AI
+nav_order: 3
+parent: Guides
+description: "How to review AI-generated code effectively, including AI-specific code smells and security checks."
+---
+
 # Code Review Practices for AI-Generated Code
 
 AI-generated code requires different review practices than human-written code. LLMs can produce syntactically correct code that is nonetheless wrong, insecure, or inefficient. This document outlines how to review AI outputs effectively.
