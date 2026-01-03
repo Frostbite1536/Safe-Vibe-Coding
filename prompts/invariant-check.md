@@ -1,3 +1,10 @@
+---
+layout: default
+title: Invariant Check
+parent: Prompts Library
+nav_order: 10
+---
+
 # Invariant Check Prompt
 
 Use this prompt to verify that code changes respect system invariants and contracts.

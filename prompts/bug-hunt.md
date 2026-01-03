@@ -1,3 +1,10 @@
+---
+layout: default
+title: Bug Hunt
+parent: Prompts Library
+nav_order: 2
+---
+
 # Bug Hunt Prompt
 
 Use this prompt after implementing features or making significant changes to proactively find bugs.

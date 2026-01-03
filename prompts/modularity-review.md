@@ -1,3 +1,10 @@
+---
+layout: default
+title: Modularity Review
+parent: Prompts Library
+nav_order: 8
+---
+
 # Modularity Review Prompt
 
 Use this prompt to review code for modularity issues and get recommendations for breaking down large or complex files.

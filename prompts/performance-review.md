@@ -1,3 +1,10 @@
+---
+layout: default
+title: Performance Review
+parent: Prompts Library
+nav_order: 6
+---
+
 # Performance Review Prompt
 
 Use this prompt to identify performance issues in code or architecture.

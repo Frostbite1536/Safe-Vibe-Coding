@@ -1,6 +1,15 @@
-# Documentation
+---
+layout: default
+title: Guides
+nav_order: 3
+has_children: true
+description: "Essential guides and documentation for safe vibe coding."
+permalink: /docs/
+---
 
-This directory contains documentation templates and essential guides for safe vibe coding projects.
+# Guides
+
+This section contains essential guides and documentation templates for safe vibe coding projects.
 
 ---
 

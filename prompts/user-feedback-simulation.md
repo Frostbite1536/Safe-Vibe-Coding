@@ -1,3 +1,10 @@
+---
+layout: default
+title: User Feedback Simulation
+parent: Prompts Library
+nav_order: 11
+---
+
 # User Feedback Simulation Prompt
 
 Use this prompt to have the LLM simulate user behavior and identify UX issues.

@@ -1,3 +1,10 @@
+---
+layout: default
+title: Engineering Prompt
+parent: Prompts Library
+nav_order: 1
+---
+
 # Engineering Prompt
 
 Use this prompt when you want the LLM to write production-grade code with conservative, proven patterns.
