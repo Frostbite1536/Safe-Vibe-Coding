@@ -26,11 +26,13 @@ When working with LLMs, code appears quickly. This speed creates risk:
 A comprehensive automation setup includes:
 
 1. **Pre-commit hooks** - Catch issues before they enter version control
-2. **CI/CD pipelines** - Automated testing and deployment
-3. **Static analysis** - Find bugs without running code
-4. **Security scanning** - Identify vulnerabilities automatically
-5. **Dependency auditing** - Keep dependencies secure and updated
-6. **Code coverage** - Ensure tests actually test the code
+2. **Claude Code hooks** - Auto-format code, run verification after edits
+3. **CI/CD pipelines** - Automated testing and deployment
+4. **Static analysis** - Find bugs without running code
+5. **Security scanning** - Identify vulnerabilities automatically
+6. **Dependency auditing** - Keep dependencies secure and updated
+7. **Code coverage** - Ensure tests actually test the code
+8. **Verification loops** - Give Claude ways to verify its own work
 
 ---
 
@@ -168,6 +170,135 @@ pre-commit run --all-files
         types: [rust]
         pass_filenames: false
 ```
+
+---
+
+## Claude Code Hooks
+
+If you're using Claude Code for AI-assisted development, **hooks** provide powerful automation that runs during your coding session—not just at commit time.
+
+### PostToolUse Hooks for Auto-Formatting
+
+Claude usually generates well-formatted code, but a PostToolUse hook handles the last 10% to avoid formatting errors in CI. This runs automatically after every file edit:
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npm run format || true"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**Language-specific examples**:
+
+```json
+// JavaScript/TypeScript - Prettier
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "prettier --write . || true"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+```json
+// Python - Black + isort
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "black . && isort . || true"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+```json
+// Go - gofmt
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "gofmt -w . || true"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**Why use `|| true`?** This prevents the hook from blocking Claude if formatting fails on a partial file. The CI pipeline will catch any remaining issues.
+
+### Stop Hooks for Verification
+
+For long-running tasks, use a Stop hook to automatically verify Claude's work when it finishes:
+
+```json
+{
+  "hooks": {
+    "Stop": [
+      {
+        "type": "command",
+        "command": "npm test"
+      }
+    ]
+  }
+}
+```
+
+This ensures every coding session ends with a test run, catching issues before you review.
+
+### Pre-allowing Safe Commands
+
+Instead of using `--dangerously-skip-permissions`, pre-allow common safe commands in `.claude/settings.json`:
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm test:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npm run build:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)"
+    ]
+  }
+}
+```
+
+This avoids permission prompts for routine operations while maintaining security for destructive commands.
 
 ---
 
@@ -315,6 +446,45 @@ Configure branch protection to require CI passes:
    - **Require pull request reviews before merging**
 
 This prevents merging code that fails automated checks.
+
+### Claude Code GitHub Action
+
+Use the Claude Code GitHub Action to automate AI-assisted code review and documentation updates on pull requests:
+
+```yaml
+# .github/workflows/claude-review.yml
+name: Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+  issue_comment:
+    types: [created]
+
+jobs:
+  claude-review:
+    if: |
+      github.event_name == 'pull_request' ||
+      (github.event_name == 'issue_comment' &&
+       contains(github.event.comment.body, '@claude'))
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Claude Code Review
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+```
+
+**Use cases**:
+- **Automated review**: Claude reviews every PR for code quality, security, and best practices
+- **Documentation updates**: Tag `@claude` in PR comments to update CLAUDE.md or other docs
+- **CLAUDE.md maintenance**: When Claude makes a mistake, add it to CLAUDE.md as part of the PR
+
+**Pro tip**: During code review, tag `@claude` on coworkers' PRs to add learnings to the team's CLAUDE.md. This creates a compounding knowledge base—mistakes made once are never repeated.
 
 ---
 
@@ -992,16 +1162,200 @@ Before code can be merged, ensure all gates pass:
 
 ---
 
+## Verification Loops: The Most Important Pattern
+
+**The single most important thing for getting great results from AI coding: give Claude a way to verify its work.**
+
+If Claude has a feedback loop to check its own work, it will 2-3x the quality of the final result. Without verification, Claude is coding blind.
+
+### Why Verification Matters
+
+AI can generate code that:
+- Looks correct but has subtle bugs
+- Works in isolation but breaks integration
+- Passes type checks but fails at runtime
+- Handles happy paths but crashes on edge cases
+
+**Verification catches these issues before you review the code.**
+
+### Types of Verification Loops
+
+**1. Test Suite Verification** (Most Common)
+
+Prompt Claude to run tests after every change:
+
+```
+After making changes, always run `npm test` and fix any failures before reporting completion.
+```
+
+Or use a Stop hook to enforce it:
+
+```json
+{
+  "hooks": {
+    "Stop": [
+      {
+        "type": "command",
+        "command": "npm test"
+      }
+    ]
+  }
+}
+```
+
+**2. Build Verification**
+
+Ensure the code compiles/builds:
+
+```
+After implementing this feature:
+1. Run `npm run build` to verify compilation
+2. Fix any type errors or build failures
+3. Only report completion when build succeeds
+```
+
+**3. Browser/UI Verification**
+
+For frontend work, Claude can test in a real browser using the Claude Chrome extension:
+
+```
+After implementing this UI change:
+1. Open the app in Chrome
+2. Navigate to the affected page
+3. Verify the feature works visually
+4. Test user interactions
+5. Iterate until the UX feels right
+```
+
+**4. Linter Verification**
+
+Ensure code style compliance:
+
+```
+After every file edit, run `npm run lint` and fix any issues.
+```
+
+**5. Integration Verification**
+
+For API or database changes:
+
+```
+After implementing this endpoint:
+1. Start the dev server
+2. Make test requests with curl
+3. Verify responses match expected format
+4. Test error cases
+```
+
+### Verification Subagents
+
+For complex verification, create dedicated subagents:
+
+```markdown
+# .claude/agents/verify-app.md
+---
+name: verify-app
+description: Comprehensive app verification. Use after completing features.
+tools: Bash, Read
+---
+
+Run comprehensive verification:
+
+1. Run the test suite: `npm test`
+2. Run the linter: `npm run lint`
+3. Build the project: `npm run build`
+4. Start the dev server and verify it loads
+5. Check for console errors
+6. Report any failures with specific details
+```
+
+Then prompt Claude:
+
+```
+After implementing the feature, use the verify-app subagent to check everything works.
+```
+
+### Verification for Long-Running Tasks
+
+For tasks that run autonomously for extended periods:
+
+**Option A: Prompt-based verification**
+```
+When you finish, use a background subagent to verify your work before reporting completion.
+```
+
+**Option B: Stop hook verification**
+```json
+{
+  "hooks": {
+    "Stop": [
+      {
+        "type": "command",
+        "command": "./scripts/full-verification.sh"
+      }
+    ]
+  }
+}
+```
+
+**Option C: Continuous verification plugin**
+Use plugins like [ralph-wiggum](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/ralph-wiggum) for automated verification during long sessions.
+
+### Domain-Specific Verification
+
+Verification looks different for each domain:
+
+| Domain | Verification Method |
+|--------|-------------------|
+| Backend API | Run test suite + curl requests |
+| Frontend UI | Browser testing with Chrome extension |
+| CLI tools | Run commands and check output |
+| Libraries | Run unit tests + example usage |
+| Data pipelines | Validate output data format |
+| Infrastructure | Terraform plan + apply dry-run |
+
+### Making Verification Rock-Solid
+
+Invest time in making verification reliable:
+
+1. **Fast feedback**: Verification should take seconds, not minutes
+2. **Clear output**: Success/failure should be obvious
+3. **Comprehensive**: Cover the common failure modes
+4. **Automated**: No manual steps required
+
+**If verification is slow or flaky, Claude won't use it effectively.**
+
+### Verification Prompt Template
+
+```
+After completing this task:
+
+1. Run tests: `npm test`
+2. Run linter: `npm run lint`
+3. Build: `npm run build`
+
+If any step fails:
+- Fix the issue
+- Re-run verification
+- Only report completion when ALL checks pass
+
+Do not skip verification. Do not report success with failing tests.
+```
+
+---
+
 ## Summary
 
 **Automation is not optional for AI-assisted development.** The speed of AI-generated code makes manual-only review insufficient. Implement:
 
 1. **Pre-commit hooks** - Stop problems at the source
-2. **CI/CD pipelines** - Consistent automated testing
-3. **Static analysis** - Catch bugs before runtime
-4. **Security scanning** - Find vulnerabilities automatically
-5. **Coverage enforcement** - Ensure tests exist for AI code
-6. **Quality gates** - Block merging until standards are met
+2. **Claude Code hooks** - Auto-format and verify during sessions
+3. **CI/CD pipelines** - Consistent automated testing
+4. **Static analysis** - Catch bugs before runtime
+5. **Security scanning** - Find vulnerabilities automatically
+6. **Coverage enforcement** - Ensure tests exist for AI code
+7. **Quality gates** - Block merging until standards are met
+8. **Verification loops** - Give Claude feedback to improve output quality 2-3x
 
 **The investment in automation pays off immediately**: fewer bugs in production, faster code reviews, and confidence that AI-generated code meets your standards.
 
@@ -1011,12 +1365,24 @@ Before code can be merged, ensure all gates pass:
 
 Getting started with automation:
 
+### Essential (Do First)
 1. [ ] Install pre-commit: `pip install pre-commit && pre-commit install`
 2. [ ] Create `.pre-commit-config.yaml` with basic hooks
 3. [ ] Create `.github/workflows/ci.yml` for CI
-4. [ ] Enable Dependabot for dependency updates
-5. [ ] Enable CodeQL for security scanning
-6. [ ] Configure coverage thresholds
-7. [ ] Set up branch protection rules
+4. [ ] Set up verification loop (make Claude run tests after changes)
 
-**Start small and iterate.** Add more checks as you identify pain points.
+### Recommended (Do Soon)
+5. [ ] Add PostToolUse hook for auto-formatting
+6. [ ] Enable Dependabot for dependency updates
+7. [ ] Enable CodeQL for security scanning
+8. [ ] Configure coverage thresholds
+9. [ ] Set up branch protection rules
+10. [ ] Pre-allow safe commands in `.claude/settings.json`
+
+### Advanced (As Needed)
+11. [ ] Install Claude Code GitHub Action for PR reviews
+12. [ ] Create verification subagents for complex workflows
+13. [ ] Set up Stop hooks for automatic verification
+14. [ ] Configure MCP servers for external tool access
+
+**Start small and iterate.** Add more checks as you identify pain points. The verification loop is the highest-impact change you can make.

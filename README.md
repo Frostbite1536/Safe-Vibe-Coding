@@ -261,6 +261,15 @@ Store checkpoints in:
 
 Before you start vibe coding, read these critical documents. They address common failure modes and essential practices:
 
+### 🚀 New to Claude Code? Start Here!
+
+- **[Claude Code Setup Guide](./docs/BEGINNER_SETUP.md)** - Comprehensive beginner guide
+  - Terminal configuration and notifications
+  - Running multiple Claude instances in parallel
+  - Plan mode, CLAUDE.md, slash commands
+  - Subagents, skills, and hooks
+  - MCP servers and verification loops
+
 ### 📖 Core Guides
 
 - **[Context Management](./docs/CONTEXT_MANAGEMENT.md)** - How to maintain coherent context across sessions
@@ -289,11 +298,11 @@ Before you start vibe coding, read these critical documents. They address common
 
 - **[Automation & Testing](./docs/AUTOMATION_TESTING.md)** - Automated quality gates for AI code
   - GitHub Actions CI/CD pipelines
-  - Pre-commit hooks setup
-  - Static analysis (ESLint, Pylint, SonarCloud)
+  - Claude Code hooks (PostToolUse for auto-formatting)
+  - Pre-commit hooks and static analysis
   - Security scanning (CodeQL, Semgrep, Gitleaks)
-  - Code coverage enforcement
-  - Testing strategies for AI-generated code
+  - Verification loops (key to quality AI code)
+  - Claude Code GitHub Action for PR reviews
 
 **Start here**: If you only read one, read [Anti-Patterns & Warning Signs](./docs/ANTI_PATTERNS.md). It will save you from the most common mistakes.
 
