@@ -94,6 +94,7 @@ graph TD
     D --> B
     C -->|Pass| E[Merge & Maintain Velocity]
     style C fill:#f9f,stroke:#333,stroke-width:2px
+```
     
 ---
 
