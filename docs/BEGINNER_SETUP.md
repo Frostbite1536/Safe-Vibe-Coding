@@ -130,6 +130,33 @@ Supports: mode switching, navigation (hjkl, w/e/b), and basic editing commands.
 
 One of the biggest productivity boosts is running multiple Claude instances in parallel.
 
+```mermaid
+graph TD
+    subgraph Tab1 ["Tab 1: Feature Development"]
+        A([Implement Feature]) --> B{Need Testing?}
+        B -- Yes --> C[Hand off to Tab 2]
+    end
+
+    subgraph Tab2 ["Tab 2: Testing & Fixes"]
+        C --> D[Run Tests]
+        D --> E{Tests Pass?}
+        E -- No --> F[Fix Bugs]
+        F --> D
+        E -- Yes --> G[Hand off to Tab 3]
+    end
+
+    subgraph Tab3 ["Tab 3: Review & Polish"]
+        G --> H[Code Review]
+        H --> I([Merge Ready])
+    end
+
+    style A fill:#e1f5fe,stroke:#01579b
+    style B fill:#fff9c4,stroke:#fbc02d
+    style E fill:#fff9c4,stroke:#fbc02d
+    style I fill:#c8e6c9,stroke:#2e7d32
+    style F fill:#ffcdd2,stroke:#c62828
+```
+
 ### Local Terminal Setup
 
 **Recommended**: Run 5 Claude sessions in numbered tabs.
