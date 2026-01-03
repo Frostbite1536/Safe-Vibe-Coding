@@ -141,3 +141,6 @@ This guide is a living document. If you've found patterns that work (or anti-pat
 
 {: .note }
 This guide is released into the public domain. Use it however helps you build better software.
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true});</script>
