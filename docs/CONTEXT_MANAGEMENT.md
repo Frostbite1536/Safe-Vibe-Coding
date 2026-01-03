@@ -26,6 +26,39 @@ This document provides strategies for effective context management.
 
 ---
 
+## Context Management Lifecycle
+
+Use this flow to maintain a "high-value" context budget throughout your development cycle.
+
+```mermaid
+graph TD
+    Start((New Session)) --> WarmUp[Warm-Up Template]
+    WarmUp --> Essential[Share Essential Files]
+    Essential --> Active{Active Coding}
+
+    Active --> Hygiene[Context Hygiene]
+    Hygiene -->|30-60 mins| Checkpoint[Context Checkpoint]
+    Checkpoint --> Alignment{Still Aligned?}
+
+    Alignment -- Yes --> Active
+    Alignment -- No/Drifting --> RedFlags{Red Flags?}
+
+    RedFlags -- Pollution --> Reset[Option 1: Explicit Reset]
+    RedFlags -- Confusion/Limit --> Fresh[Option 2: Start Fresh]
+    
+    Reset --> Active
+    Fresh --> Summary[Generate Checkpoint Summary]
+    Summary --> Start
+
+    style Start fill:#f4f4f4,stroke:#333
+    style Active fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    style RedFlags fill:#ffebee,stroke:#c62828
+    style Alignment fill:#fff9c4,stroke:#fbc02d
+    style Fresh fill:#c8e6c9,stroke:#2e7d32
+```
+
+---
+
 ## Starting a New Session
 
 ### Warm-Up Template
@@ -148,6 +181,17 @@ This prevents context drift and catches misalignments early.
 - Break large tasks into smaller sessions
 - Each session focuses on one module or feature
 - Use checkpoint summaries to bridge sessions
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'pie1': '#7161ef', 'pie2': '#2ecc71', 'pie3': '#3498db', 'pie4': '#f1c40f', 'pie5': '#e74c3c'}}}%%
+pie title LLM Context Budgeting
+    "Architecture & Invariants" : 10
+    "Code Being Modified" : 30
+    "Tests & Related Code" : 20
+    "Conversation History" : 20
+    "Response Buffer" : 20
+```
+
 
 ---
 
@@ -344,3 +388,7 @@ Think of context as a limited resource:
 Your goal isn't to give the LLM all the information, it's to give it the *right* information to maintain coherent understanding across time.
 
 **Good context management is the difference between productive AI collaboration and frustrating confusion.**
+
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true});</script>
