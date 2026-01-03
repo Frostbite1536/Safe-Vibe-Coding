@@ -8,7 +8,7 @@ url: "https://frostbite1536.github.io"
 remote_theme: just-the-docs/just-the-docs@v0.8.2
 
 # Color scheme (light, dark, or auto)
-color_scheme: auto
+color_scheme: light
 
 # Logo (optional - can add later)
 # logo: "/assets/images/logo.png"
