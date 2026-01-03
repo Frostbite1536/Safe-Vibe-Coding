@@ -15,6 +15,20 @@ This directory contains reusable prompts for working with LLMs on software proje
 
 ## Available Prompts
 
+### 🆕 Customizable Templates
+
+- **[llm-coding-templates.md](./llm-coding-templates.md)** - Battle-tested, customizable prompt templates
+  - **Safe Engineering** - Default prompt for production-safe coding
+  - **Bug Discovery** - Read-only, adversarial bug hunting
+  - **Bug Fixing** - Surgical, minimal fixes for specific bugs
+  - **Confidence Sweep** - Post-fix stability validation
+  - **UX Bug Discovery** - UI/UX-focused bug hunting
+  - **UX Confidence Sweep** - UX stability validation
+  - **Product Tester** - Role-based product evaluation
+  - **Systematic Bug Scan** - Comprehensive checklist-based detection
+
+  Each template has `[CUSTOMIZE]` sections to fill in for your specific codebase.
+
 ### Engineering & Development
 
 - **[engineering-prompt.md](./engineering-prompt.md)** - Production-grade code with conservative, proven patterns
