@@ -88,12 +88,15 @@ Regularly ask the LLM to review changes, check edge cases, and find regressions.
 **The most important pattern**: Give Claude a way to verify its work. This 2-3x the quality of output.
 ```mermaid
 graph TD
-    A[Define Constraints & Invariants] --> B[Generate Code]
-    B --> C{Automated Verification}
-    C -->|Fail| D[Refactor based on Error]
+    A([Define Constraints & Invariants]) --> B[Generate Code]
+    B --> C{Automated <br/>Verification}
+    C -- No --> D[Refactor based on Error]
     D --> B
-    C -->|Pass| E[Merge & Maintain Velocity]
-    style C fill:#f9f,stroke:#333,stroke-width:2px
+    C -- Yes --> E([Merge & Maintain Velocity])
+
+    style A fill:#e1f5fe,stroke:#01579b
+    style C fill:#fff9c4,stroke:#fbc02d
+    style E fill:#c8e6c9,stroke:#2e7d32
 ```
     
 ---
