@@ -1,6 +1,6 @@
 # Vibe Coding with LLMs: A Practical Guide to Building Real Software
 
-This guide describes a collaborative, structured way to build software with LLMs while maintaining correctness, stability, and long-term maintainability. The goal is not novelty—it's shipping reliable systems without losing momentum. 
+This guide describes a collaborative, structured way to build software with LLMs while maintaining correctness, stability, and long-term maintainability. The goal is not novelty—it's shipping reliable systems without losing momentum.
 
 ---
 
