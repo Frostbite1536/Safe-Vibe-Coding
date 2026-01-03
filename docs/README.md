@@ -8,6 +8,19 @@ This directory contains documentation templates and essential guides for safe vi
 
 These documents cover critical practices for successful AI-assisted development:
 
+### [Claude Code Setup Guide](./BEGINNER_SETUP.md) (Start Here!)
+Comprehensive beginner-friendly guide to setting up Claude Code. Covers:
+- Terminal configuration (notifications, line breaks)
+- Running multiple Claude instances in parallel
+- Plan mode for complex tasks
+- CLAUDE.md: teaching Claude your codebase
+- Slash commands, subagents, and skills
+- Hooks for auto-formatting and verification
+- MCP servers for external tools
+- Model selection and verification loops
+
+**Read this to**: Get the most out of Claude Code from day one.
+
 ### [Context Management](./CONTEXT_MANAGEMENT.md)
 How to maintain coherent context across LLM sessions. Covers:
 - Starting new sessions with proper warm-up
@@ -51,13 +64,14 @@ Git workflow for AI-assisted development. Covers:
 ### [Automation & Testing](./AUTOMATION_TESTING.md)
 Comprehensive automation and CI/CD for AI-assisted projects. Covers:
 - GitHub Actions workflows for automated testing
+- Claude Code hooks (PostToolUse for auto-formatting)
 - Pre-commit hooks with the pre-commit framework
 - Static analysis tools (ESLint, Pylint, SonarCloud)
 - Security scanning (CodeQL, Semgrep, Gitleaks)
 - Dependency vulnerability auditing
 - Code coverage enforcement
-- Quality gates and branch protection
-- Testing strategies for AI-generated code
+- Verification loops (the key to quality AI code)
+- Claude Code GitHub Action for PR reviews
 
 **Read this to**: Set up automated quality gates that catch issues humans miss.
 
