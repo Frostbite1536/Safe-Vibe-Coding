@@ -287,6 +287,14 @@ Before you start vibe coding, read these critical documents. They address common
   - Branching for experiments
   - Commit message templates
 
+- **[Automation & Testing](./docs/AUTOMATION_TESTING.md)** - Automated quality gates for AI code
+  - GitHub Actions CI/CD pipelines
+  - Pre-commit hooks setup
+  - Static analysis (ESLint, Pylint, SonarCloud)
+  - Security scanning (CodeQL, Semgrep, Gitleaks)
+  - Code coverage enforcement
+  - Testing strategies for AI-generated code
+
 **Start here**: If you only read one, read [Anti-Patterns & Warning Signs](./docs/ANTI_PATTERNS.md). It will save you from the most common mistakes.
 
 ---

@@ -48,6 +48,19 @@ Git workflow for AI-assisted development. Covers:
 
 **Read this to**: Use git effectively as a safety net for AI development.
 
+### [Automation & Testing](./AUTOMATION_TESTING.md)
+Comprehensive automation and CI/CD for AI-assisted projects. Covers:
+- GitHub Actions workflows for automated testing
+- Pre-commit hooks with the pre-commit framework
+- Static analysis tools (ESLint, Pylint, SonarCloud)
+- Security scanning (CodeQL, Semgrep, Gitleaks)
+- Dependency vulnerability auditing
+- Code coverage enforcement
+- Quality gates and branch protection
+- Testing strategies for AI-generated code
+
+**Read this to**: Set up automated quality gates that catch issues humans miss.
+
 ---
 
 ## Templates
