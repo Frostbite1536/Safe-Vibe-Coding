@@ -12,7 +12,7 @@ mermaid:
   version: "10.9.1"
 
 # Color scheme (light, dark, or auto)
-color_scheme: light
+color_scheme: nil
 
 # Logo (optional - can add later)
 # logo: "/assets/images/logo.png"
@@ -40,7 +40,7 @@ search:
   preview_words_after: 10
   tokenizer_separator: /[\s/]+/
   rel_url: true
-  button: false
+  button: true
 
 # Navigation
 nav_enabled: true
