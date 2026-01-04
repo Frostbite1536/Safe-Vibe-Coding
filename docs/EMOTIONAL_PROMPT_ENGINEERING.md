@@ -347,27 +347,59 @@ What would you flag in a code review?
 
 ### Negative Prompting (Contrast Prompting)
 
-Tell the model what NOT to do, in addition to what you want.
+Tell the model what NOT to do—but **use with caution**.
+
+⚠️ **Warning: The Backfire Effect**
+
+Research shows that negative instructions can backfire:
+
+| Finding | Implication |
+|---------|-------------|
+| Larger models perform **worse** with negative prompts (KAIST) | "Don't do X" activates the concept of X |
+| Negation understanding doesn't improve with scale (NeQA) | This isn't fixed by better models |
+| Models prioritize helpfulness over logical consistency | They may do X anyway to be "helpful" |
+
+When you say "Don't use eval()", the model activates `eval()` in its attention—and may be *more* likely to reach for it than if you'd never mentioned it.
+
+**The Fix: Prefer Positive Framing**
+
+Instead of saying what NOT to do, say what TO do:
+
+| ❌ Negative (Risky) | ✅ Positive (Better) |
+|---------------------|---------------------|
+| "Don't use eval()" | "Use ast.literal_eval() for safe parsing" |
+| "Don't catch exceptions silently" | "Log all exceptions with full context" |
+| "Don't use regex for HTML" | "Use BeautifulSoup or lxml for HTML parsing" |
+| "Don't hardcode secrets" | "Load secrets from environment variables" |
+| "Don't write verbose code" | "Write concise, readable code" |
+
+**When Negative Prompting Can Still Work**
+
+Negative prompts aren't useless—but structure them carefully:
 
 ```
 Write a function to parse user input.
 
-DO NOT:
-- Use eval() or exec()
-- Trust input without validation
-- Catch exceptions silently
-- Use regex for HTML/XML parsing
+## Required Approach (Primary Instructions)
+- Use ast.literal_eval() for safe parsing
+- Validate input types and ranges before processing
+- Log all exceptions with full context and stack traces
+- Return typed error objects with actionable messages
 
-DO:
-- Validate input types and ranges
-- Handle edge cases explicitly
-- Log errors with context
-- Return meaningful error messages
+## Verification Checklist (Confirm After Writing)
+After completing the code, verify:
+- [ ] No eval() or exec() calls present
+- [ ] No bare except clauses
+- [ ] No string concatenation for queries
+- [ ] All inputs validated at entry points
 ```
 
-**Why it works**: Explicitly stating anti-patterns helps the model avoid common mistakes. Especially useful for security-sensitive code.
+This structure:
+1. **Leads with positive instructions** (what TO do)
+2. **Uses negatives as verification** (check AFTER, not during generation)
+3. **Frames as checklist** (cognitive task, not generative constraint)
 
-**Contrastive Chain-of-Thought (CD-CoT)**: Shows both correct and incorrect reasoning examples, helping the model learn from contrast. Improves accuracy by 17.8% on average.
+**Contrastive Chain-of-Thought (CD-CoT)**: A research technique that shows both correct AND incorrect reasoning examples side-by-side. This works because the model learns from *contrast*, not just prohibition. Improves accuracy by 17.8% on average—but requires showing the right way, not just forbidding the wrong way.
 
 ### Meta-Prompting
 
@@ -401,15 +433,20 @@ Review this code step-by-step: (CHAIN-OF-THOUGHT)
 3. Check for sanitization at each step
 4. Flag any unvalidated paths
 
-DO NOT: (NEGATIVE PROMPTING)
-- Assume any input is safe
-- Skip "obvious" code paths
-- Ignore error handling code
+Required focus areas: (POSITIVE FRAMING)
+- Treat every input as potentially malicious
+- Examine every code path, including error handlers
+- Verify parameterized queries for all database access
 
 After your review, critique your findings: (REFLEXION)
 - Did you check all entry points?
 - Could you have missed anything?
 - What would a malicious user try?
+
+Verification checklist: (NEGATIVE AS POST-CHECK)
+- [ ] No SQL injection vectors
+- [ ] No XSS vulnerabilities
+- [ ] No hardcoded secrets
 
 This code handles payment data— (HIGH STAKES)
 errors here could cause financial loss and legal liability.
@@ -420,10 +457,10 @@ errors here could cause financial loss and legal liability.
 | Problem Type | Best Strategies |
 |-------------|-----------------|
 | **Complex reasoning** | CoT + Self-Consistency |
-| **Code generation** | Persona + Negative Prompting + Reflexion |
+| **Code generation** | Persona + Positive Constraints + Reflexion |
 | **Architecture decisions** | ToT + High Stakes |
 | **Bug hunting** | Persona + Reflexion + Verification |
-| **Security review** | Negative Prompting + CoT + Stakes |
+| **Security review** | Positive Constraints + CoT + Stakes + Verification Checklist |
 | **Creative tasks** | ToT + Meta-Prompting |
 
 ### Research References
@@ -433,6 +470,8 @@ errors here could cause financial loss and legal liability.
 - **Tree of Thoughts**: Yao et al., "Tree of Thoughts: Deliberate Problem Solving with Large Language Models"
 - **Reflexion**: Shinn et al., "Reflexion: Language Agents with Verbal Reinforcement Learning"
 - **Meta-Prompting**: Zhou et al., "Large Language Models Are Human-Level Prompt Engineers"
+- **Negation Understanding**: KAIST, "NeQA: Negation Understanding Benchmark for Language Models"
+- **Sycophancy & Helpfulness**: Nature Digital Medicine, "When Helpfulness Backfires" (2025)
 
 ---
 
@@ -465,6 +504,8 @@ errors here could cause financial loss and legal liability.
 - [Prompt Engineering Guide](https://www.promptingguide.ai/) - Comprehensive techniques reference
 - [Chain of Thought Prompting Guide](https://orq.ai/blog/what-is-chain-of-thought-prompting) - Deep dive on CoT
 - [Meta Prompting Guide](https://www.promptingguide.ai/techniques/meta-prompting) - Self-optimizing prompts
+- [Why Positive Prompts Outperform Negative Ones](https://gadlet.com/posts/negative-prompting/) - Negation research
+- [LLMs Don't Understand Negation](https://hackernoon.com/llms-dont-understand-negation) - Backfire effect analysis
 
 ### Related Guides in This Repository
 - **[Context Management](./CONTEXT_MANAGEMENT.md)** - Maintaining quality across sessions
