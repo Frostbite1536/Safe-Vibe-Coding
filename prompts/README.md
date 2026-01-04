@@ -35,6 +35,10 @@ This directory contains reusable prompts for working with LLMs on software proje
   - Use when: Building new features, writing production code
   - Focus: Maintainability, modularity, security, respecting architecture
 
+- **[feature-implementation.md](./feature-implementation.md)** - Autonomous feature implementation with verification loops
+  - Use when: Implementing features from roadmap/plan documents
+  - Focus: Gap analysis, structured implementation, mandatory verification, progress tracking
+
 - **[architecture-aware-feature.md](./architecture-aware-feature.md)** - Add features safely while respecting architecture
   - Use when: Extending existing systems with new functionality
   - Focus: Architecture alignment, invariant compliance, minimal surface area
