@@ -262,6 +262,180 @@ This code will be merged to main—review it as if your name were on it.
 
 ---
 
+## Advanced Reasoning Strategies
+
+Beyond emotional framing, these cutting-edge techniques can dramatically improve LLM output quality. Many combine well with emotional prompting.
+
+### Chain-of-Thought (CoT) Prompting
+
+Force the model to show its reasoning steps before arriving at an answer.
+
+```
+Think through this step-by-step:
+1. First, identify the core problem
+2. Then, consider possible approaches
+3. Evaluate trade-offs of each approach
+4. Finally, recommend the best solution with justification
+```
+
+**Why it works**: Breaking down complex problems into steps reduces errors by 10-30% on reasoning tasks. The phrase "Let's think step by step" alone can significantly improve accuracy.
+
+**Chain of Draft (CoD)** - A 2025 variant that produces concise, information-dense reasoning steps rather than verbose explanations. Matches CoT accuracy with significantly fewer tokens.
+
+### Self-Consistency
+
+Generate multiple reasoning paths and select the most common answer.
+
+```
+I need you to solve this problem three different ways, then tell me which answer appears most frequently. Show your work for each approach.
+```
+
+**Performance**: Self-consistency + CoT improves accuracy by 17.9% on math problems (GSM8K) and 11% on word problems (SVAMP) compared to standard CoT.
+
+**When to use**: Complex problems with multiple valid solution paths—math, logic puzzles, architectural decisions.
+
+### Tree of Thoughts (ToT)
+
+Explore multiple branches of reasoning before committing to an answer.
+
+```
+Before solving this, explore three different approaches:
+
+Approach A: [describe]
+- Pros:
+- Cons:
+- Likely outcome:
+
+Approach B: [describe]
+- Pros:
+- Cons:
+- Likely outcome:
+
+Approach C: [describe]
+- Pros:
+- Cons:
+- Likely outcome:
+
+Now, select the best approach and implement it.
+```
+
+**Why it works**: Instead of a single linear chain, ToT maintains a "tree" of thoughts, allowing the model to backtrack from dead ends and explore alternatives.
+
+### Reflexion (Self-Critique)
+
+Have the model evaluate and improve its own output.
+
+```
+First, provide your answer.
+
+Then, critically evaluate your answer:
+- What assumptions did you make?
+- What could be wrong?
+- What edge cases might break this?
+
+Finally, provide an improved answer addressing any issues found.
+```
+
+**Performance**: Reflexion agents show 22% improvement on decision-making tasks and 20% on reasoning tasks through iterative self-improvement.
+
+**Combine with emotional framing**:
+```
+You are a meticulous engineer who never ships bugs.
+After writing this code, review it as if you were auditing someone else's work.
+What would you flag in a code review?
+```
+
+### Negative Prompting (Contrast Prompting)
+
+Tell the model what NOT to do, in addition to what you want.
+
+```
+Write a function to parse user input.
+
+DO NOT:
+- Use eval() or exec()
+- Trust input without validation
+- Catch exceptions silently
+- Use regex for HTML/XML parsing
+
+DO:
+- Validate input types and ranges
+- Handle edge cases explicitly
+- Log errors with context
+- Return meaningful error messages
+```
+
+**Why it works**: Explicitly stating anti-patterns helps the model avoid common mistakes. Especially useful for security-sensitive code.
+
+**Contrastive Chain-of-Thought (CD-CoT)**: Shows both correct and incorrect reasoning examples, helping the model learn from contrast. Improves accuracy by 17.8% on average.
+
+### Meta-Prompting
+
+Use the LLM to help write or refine prompts.
+
+```
+I want to write a prompt that will help an LLM review code for security vulnerabilities.
+
+Help me write an effective prompt by:
+1. Identifying what context the LLM needs
+2. Suggesting the best persona/role framing
+3. Listing specific instructions for thoroughness
+4. Adding verification steps to catch mistakes
+```
+
+**Why it works**: LLMs understand their own capabilities and limitations. They can help structure prompts that play to their strengths.
+
+**Automatic Prompt Engineer (APE)**: A technique where the LLM generates multiple candidate prompts, tests them, and selects the best performer.
+
+### Combining Strategies
+
+The most effective prompts combine multiple techniques:
+
+```
+You are a world-class security engineer (PERSONA + EMOTIONAL FRAMING)
+who never misses OWASP Top 10 vulnerabilities.
+
+Review this code step-by-step: (CHAIN-OF-THOUGHT)
+1. Identify all user inputs
+2. Trace each input through the code
+3. Check for sanitization at each step
+4. Flag any unvalidated paths
+
+DO NOT: (NEGATIVE PROMPTING)
+- Assume any input is safe
+- Skip "obvious" code paths
+- Ignore error handling code
+
+After your review, critique your findings: (REFLEXION)
+- Did you check all entry points?
+- Could you have missed anything?
+- What would a malicious user try?
+
+This code handles payment data— (HIGH STAKES)
+errors here could cause financial loss and legal liability.
+```
+
+### Strategy Selection Guide
+
+| Problem Type | Best Strategies |
+|-------------|-----------------|
+| **Complex reasoning** | CoT + Self-Consistency |
+| **Code generation** | Persona + Negative Prompting + Reflexion |
+| **Architecture decisions** | ToT + High Stakes |
+| **Bug hunting** | Persona + Reflexion + Verification |
+| **Security review** | Negative Prompting + CoT + Stakes |
+| **Creative tasks** | ToT + Meta-Prompting |
+
+### Research References
+
+- **Chain-of-Thought**: Wei et al., "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models"
+- **Self-Consistency**: Wang et al., "Self-Consistency Improves Chain of Thought Reasoning"
+- **Tree of Thoughts**: Yao et al., "Tree of Thoughts: Deliberate Problem Solving with Large Language Models"
+- **Reflexion**: Shinn et al., "Reflexion: Language Agents with Verbal Reinforcement Learning"
+- **Meta-Prompting**: Zhou et al., "Large Language Models Are Human-Level Prompt Engineers"
+
+---
+
 ## Summary
 
 **Emotional prompt engineering works** because it steers the LLM toward higher-quality token predictions associated with expertise and authority in its training data.
@@ -280,7 +454,19 @@ This code will be merged to main—review it as if your name were on it.
 
 ## Further Reading
 
-- **EmotionPrompt Paper**: "Large Language Models Understand and Can Be Enhanced by Emotional Stimuli" (Li et al.)
+### Research Papers
+- **EmotionPrompt**: "Large Language Models Understand and Can Be Enhanced by Emotional Stimuli" (Li et al.)
+- **Chain-of-Thought**: "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models" (Wei et al.)
+- **Self-Consistency**: "Self-Consistency Improves Chain of Thought Reasoning" (Wang et al.)
+- **Tree of Thoughts**: "Tree of Thoughts: Deliberate Problem Solving with Large Language Models" (Yao et al.)
+- **Reflexion**: "Reflexion: Language Agents with Verbal Reinforcement Learning" (Shinn et al.)
+
+### External Resources
+- [Prompt Engineering Guide](https://www.promptingguide.ai/) - Comprehensive techniques reference
+- [Chain of Thought Prompting Guide](https://orq.ai/blog/what-is-chain-of-thought-prompting) - Deep dive on CoT
+- [Meta Prompting Guide](https://www.promptingguide.ai/techniques/meta-prompting) - Self-optimizing prompts
+
+### Related Guides in This Repository
 - **[Context Management](./CONTEXT_MANAGEMENT.md)** - Maintaining quality across sessions
 - **[LLM Coding Templates](../prompts/llm-coding-templates.md)** - Battle-tested prompts with persona framing
 - **[Engineering Prompt](../prompts/engineering-prompt.md)** - Example of role-based prompting
