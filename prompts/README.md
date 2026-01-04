@@ -29,6 +29,17 @@ This directory contains reusable prompts for working with LLMs on software proje
 
   Each template has `[CUSTOMIZE]` sections to fill in for your specific codebase.
 
+### 🤖 Agent Workflows
+
+- **[project-bootstrap.md](./project-bootstrap.md)** - Bootstrap a new project with Safe Vibe Coding infrastructure
+  - Use when: Starting a new project or onboarding an agent to a repository
+  - Focus: Documentation foundation, directory structure, prompt library, CI setup
+  - Creates: README, ARCHITECTURE.md, INVARIANTS.md, ROADMAP.md, prompts/
+
+- **[feature-implementation.md](./feature-implementation.md)** - Autonomous feature implementation with verification loops
+  - Use when: Implementing features from roadmap/plan documents
+  - Focus: Gap analysis, structured implementation, mandatory verification, progress tracking
+
 ### Engineering & Development
 
 - **[engineering-prompt.md](./engineering-prompt.md)** - Production-grade code with conservative, proven patterns
