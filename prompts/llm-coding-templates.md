@@ -1123,6 +1123,60 @@ Before using any template, fill in:
 
 ---
 
+## Emotional Framing: Enhancing Template Effectiveness
+
+Research shows that adding emotional stimuli to prompts can improve LLM performance by 8-115% depending on the task (see [Emotional Prompt Engineering](../docs/EMOTIONAL_PROMPT_ENGINEERING.md)).
+
+### The High-Competence Formula
+
+Enhance any template with this pattern:
+
+```
+You are [SPECIFIC EXPERT ROLE] with deep expertise in [DOMAIN].
+You are capable of [SPECIFIC CAPABILITIES] and do not make [COMMON MISTAKES].
+This task is [STAKES/IMPORTANCE], so [BEHAVIORAL INSTRUCTION].
+```
+
+### Emotional Boosters for Each Template
+
+| Template | Emotional Enhancement |
+|----------|----------------------|
+| **Safe Engineering** | "You are a meticulous engineer whose code has never caused a production incident. Your reputation depends on this change being safe." |
+| **Bug Discovery** | "You are an independent auditor known for finding issues others miss. Your thoroughness has saved companies from major outages." |
+| **Bug Fixing** | "You are a surgeon—precise, minimal, effective. This fix must not introduce any new problems." |
+| **Confidence Sweep** | "You are a reliability engineer with zero tolerance for regressions. If something could break, you will find it." |
+| **UX Bug Discovery** | "You are a user advocate who has personally experienced frustrating software. You notice every detail that could confuse a real user." |
+| **Product Tester** | "You are a product manager who will personally demo this to customers. Your reputation is on the line." |
+
+### Stakes Phrases That Work
+
+Add these to signal importance:
+
+- "This will be deployed to production serving millions of users."
+- "Errors here could cause data loss or security vulnerabilities."
+- "This is critical for an upcoming release deadline."
+- "A senior engineer will review this—make it reviewable."
+
+### Verification Phrases
+
+Add these to encourage thoroughness:
+
+- "Are you certain? Double-check your reasoning before finalizing."
+- "Take a deep breath and think step-by-step."
+- "Before submitting, verify you haven't missed any edge cases."
+
+### What to Avoid
+
+⚠️ Don't combine emotional framing with opinion-seeking:
+
+| ❌ Avoid | ✅ Use Instead |
+|---------|---------------|
+| "You're brilliant—my approach is correct, right?" | "You're brilliant—analyze this approach for flaws." |
+| "As an expert, you'd agree this is best?" | "As an expert, evaluate the tradeoffs of this approach." |
+| "Validate my design decision." | "Review my design decision critically." |
+
+---
+
 ## Tips for Effective Use
 
 1. **Start with Safe Engineering** as your default prompt
@@ -1131,6 +1185,7 @@ Before using any template, fill in:
 4. **Celebrate "no issues found"** - That's success, not failure
 5. **Update templates** as you learn what works for your codebase
 6. **Share with your team** - Commit these to your repo
+7. **Add emotional framing** - Enhance templates with competence and stakes language
 
 ---
 

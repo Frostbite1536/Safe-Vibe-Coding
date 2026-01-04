@@ -304,6 +304,13 @@ Before you start vibe coding, read these critical documents. They address common
   - Verification loops (key to quality AI code)
   - Claude Code GitHub Action for PR reviews
 
+- **[Emotional Prompt Engineering](./docs/EMOTIONAL_PROMPT_ENGINEERING.md)** - Using psychology to improve LLM output
+  - Why telling LLMs they're "the best" actually works
+  - EmotionPrompt research and findings
+  - Effective vs. ineffective "hype" strategies
+  - The sycophancy trap and how to avoid it
+  - High-competence prompt formulas
+
 **Start here**: If you only read one, read [Anti-Patterns & Warning Signs](./docs/ANTI_PATTERNS.md). It will save you from the most common mistakes.
 
 ---
