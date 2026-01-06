@@ -349,6 +349,56 @@ Consider: [alternative direction]
 
 ---
 
+### Anti-Pattern: The Symptom Chase
+
+**What it looks like**: Adding defensive checks in 5+ locations for the same recurring error.
+
+**Why it's bad**: You're masking the root cause instead of fixing it. The bug persists, just appearing in new locations.
+
+**Real example** (20 commits to change one number):
+
+```
+Commit 1:  Add sanitization to toContact mapper
+Commit 2:  Add type checks to BD page
+Commit 3:  Add sanitization to all role-based pages
+Commit 4:  Add contact_id handling and debug logging
+Commit 5:  Fix unsafe contact_id usages
+Commit 6:  Add render-time debug logging
+Commit 7:  Add render-time sanitization for stageContacts
+Commit 8:  Add sanitization to CommandPalette, Dashboard
+Commit 9:  Add KanbanErrorBoundary to isolate crash
+Commit 10: Enhanced debug logging
+Commit 11: Remove Avatar component to isolate crash
+Commit 12: Remove Avatar from more components
+Commit 13: Radical simplification - plain HTML only
+Commit 14: Bypass ALL wrappers
+Commit 15: Add back SmartColumn... crash returns! ← Root cause found
+Commit 16: Disable virtualization ← Actual fix: 1 line
+```
+
+**The pattern**:
+- Error: "Objects are not valid as React child"
+- Commits 1-14: Adding defensive type checks everywhere the error appeared
+- Commit 15: Started *removing* code instead of adding → found virtualization was the cause
+- Commit 16: Set `VIRTUALIZATION_THRESHOLD = 10000` (one constant)
+
+**Red flags you're symptom chasing**:
+- Same error type appearing in new locations after each "fix"
+- Adding identical defensive checks across multiple files
+- Grepping for patterns (`contact.name`) instead of tracing data flow
+- Commit messages like "Add more sanitization" or "Fix in another location"
+
+**Fix**: Use root-cause-isolation prompt:
+1. Read the stack trace (it said `setData` → cache mutation, not rendering)
+2. Trace data upstream (API → cache → component)
+3. Disable complexity layers one by one (virtualization, memoization, caching)
+4. Find the single boundary where invalid data enters
+5. Fix there, once
+
+**Prevention**: When you're about to add the same defensive check in a third location, stop. You're treating symptoms. Trace upstream instead.
+
+---
+
 ## Recognizing Context Pollution
 
 **Signs context is polluted**:
