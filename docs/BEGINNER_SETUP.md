@@ -350,6 +350,138 @@ During PR reviews, if you see Claude made a mistake, tag `@claude` to update CLA
 useQuery hook for data fetching, not fetch() directly.
 ```
 
+### Advanced CLAUDE.md Structure
+
+For larger projects, structure your CLAUDE.md comprehensively. Here's a complete template:
+
+```markdown
+# CLAUDE.md
+
+## Project Overview
+Brief description of what this project does and its core purpose.
+
+## Module Hierarchy
+Understanding code organization prevents Claude from creating files in wrong locations.
+
+### Directory Structure
+```
+/src
+├── /core         # Foundation - no dependencies on other src modules
+├── /domain       # Business logic - depends only on core
+├── /services     # External integrations - depends on core, domain
+├── /api          # HTTP layer - depends on services, domain
+└── /ui           # Presentation - depends on api, domain
+```
+
+### Import Rules
+- `core/` → imports nothing from src
+- `domain/` → may import from `core/`
+- `services/` → may import from `core/`, `domain/`
+- `api/` → may import from `core/`, `domain/`, `services/`
+- `ui/` → may import from any layer
+
+**Never import upward** (e.g., core importing from services).
+
+## Critical Invariants
+Non-negotiable rules that must always hold true.
+
+### Thread Safety
+- All database access goes through the connection pool
+- Never hold locks across async boundaries
+- Use `@synchronized` decorator for shared state mutations
+
+### API Patterns
+- All endpoints return `{ data, error, metadata }` shape
+- Errors use RFC 7807 problem details format
+- Pagination uses cursor-based approach, never offset
+
+### Data Integrity
+- User IDs are immutable after creation
+- Soft delete only - never hard delete user data
+- All monetary values stored as integers (cents)
+
+## Red Flags to Avoid
+Patterns that indicate something is wrong.
+
+### Code Smells
+- ❌ `any` type in TypeScript - always use proper types
+- ❌ `// eslint-disable` - fix the issue instead
+- ❌ `console.log` in production code - use the logger
+- ❌ Hardcoded secrets or API keys
+- ❌ Raw SQL queries - use the ORM
+
+### Architecture Violations
+- ❌ UI components calling database directly
+- ❌ Business logic in API route handlers
+- ❌ Circular dependencies between modules
+- ❌ God classes with 10+ dependencies
+
+### Testing Anti-patterns
+- ❌ Tests that depend on execution order
+- ❌ Mocking what you don't own (mock adapters instead)
+- ❌ Tests without assertions
+
+## Common Task Patterns
+How to approach recurring tasks correctly.
+
+### Adding a New API Endpoint
+1. Define types in `src/domain/types/`
+2. Add validation schema in `src/domain/validators/`
+3. Implement business logic in `src/domain/services/`
+4. Create route handler in `src/api/routes/`
+5. Add tests for each layer
+6. Update OpenAPI spec
+
+### Adding a Database Migration
+1. Create migration file: `npm run migration:create`
+2. Write up and down migrations
+3. Test migration: `npm run migration:test`
+4. Update TypeORM entities to match
+5. Run `npm run generate:types` for type safety
+
+### Implementing a New Feature
+1. Check ARCHITECTURE.md for where it fits
+2. Check INVARIANTS.md for applicable rules
+3. Write failing tests first
+4. Implement in appropriate module
+5. Ensure all existing tests pass
+6. Update documentation if needed
+
+## Key Files Reference
+Point Claude to existing documentation for deep context.
+
+- **Architecture**: See `docs/ARCHITECTURE.md` for system design
+- **Invariants**: See `docs/INVARIANTS.md` for non-negotiable rules
+- **API Contracts**: See `docs/API.md` for endpoint specifications
+- **Testing Guide**: See `docs/TESTING.md` for testing conventions
+
+## Commands Quick Reference
+```bash
+npm run dev          # Start development server
+npm run test         # Run all tests
+npm run test:watch   # Run tests in watch mode
+npm run lint         # Run linter
+npm run lint:fix     # Fix linting issues
+npm run build        # Production build
+npm run typecheck    # TypeScript check
+npm run db:migrate   # Run migrations
+npm run db:seed      # Seed database
+```
+```
+
+### File Locations for CLAUDE.md
+
+Claude Code looks for instructions in multiple places (in order of precedence):
+
+| Location | Scope | Use Case |
+|----------|-------|----------|
+| `CLAUDE.md` | Project root | Main project instructions (commit to git) |
+| `.claude/instructions.md` | Project | Alternative location (commit to git) |
+| `~/.claude/CLAUDE.md` | User-global | Personal preferences across all projects |
+| `.claude.local.md` | Project root | Personal project notes (gitignore this) |
+
+**Tip**: Use `CLAUDE.md` for team-shared knowledge and `.claude.local.md` for personal notes like "I'm working on the auth refactor" that shouldn't be committed.
+
 ---
 
 ## Slash Commands: Automate Repetitive Tasks
