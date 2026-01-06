@@ -76,6 +76,11 @@ This directory contains reusable prompts for working with LLMs on software proje
   - Use when: Fixing specific bugs
   - Focus: Minimal changes, root cause fixes, no refactoring
 
+- **[root-cause-isolation.md](./root-cause-isolation.md)** - Debug elusive bugs that evade normal fixes
+  - Use when: Same error appears in multiple locations, defensive fixes aren't working
+  - Focus: Stack trace analysis, data flow tracing, complexity layer isolation
+  - Key technique: Remove optimization layers (virtualization, memoization, caching) to isolate
+
 - **[invariant-check.md](./invariant-check.md)** - Verify changes against system invariants
   - Use when: Before merging significant changes
   - Focus: Contract compliance, detecting violations, maintaining guarantees

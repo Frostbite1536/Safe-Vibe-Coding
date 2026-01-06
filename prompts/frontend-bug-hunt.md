@@ -189,6 +189,37 @@ You are a frontend engineer reviewing client-side code for bugs. Your goal is to
 - Is sensitive data stored insecurely?
 - Does server-side validation exist?
 
+### 11. Optimization Layer Edge Cases
+
+Optimizations can introduce subtle bugs during edge cases. These are often the hardest bugs to find because the optimization "usually" works.
+
+**Layers that can cause bugs**:
+
+| Layer | What it does | Bug patterns |
+|-------|--------------|--------------|
+| **Virtualization** | Only renders visible items | Stale data during scroll, crashes during cache updates |
+| **Memoization** | Caches computed values | Stale values when deps change, incorrect dep arrays |
+| **Optimistic updates** | Updates UI before server | UI/server desync on rollback, race conditions |
+| **React Query/SWR caching** | Caches API responses | Stale data shown, cache invalidation timing |
+| **React.memo** | Prevents re-renders | Component not updating when it should |
+| **Suspense** | Defers rendering | Waterfall loading, missing boundaries |
+
+**Check for**:
+- Virtualized lists behaving oddly during data updates
+- Memoized values not updating when source data changes
+- Optimistic updates not rolling back correctly on errors
+- Cached data persisting when it should be refreshed
+- Components not re-rendering after state changes
+
+**Questions**:
+- What happens to virtualized rows during a cache update?
+- Are memoization dependency arrays complete and correct?
+- What happens when an optimistic update fails?
+- Is the cache invalidated at the right times?
+- Could React.memo be preventing necessary re-renders?
+
+**Debugging tip**: When a bug is elusive and appearing in multiple locations, try disabling optimization layers one at a time. If the bug disappears, that layer is involved in the root cause. See **root-cause-isolation.md** for the full methodology.
+
 ---
 
 ## Output Format
