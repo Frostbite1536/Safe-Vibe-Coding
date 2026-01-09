@@ -36,6 +36,15 @@ Use this as a lightweight guardrail when building with LLMs. Print it, pin it, r
 - [ ] Confirm invariants before behavior changes
 - [ ] Treat invariant violations as bugs or product decisions
 
+## Secrets & API Key Security
+
+- [ ] No API keys or secrets in frontend code ([guide](./docs/API_KEY_SECURITY.md))
+- [ ] External APIs called through server-side proxy routes
+- [ ] No secrets in `NEXT_PUBLIC_`, `VITE_`, or `REACT_APP_` env vars
+- [ ] `.env` files in `.gitignore`
+- [ ] Network tab checked for exposed credentials
+- [ ] Proxy routes require authentication
+
 ## Implementation Discipline
 
 - [ ] Write tests alongside features

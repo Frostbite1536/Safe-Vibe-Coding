@@ -60,6 +60,17 @@ When AI development goes wrong and how to recover. Covers:
 
 **Read this to**: Avoid common failure modes and know when to course-correct.
 
+### [API Key & Secrets Security](./API_KEY_SECURITY.md)
+How to keep API keys out of your frontend code. Covers:
+- Why 9/10 vibe-coded apps leak credentials
+- Server-side proxy patterns for all major frameworks
+- Environment variable best practices
+- Framework-specific guidance (Next.js, Vite, Express, FastAPI)
+- How to check for leaks (Network tab, source search)
+- Pre-commit hooks for secret detection
+
+**Read this to**: Stop your app from leaking API keys in the browser Network tab.
+
 ### [Version Control Best Practices](./VERSION_CONTROL.md)
 Git workflow for AI-assisted development. Covers:
 - Atomic commits with AI code
