@@ -99,7 +99,18 @@ Define the non-negotiable rules:
 Use the INV-[CATEGORY]-### naming convention.
 Each invariant needs: Rule, Rationale, Examples (valid/invalid), Enforcement.
 
-#### 1.4 docs/ROADMAP.md
+#### 1.4 docs/THREAT_MODEL.md
+
+For systems handling user data or external input, create a threat model:
+- Identify assets to protect (credentials, PII, business data)
+- Map trust boundaries (where data crosses security domains)
+- Apply STRIDE analysis (Spoofing, Tampering, Repudiation, Information Disclosure, DoS, Elevation of Privilege)
+- Document attack surface (entry points, data flows)
+- Define security controls (preventive, detective, corrective)
+
+Use threat IDs (S-1, T-1, etc.) and track mitigation status.
+
+#### 1.5 docs/ROADMAP.md
 
 Structure the implementation plan:
 - Phase 1: [Foundation - core infrastructure]
@@ -326,6 +337,9 @@ For a faster setup, create only these essential files:
 5. **.github/workflows/ci.yml** - Basic CI pipeline
 
 This gives you the core Safe Vibe Coding infrastructure in 5 files.
+
+**Add if handling user data or external input**:
+6. **docs/THREAT_MODEL.md** - Attack surface and mitigations (use STRIDE)
 
 ---
 
