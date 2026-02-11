@@ -382,6 +382,30 @@ Commit 16: Disable virtualization ← Actual fix: 1 line
 - Commit 15: Started *removing* code instead of adding → found virtualization was the cause
 - Commit 16: Set `VIRTUALIZATION_THRESHOLD = 10000` (one constant)
 
+```mermaid
+flowchart LR
+    subgraph symptom ["❌ Symptom Chasing (14 commits)"]
+        direction TB
+        S1[Add check to mapper] --> S2[Add check to BD page]
+        S2 --> S3[Add check to role pages]
+        S3 --> S4[Add check to Dashboard]
+        S4 --> S5[Add check to CommandPalette]
+        S5 --> S6["...more files"]
+    end
+
+    subgraph root ["✅ Root Cause Fix (1 line)"]
+        direction TB
+        R1["Disable virtualization<br/>THRESHOLD = 10000"]
+    end
+
+    symptom -.->|"Error keeps<br/>appearing elsewhere"| symptom
+    root -.->|"Error gone<br/>everywhere"| Done["✓ Fixed"]
+
+    style symptom fill:#fff0f0,stroke:#c00
+    style root fill:#f0fff0,stroke:#0a0
+    style Done fill:#efe,stroke:#0a0
+```
+
 **Red flags you're symptom chasing**:
 - Same error type appearing in new locations after each "fix"
 - Adding identical defensive checks across multiple files

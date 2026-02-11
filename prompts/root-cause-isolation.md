@@ -46,6 +46,28 @@ When a bug appears at render time, the data was corrupted earlier. When a cache 
 
 **Trace upstream, not downstream.**
 
+```mermaid
+flowchart LR
+    subgraph upstream ["🔍 Look Here (Upstream)"]
+        A[API Response] --> B[Data Transform]
+        B --> C[Cache Write]
+    end
+
+    subgraph downstream ["❌ Error Appears Here (Downstream)"]
+        C --> D[Cache Read]
+        D --> E[Component Props]
+        E --> F[Render]
+    end
+
+    F -.- G["💥 Error thrown here"]
+    B -.- H["🎯 Problem actually here"]
+
+    style G fill:#fee,stroke:#c00
+    style H fill:#efe,stroke:#0a0
+    style upstream fill:#f0fff0,stroke:#0a0
+    style downstream fill:#fff0f0,stroke:#c00
+```
+
 ---
 
 ## Root Cause Isolation Methodology
@@ -102,6 +124,27 @@ Modern apps have optimization layers that can create edge cases:
 2. Test if bug persists
 3. If bug disappears → that layer is involved in the root cause
 4. If bug persists → re-enable and try next layer
+
+```mermaid
+flowchart TD
+    A[Bug persists after multiple fixes] --> B[List complexity layers]
+    B --> C[Disable layer #1]
+    C --> D{Bug still<br/>present?}
+
+    D -->|Yes| E[Re-enable layer #1]
+    E --> F[Disable layer #2]
+    F --> D
+
+    D -->|No| G["🎯 Found it!<br/>This layer is involved"]
+    G --> H[Investigate layer's edge cases]
+    H --> I[Fix at the boundary]
+
+    D -->|"All layers tested,<br/>bug persists"| J[Problem is in core logic,<br/>not optimization layers]
+    J --> K[Use binary search on<br/>business logic instead]
+
+    style G fill:#efe,stroke:#0a0
+    style A fill:#fee,stroke:#c00
+```
 
 ### Step 4: Reproduce at the Boundary
 
