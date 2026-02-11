@@ -175,19 +175,27 @@ You are a frontend engineer reviewing client-side code for bugs. Your goal is to
 
 ### 10. Security (Client-Side)
 
+**This is critical.** 9 out of 10 vibe-coded apps leak credentials. See [API Key Security Guide](../docs/API_KEY_SECURITY.md).
+
 **Check for**:
+- **API keys in frontend code** - Search for `sk-`, `api_key`, `secret`, `token`
+- **Direct calls to external APIs** - Frontend should call YOUR server, not OpenAI/Stripe/etc directly
+- **Secrets in public env vars** - `NEXT_PUBLIC_*`, `VITE_*`, `REACT_APP_*` are bundled into JS
+- **Keys visible in Network tab** - Open DevTools and check every request
 - XSS vulnerabilities (unescaped user input)
 - Sensitive data in client-side code
-- Exposing API keys or tokens
 - Local storage of sensitive data
 - Missing CSRF tokens
 - Trusting client-side validation only
 
 **Questions**:
+- Open the Network tab - are any API keys visible in requests?
+- Does frontend code call external APIs directly (instead of through your backend)?
+- Are there any `NEXT_PUBLIC_*` or `VITE_*` env vars containing secrets?
 - Is user-generated content properly escaped?
-- Are API keys or secrets exposed?
 - Is sensitive data stored insecurely?
 - Does server-side validation exist?
+- Are proxy routes protected with authentication?
 
 ### 11. Optimization Layer Edge Cases
 
@@ -281,6 +289,12 @@ const handleAddToCart = (product) => {
 ## Red Flags
 
 Watch for these patterns:
+
+🚨 **API keys in frontend code** - CRITICAL: Search for `sk-`, `Bearer`, `api_key`, `secret`
+
+🚨 **Direct external API calls** - Frontend calling `api.openai.com`, `api.stripe.com`, etc. directly
+
+🚨 **Secrets in public env vars** - `NEXT_PUBLIC_SECRET`, `VITE_API_KEY`, `REACT_APP_TOKEN`
 
 🚩 **Uncaught promise rejections** (missing .catch() or try/catch)
 
