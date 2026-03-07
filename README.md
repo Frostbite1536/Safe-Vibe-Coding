@@ -311,6 +311,14 @@ Before you start vibe coding, read these critical documents. They address common
   - The sycophancy trap and how to avoid it
   - High-competence prompt formulas
 
+- **[Building MCP Servers](./docs/MCP_DEVELOPMENT.md)** - Hard-won lessons from real MCP server implementations
+  - What MCP servers are and why you'd build one
+  - Why your consumer is an LLM, not a human
+  - Input validation, error handling, and serialization
+  - The 15 most common bug patterns (with fixes)
+  - Design-time practices that prevent MCP bugs later
+  - Complete build/review checklist
+
 **Start here**: If you only read one, read [Anti-Patterns & Warning Signs](./docs/ANTI_PATTERNS.md). It will save you from the most common mistakes.
 
 ---
