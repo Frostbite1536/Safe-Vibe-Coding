@@ -86,6 +86,22 @@ Use this as a lightweight guardrail when building with LLMs. Print it, pin it, r
 
 ---
 
+## MCP Server Development
+
+- [ ] Tool descriptions list every parameter with type, purpose, and valid values
+- [ ] Return type semantics documented (creates, returns ref, returns data, side effect)
+- [ ] Parameter names in schema match what descriptions lead the LLM to expect
+- [ ] Every handler wrapped in a safe error boundary (decorator/try-catch)
+- [ ] Error responses include valid options and expected format (never "see the docs")
+- [ ] No `print()`/`console.log()` writing to stdout (corrupts stdio transport)
+- [ ] Every attribute access verified against actual type definitions
+- [ ] Every function call uses correct parameter names from real signatures
+- [ ] All response types are JSON-serializable (handle datetime, tuples, custom types)
+- [ ] Inputs validated at the boundary: enums, non-finite numbers, required refs, types
+- [ ] Full checklist: [Building MCP Servers guide](./docs/MCP_DEVELOPMENT.md#mcp-server-checklist)
+
+---
+
 ## After Each Major Change
 
 Generate a checkpoint summary:
