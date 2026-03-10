@@ -321,7 +321,45 @@ throw new Error(`API call failed with key ${apiKey}`);
 throw new Error('API call failed - check server logs');
 ```
 
-### 6. Exposing internal services
+### 6. Warn-Only Security Defaults
+
+```python
+# ❌ AI generates this constantly
+SECRET_KEY = os.environ.get("SECRET_KEY", "default-insecure-key-change-me")
+if SECRET_KEY == "default-insecure-key-change-me":
+    logger.warning("Using default SECRET_KEY — not safe for production!")
+    # But keeps running with the insecure key...
+
+# ✅ Fail-fast in non-development environments
+SECRET_KEY = os.environ.get("SECRET_KEY", "default-insecure-key-change-me")
+if SECRET_KEY == "default-insecure-key-change-me":
+    env = os.environ.get("ENVIRONMENT", "production")
+    if env != "development":
+        raise RuntimeError("SECRET_KEY must be set in production/staging")
+    logger.warning("Using default SECRET_KEY — development only")
+```
+
+Nobody reads warning logs during development, and the default key ships to production. **Default-insecure with a warning is effectively the same as no security.** Make insecure configurations fail loudly in any non-development environment.
+
+### 7. Missing Rate Limiting on Auth Endpoints
+
+```python
+# ❌ Unauthenticated endpoint with no rate limiting
+@app.route('/auth/login', methods=['POST'])
+def login():
+    # Brute-force invitation, especially with JWT (no account lockout)
+    ...
+
+# ✅ Rate limit before processing
+@app.route('/auth/login', methods=['POST'])
+@limiter.limit("5/minute")
+def login():
+    ...
+```
+
+Rate limiting is table stakes, not a nice-to-have. An unauthenticated login endpoint without rate limiting is a brute-force invitation — especially with JWT-based auth where there's no account lockout mechanism. **Add rate limiting before your first deployment, not after your first incident.** Five requests per minute on auth endpoints is a reasonable starting point.
+
+### 8. Exposing internal services
 
 ```javascript
 // ❌ Frontend directly calls internal service
