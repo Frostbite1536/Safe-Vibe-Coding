@@ -1038,7 +1038,43 @@ pip install mutmut
 mutmut run
 ```
 
-### 4. Contract Testing
+### 4. Keep Test Fixtures in Sync with the Data Model
+
+When you add a field that changes semantics (e.g., a `pnl_is_set` boolean alongside a `pnl` float), every test that constructs objects with explicit values needs updating. If tests still pass without updating fixtures, **your tests aren't testing the new behavior**.
+
+The fix: make test factories auto-detect intent.
+
+```python
+# ❌ After adding pnl_is_set, this fixture silently ignores PnL
+trade = create_trade(pnl=42.50)
+# trade.pnl_is_set defaults to False — test doesn't exercise the PnL path
+
+# ✅ Factory auto-detects: if "pnl" was explicitly passed, set the flag
+def create_trade(**kwargs):
+    defaults = {"pnl": 0.0, "pnl_is_set": False, ...}
+    if "pnl" in kwargs:
+        defaults["pnl_is_set"] = True  # Caller clearly intends PnL to be set
+    defaults.update(kwargs)
+    return Trade(**defaults)
+```
+
+**Rule**: When you add a field that changes how existing fields are interpreted, update test factories — not just production code. Fix in dependency order: model first, then providers, then business logic, then tests.
+
+### 5. Run Partial Tests Rather Than No Tests
+
+If some tests can't run (missing dependencies, uninstalled modules, environment constraints), don't skip testing entirely. Run the subset that can execute. 335 passing tests is infinitely better than zero tests because the other 50 couldn't run.
+
+```bash
+# ❌ "mcp module isn't installed, so I skipped all tests"
+
+# ✅ Run what you can, document the gap
+pytest --ignore=tests/mcp/ -v  # Run everything except MCP tests
+echo "NOTE: tests/mcp/ skipped — requires mcp package not in test env"
+```
+
+**Rule**: Never skip all tests because some can't run. Find the subset that can and run those. Document the gap so someone can close it later.
+
+### 6. Contract Testing
 
 Ensure AI-generated APIs match expected contracts:
 

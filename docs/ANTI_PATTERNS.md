@@ -333,6 +333,53 @@ Consider: [alternative direction]
 
 ---
 
+### Anti-Pattern: Debug-Level Exception Swallowing
+
+**What it looks like**: Broad exception handlers that log at `debug` level instead of `warning` or `error`.
+
+**Why it's bad**: Catching `Exception` also catches `AttributeError`, `TypeError`, and `KeyError` — actual bugs in your code. Logging at `debug` means nobody sees them in production. Real bugs get silently ignored, and data falls through to incorrect fallback paths.
+
+**Example**:
+```python
+❌ try:
+       result = provider.normalize_trade(raw_data)
+   except Exception:
+       logger.debug("Provider detection failed")  # Swallows real bugs
+       # Falls through to generic parser with wrong field mappings
+
+✅ try:
+       result = provider.normalize_trade(raw_data)
+   except (ValueError, KeyError) as e:
+       logger.warning("Provider normalization failed: %s", e)  # Visible, specific
+```
+
+**Fix**: Catch specific exceptions. If you must catch `Exception`, log at `warning` or `error`, not `debug`. If a broad catch silently redirects to a fallback path, you're hiding data corruption.
+
+---
+
+### Anti-Pattern: Sentinel Value Abuse
+
+**What it looks like**: Using a legitimate business value (zero, empty string, `-1`) to mean "not yet set" or "missing."
+
+**Why it's bad**: The sentinel value eventually occurs naturally, and the code silently treats real data as uninitialized. This is especially dangerous in financial code where zero means "breakeven trade" — not "PnL hasn't been calculated."
+
+**Example**:
+```python
+❌ if trade.pnl == 0.0:
+       # Meant to check "not yet calculated"
+       # But also skips real breakeven trades
+       trade.pnl = calculate_pnl(trade)
+
+✅ if not trade.pnl_is_set:
+       # Explicit boolean flag — boring but correct
+       trade.pnl = calculate_pnl(trade)
+       trade.pnl_is_set = True
+```
+
+**Fix**: Use an explicit flag or `Optional` type. `pnl: Optional[float] = None` with `if pnl is None` is safe because `None` can't naturally occur as a PnL value. Overloading real values as sentinels is a design trap that AI readily falls into because it produces shorter code.
+
+---
+
 ### Anti-Pattern: Database Query Explosion
 
 **What it looks like**: N+1 queries, missing eager loading.

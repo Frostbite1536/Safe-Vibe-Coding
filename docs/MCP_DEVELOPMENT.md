@@ -339,6 +339,51 @@ Use this checklist when building or reviewing an MCP server.
 - [ ] Tools are tested with wrong parameter names to verify error messages
 - [ ] Tools are tested with edge-case values (`null`, empty strings, boundary numbers)
 - [ ] The full stdio transport path is tested end-to-end (not just handler functions)
+- [ ] An LLM-specific input test suite exists (see below)
+
+---
+
+## Write an LLM-Specific Input Test Suite
+
+LLMs don't send the same inputs humans do. They send lowercase enums (`"buy"` instead of `"Buy"`), `NaN` from hallucinated JSON, and arbitrary strings for sort orders. This is a distinct concern from normal unit tests and deserves its own test file.
+
+Create a `test_llm_inputs.py` (or equivalent) that specifically tests the weird things LLMs actually send:
+
+```python
+# test_llm_inputs.py — tests for real LLM input patterns
+
+def test_lowercase_enum_values():
+    """LLMs often send lowercase versions of enum values."""
+    # Should accept "buy", "Buy", "BUY" — normalize, don't reject
+    result = handle_trade(action="buy")
+    assert result.action == "Buy"
+
+def test_nan_numeric_inputs():
+    """LLMs sometimes produce NaN from malformed JSON."""
+    # Should reject NaN, not silently produce wrong results
+    with pytest.raises(ValueError):
+        filter_by_pnl(min_pnl=float('nan'))
+
+def test_infinity_numeric_inputs():
+    """LLMs sometimes produce Infinity from edge-case calculations."""
+    with pytest.raises(ValueError):
+        set_threshold(value=float('inf'))
+
+def test_arbitrary_sort_strings():
+    """LLMs may send plausible but invalid sort orders."""
+    result = list_trades(sort_by="most_recent")  # Not a valid sort key
+    # Should return helpful error, not crash or silently ignore
+    assert "valid sort options" in result.error.lower()
+
+def test_extra_whitespace_in_strings():
+    """LLMs sometimes add leading/trailing whitespace."""
+    result = find_market(slug="  polymarket-election-2024  ")
+    assert result is not None  # Should trim, not fail
+```
+
+**Why this matters**: `filter_by_pnl(min_pnl=float('nan'))` silently returns *all trades* because NaN comparisons always return `False` in Python. No error, no warning — just wrong results. Financial tools that silently give wrong numbers are worse than tools that crash.
+
+**The advice from the MCP Development Guide to "accept both display-friendly and internal forms" is correct** — normalize inputs instead of rejecting them. Rejecting `"buy"` when you accept `"Buy"` just wastes an LLM round-trip.
 
 ---
 

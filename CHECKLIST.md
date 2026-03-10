@@ -44,6 +44,8 @@ Use this as a lightweight guardrail when building with LLMs. Print it, pin it, r
 - [ ] `.env` files in `.gitignore`
 - [ ] Network tab checked for exposed credentials
 - [ ] Proxy routes require authentication
+- [ ] No "warn-only" security defaults (insecure configs must fail-fast outside dev)
+- [ ] Auth endpoints have rate limiting
 
 ## Implementation Discipline
 
@@ -98,6 +100,7 @@ Use this as a lightweight guardrail when building with LLMs. Print it, pin it, r
 - [ ] Every function call uses correct parameter names from real signatures
 - [ ] All response types are JSON-serializable (handle datetime, tuples, custom types)
 - [ ] Inputs validated at the boundary: enums, non-finite numbers, required refs, types
+- [ ] LLM-specific input test suite exists (lowercase enums, NaN, extra whitespace)
 - [ ] Full checklist: [Building MCP Servers guide](./docs/MCP_DEVELOPMENT.md#mcp-server-checklist)
 
 ---

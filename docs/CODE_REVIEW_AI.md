@@ -266,6 +266,106 @@ def handle_update(data):
 
 **Red flag**: AI doesn't refactor common patterns it creates.
 
+### 7. Sentinel Value Abuse
+
+```python
+# AI might generate
+if trade.pnl == 0.0:
+    # "Not yet calculated"
+    calculate_pnl(trade)
+```
+
+**Red flag**: Using a legitimate business value (zero = breakeven) as a sentinel for "uninitialized." This silently corrupts real data. The fix is an explicit flag (`pnl_is_set = True`) or `Optional[float]` — boring but correct. **If you see `if x == 0.0` or `if x is None` to detect "uninitialized," ask whether that value could naturally occur.**
+
+### 8. Timezone Stripping Instead of Converting
+
+```python
+# AI might generate
+naive_dt = aware_dt.replace(tzinfo=None)  # ❌ Strips label, doesn't convert
+
+# Correct
+naive_utc = aware_dt.astimezone(timezone.utc).replace(tzinfo=None)  # ✅
+```
+
+**Red flag**: `replace(tzinfo=None)` just removes the timezone label without converting the time. `2024-01-15T10:00:00-05:00` should become `2024-01-15T15:00:00` (UTC), not `2024-01-15T10:00:00`. This bug gets copy-pasted across files. **When you see timezone handling, mentally trace a non-UTC input through it.**
+
+### 9. Dead `hasattr` Checks on Structured Types
+
+```python
+# AI might generate
+if hasattr(trade, 'outcome'):
+    # This field doesn't exist on the dataclass — always False
+    process_outcome(trade.outcome)
+```
+
+**Red flag**: `hasattr` on a `@dataclass` or typed class for a field that isn't declared. Since these types have fixed fields, the check always returns `False` and the guarded code never runs. This often happens when code was copied from a dict-based predecessor. **Verify the attribute actually exists on at least one code path.**
+
+### 10. Wrong Formulas from Memory
+
+```python
+# AI might generate — looks right but isn't
+downside_deviation = np.std(negative_returns)  # ❌ Wrong Sortino denominator
+# Correct: sqrt(mean(min(r, 0)^2))
+```
+
+**Red flag**: Named financial or statistical metrics implemented from memory rather than the actual formula. `std(negative_returns)` and `sqrt(mean(min(r, 0)^2))` look similar but produce different results. **For any named metric (Sortino ratio, Sharpe ratio, drawdowns), look up the actual formula. Don't approximate from memory.**
+
+### 11. Inconsistent Grouping Keys Across Files
+
+```python
+# File A groups by display name
+groups = group_by(trades, key=lambda t: t.market)
+
+# File B groups by slug
+groups = group_by(trades, key=lambda t: t.market_slug)
+```
+
+**Red flag**: Two files operating on "the same grouping" use different keys. Display names can change or collide; slugs are stable. **When multiple functions group by the same concept, grep for all grouping sites and verify they use the same key.**
+
+### 12. Cumulative Metrics Without a Baseline
+
+```python
+# AI might generate
+cumulative_pnl = np.cumsum(pnls)
+peak = np.maximum.accumulate(cumulative_pnl)
+drawdown = (cumulative_pnl - peak) / peak  # ❌ First peak could be negative
+```
+
+**Red flag**: Starting `cumsum` without a zero origin means the first "peak" could be negative, making drawdown percentages meaningless. **Prepend a zero: `np.concatenate([[0], np.cumsum(pnls)])`.** Any cumulative metric needs an explicit starting point.
+
+---
+
+## Lessons from LLM Audit Cycles
+
+Real-world audits of AI-generated codebases consistently reveal patterns that single-file reviews miss. These lessons come from structured audit-and-fix cycles on production code.
+
+### Audit in Layers, Not All at Once
+
+Don't try to find everything in one pass. Use structured layers with different lenses:
+
+1. **Automated scan** — patterns like hardcoded secrets, missing validations, unused imports
+2. **Checklist-driven review** — cross-reference against your invariants and architecture docs
+3. **Documentation sync** — verify docs match actual code (tool names, field lists, API surfaces)
+4. **Production-readiness gap analysis** — rate limiting, error handling, security boundaries
+
+Each pass catches things the previous one missed. A single exhaustive review is less thorough than multiple focused passes.
+
+### Audit Reports Overcount — Group by Root Cause
+
+A report listing 19 "bugs" often collapses to ~14 distinct code changes because many findings share a root cause (e.g., the same timezone pattern repeated in 3 files, or the same sentinel value problem in 5 functions). **Group findings by root cause before coding fixes, and fix in dependency order** — model changes first, then business logic, then consumers, then tests.
+
+### Unused Imports Tell a Story
+
+Finding the same unused import (`MarketNotFoundError`, `error_result`) across multiple files suggests copy-paste patterns during initial development. These aren't just style issues — they obscure what a module actually depends on and make it harder to reason about error handling paths. **After completing a feature, run a quick unused-import check.** It takes seconds and reveals architectural shortcuts.
+
+### Don't Trust Documentation During Audits
+
+Documentation drifts faster than you think. In one audit, 8 out of 18 tool names in an architecture doc were stale. Wrong tool names, wrong field lists, wrong tool counts. **Cross-reference everything against actual code.** When you fix code, grep for old names in every markdown file.
+
+### Test What You Can, Note What You Can't
+
+If some tests can't run (missing dependencies, uninstalled modules), don't skip testing entirely. Run the subset that can execute. 335 passing tests is infinitely better than zero tests because the other 50 couldn't run. **Document the gap so someone can close it later.**
+
 ---
 
 ## Human Review Checkpoints (Non-Negotiable)
