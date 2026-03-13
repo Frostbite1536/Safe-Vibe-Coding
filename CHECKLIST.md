@@ -95,6 +95,7 @@ Use this as a lightweight guardrail when building with LLMs. Print it, pin it, r
 | User Feedback Simulation | Usability testing | [prompts/user-feedback-simulation.md](./prompts/user-feedback-simulation.md) |
 | Performance Review | Optimization | [prompts/performance-review.md](./prompts/performance-review.md) |
 | Code Review | Multi-pass PR review | [prompts/code-review.md](./prompts/code-review.md) |
+| Setup Review Pipeline | Automated PR reviews | [prompts/setup-code-review-pipeline.md](./prompts/setup-code-review-pipeline.md) |
 
 ---
 

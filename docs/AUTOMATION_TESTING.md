@@ -559,7 +559,11 @@ Create a `REVIEW.md` at your repository root to encode what reviewers should fla
 
 **Option D: GitHub Actions pipeline with inline comments**
 
-For fully automated reviews that post inline comments on the exact lines where issues are found — triggered on every PR push or manually with `@claude review` — use the DIY review pipeline:
+For fully automated reviews that post inline comments on the exact lines where issues are found — triggered on every PR push or manually with `@claude review` — use the DIY review pipeline.
+
+**Quickest setup**: Give the [setup-code-review-pipeline prompt](../prompts/setup-code-review-pipeline.md) to an LLM and it will create all files for you. One manual step remains: adding your API key to repo secrets.
+
+**Manual setup**:
 
 1. Copy `run_review.py` to your repository root ([template](../docs/templates/run_review.py))
 2. Copy the workflow to `.github/workflows/claude_review.yml` ([template](../docs/templates/claude_review.yml))
