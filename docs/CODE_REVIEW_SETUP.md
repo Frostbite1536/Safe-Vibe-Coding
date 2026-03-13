@@ -231,7 +231,7 @@ Create run_review.py in the repository root. This script should:
 Dependencies: requests, anthropic
 ```
 
-Or copy the template from this guide's repository: [`docs/templates/run_review.py`](templates/run_review.py)
+Or copy the template from this guide's repository: [`docs/templates/run_review.py`](https://github.com/Frostbite1536/Safe-Vibe-Coding/blob/main/docs/templates/run_review.py)
 
 ### Step 3: Create the GitHub Actions workflow
 
@@ -259,7 +259,7 @@ Create .github/workflows/claude_review.yml that:
 Permissions: pull-requests write, contents read
 ```
 
-Or copy the template: [`docs/templates/claude_review.yml`](templates/claude_review.yml)
+Or copy the template: [`docs/templates/claude_review.yml`](https://github.com/Frostbite1536/Safe-Vibe-Coding/blob/main/docs/templates/claude_review.yml)
 
 ### Step 4: Add your API key to GitHub
 
