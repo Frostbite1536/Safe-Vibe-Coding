@@ -58,7 +58,7 @@ Create a `REVIEW.md` file at your repository root to encode review rules that do
 
 **Why separate from CLAUDE.md?** Your `CLAUDE.md` contains general development instructions that apply during coding. `REVIEW.md` contains rules that only matter during review — what to flag, what to skip, what severity to assign. Keeping them separate prevents review noise from cluttering development context and vice versa.
 
-For a structured code review prompt that uses both files, see the [Code Review prompt](../prompts/code-review.md).
+For a structured code review prompt that uses both files, see the [Code Review prompt](../prompts/code-review.html).
 
 ---
 

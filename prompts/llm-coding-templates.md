@@ -1125,7 +1125,7 @@ Before using any template, fill in:
 
 ## Emotional Framing: Enhancing Template Effectiveness
 
-Research shows that adding emotional stimuli to prompts can improve LLM performance by 8-115% depending on the task (see [Emotional Prompt Engineering](../docs/EMOTIONAL_PROMPT_ENGINEERING.md)).
+Research shows that adding emotional stimuli to prompts can improve LLM performance by 8-115% depending on the task (see [Emotional Prompt Engineering](../docs/EMOTIONAL_PROMPT_ENGINEERING.html)).
 
 ### The High-Competence Formula
 
