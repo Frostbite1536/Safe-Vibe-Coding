@@ -565,8 +565,8 @@ For fully automated reviews that post inline comments on the exact lines where i
 
 **Manual setup**:
 
-1. Copy `run_review.py` to your repository root ([template](../docs/templates/run_review.py))
-2. Copy the workflow to `.github/workflows/claude_review.yml` ([template](../docs/templates/claude_review.yml))
+1. Copy `run_review.py` to your repository root ([template](https://github.com/Frostbite1536/Safe-Vibe-Coding/blob/main/docs/templates/run_review.py))
+2. Copy the workflow to `.github/workflows/claude_review.yml` ([template](https://github.com/Frostbite1536/Safe-Vibe-Coding/blob/main/docs/templates/claude_review.yml))
 3. Add `ANTHROPIC_API_KEY` to your repository secrets (Settings > Secrets and variables > Actions)
 
 The pipeline:
