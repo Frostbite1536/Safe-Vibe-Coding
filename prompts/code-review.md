@@ -58,6 +58,7 @@ Run these passes sequentially. Each pass looks for a different class of issue.
 - Division by zero in aggregations (empty lists, all-identical values, single-element with `ddof=1`)
 - State management: race conditions, stale state, mutations where immutability is expected
 - Error handling: silent failures, errors caught but not handled, cleanup in error paths
+- Optimization layer bugs (React): `useMemo`/`useCallback` with stale closures, `React.memo` with unstable object/array references, `useEffect` dependency arrays missing values or containing values that change every render
 
 ### Pass 2 — Security
 
@@ -70,6 +71,7 @@ Run these passes sequentially. Each pass looks for a different class of issue.
 
 This is the highest-value pass — most bugs in AI-generated code live at the seams between components.
 
+- **Trace upstream, not downstream**: When a data shape looks suspicious, trace where it was produced before checking where it's consumed — the bug is usually at the source
 - Does the changed code agree with its consumers and producers on data shape, types, and semantics?
 - If a field was added to a data model, does every layer (persistence, serialization, API, tests) know about it?
 - Are round-trips preserved? (save/restore, serialize/deserialize)

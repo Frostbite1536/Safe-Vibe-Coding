@@ -95,6 +95,7 @@ If no argument was given, review changes on the current branch against main.
 - Unhandled edge cases: empty inputs, null, boundary conditions
 - Division by zero in aggregations (empty lists, single-element with ddof=1)
 - Error handling: silent failures, errors caught but not handled
+- Optimization layer bugs (React): useMemo/useCallback with stale closures, React.memo with unstable references, useEffect dependency arrays missing or over-specified
 
 ### Pass 2 — Security
 - SQL injection, XSS, command injection, path traversal
@@ -102,6 +103,7 @@ If no argument was given, review changes on the current branch against main.
 - Secrets in code, logs, or error messages
 
 ### Pass 3 — Cross-Boundary Contracts
+- Trace upstream, not downstream: when data looks wrong, find where it was produced before checking consumers
 - Data shape mismatches between producer and consumer components
 - Fields added to a model but missing from persistence/serialization/tests
 - Type leakage: Decimal into JSON, datetime into dicts
