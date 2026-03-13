@@ -55,6 +55,15 @@ Use this as a lightweight guardrail when building with LLMs. Print it, pin it, r
 - [ ] Prefer clarity over cleverness
 - [ ] Keep files modular and focused (< ~1,500 lines)
 
+## Cross-Boundary Integrity
+
+- [ ] Adding a field? Grep for every site that creates, stores, restores, or serializes the data model
+- [ ] Data round-trips (save/restore, serialize/deserialize) preserve all fields and types
+- [ ] Multi-step operations build new state in temp variables, swap atomically on success
+- [ ] No type leakage across boundaries (Decimal into JSON, datetime into dicts)
+- [ ] Multi-source data has compatible units/semantics before aggregation
+- [ ] After fixing a bug, search entire codebase for the same pattern class
+
 ## Validation & Stability
 
 - [ ] Run bug hunts frequently ([prompt](./prompts/bug-hunt.md))
@@ -85,6 +94,18 @@ Use this as a lightweight guardrail when building with LLMs. Print it, pin it, r
 | Invariant Check | Verify against contracts | [prompts/invariant-check.md](./prompts/invariant-check.md) |
 | User Feedback Simulation | Usability testing | [prompts/user-feedback-simulation.md](./prompts/user-feedback-simulation.md) |
 | Performance Review | Optimization | [prompts/performance-review.md](./prompts/performance-review.md) |
+| Code Review | Multi-pass PR review | [prompts/code-review.md](./prompts/code-review.md) |
+| Setup Review Pipeline | Automated PR reviews | [prompts/setup-code-review-pipeline.md](./prompts/setup-code-review-pipeline.md) |
+
+---
+
+## Code Review Setup
+
+- [ ] Create `REVIEW.md` at repo root with review-specific rules ([guide](./docs/CODE_REVIEW_AI.md))
+- [ ] Use consistent severity levels: Critical (block merge), Nit (fix if easy), Pre-existing (file separately)
+- [ ] Review changed files in full, not just the diff
+- [ ] Run the [code review prompt](./prompts/code-review.md) on PRs (copy to `.claude/commands/review-pr.md` for slash command access)
+- [ ] For automated reviews: set up the [GitHub Actions pipeline](./docs/templates/claude_review.yml) with inline comments
 
 ---
 

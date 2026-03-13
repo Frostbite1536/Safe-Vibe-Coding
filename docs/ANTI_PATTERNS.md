@@ -380,6 +380,86 @@ Consider: [alternative direction]
 
 ---
 
+### Anti-Pattern: Implicit Cross-Component Contracts
+
+**What it looks like**: Module A produces data that Module B consumes, but the contract between them is never written down — it's just whatever Module A happens to output today.
+
+**Why it's bad**: LLMs generate each module in isolation. When you ask the LLM to add a field to Module A, it doesn't automatically update Module B's expectations. The contract drifts silently until something breaks at runtime.
+
+**Example**:
+```python
+# Module A adds a new boolean field
+@dataclass
+class Trade:
+    pnl: float = 0.0
+    pnl_is_set: bool = False  # New field
+
+# Module B (persistence) was generated in a different session
+# and doesn't know about pnl_is_set
+def save(trade):
+    db.insert(trade.market, trade.pnl)  # pnl_is_set lost
+
+def restore() -> Trade:
+    row = db.query(...)
+    return Trade(market=row.market, pnl=row.pnl)  # pnl_is_set defaults to False
+    # All restored trades now have pnl_is_set=False
+    # FIFO calculator will overwrite legitimate PnL values
+```
+
+**Fix**: Document cross-component contracts in your invariants doc. When you add a field to a data model, grep for every site that creates, stores, restores, or serializes that model. Fix them all in the same change — model first, then persistence, then business logic, then tests.
+
+---
+
+### Anti-Pattern: Partial Failure State Corruption
+
+**What it looks like**: A multi-step operation modifies state as it goes, but if it fails partway through, the state is left half-modified.
+
+**Why it's bad**: The system is now in a state that no code path was designed to handle. Subsequent operations may produce incorrect results or crash.
+
+**Example**:
+```python
+def load_trades(session, file):
+    session.trades = []  # Cleared existing trades
+    for row in parse(file):
+        trade = normalize(row)  # Crashes on row 50 of 100
+        session.trades.append(trade)
+    # If parse crashes: session.trades has 49 trades
+    # Previous 200 trades are gone, new file only half-loaded
+```
+
+**Fix**: Build the new state in a temporary variable. Only replace the old state after the entire operation succeeds:
+```python
+def load_trades(session, file):
+    new_trades = []
+    for row in parse(file):
+        new_trades.append(normalize(row))
+    session.trades = new_trades  # Atomic swap on success
+```
+
+---
+
+### Anti-Pattern: Fix One, Miss Ten
+
+**What it looks like**: You find a bug (e.g., hardcoded `$` symbol, or `vars(t)` instead of `t.to_dict()`), fix it in the file where you found it, and move on.
+
+**Why it's bad**: LLM-generated code often replicates the same mistake across many files — the same pattern was generated during different sessions. Fixing one instance and missing nine others means the bug persists.
+
+**Example**:
+```
+Audit finding: "vars(t) bypasses to_dict() sanitization"
+Fix applied: report_data.py ✅
+
+Still broken:
+- gui.py ❌
+- api/services/trade_service.py ❌
+- persistence.py ❌
+- serializers.py ❌
+```
+
+**Fix**: After fixing any bug, **search the entire codebase for the same pattern**. Fix the class of bugs, not the instance. Run: `grep -r 'vars(t)' .` or `grep -r 'hardcoded_value' .` Every fix should include a codebase-wide grep.
+
+---
+
 ### Anti-Pattern: Database Query Explosion
 
 **What it looks like**: N+1 queries, missing eager loading.

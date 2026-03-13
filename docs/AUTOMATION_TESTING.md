@@ -522,6 +522,69 @@ jobs:
 
 **Pro tip**: During code review, tag `@claude` on coworkers' PRs to add learnings to the team's CLAUDE.md. This creates a compounding knowledge base—mistakes made once are never repeated.
 
+### DIY Code Review with Claude Code CLI
+
+If you don't have access to managed code review services (Teams/Enterprise plans), you can replicate the multi-pass review approach using Claude Code's built-in tools. This works on any plan that includes Claude Code.
+
+**Option A: Slash command (recommended)**
+
+Copy the [code review prompt](../prompts/code-review.md) into your project as a custom command:
+
+```bash
+mkdir -p .claude/commands
+cp prompts/code-review.md .claude/commands/review-pr.md
+```
+
+Then invoke it from Claude Code:
+```
+/review-pr 42
+```
+
+Claude will use `gh pr diff`, read the changed files in full, check your `CLAUDE.md`, `REVIEW.md`, and `INVARIANTS.md`, and run a multi-pass analysis covering correctness, security, cross-boundary contracts, invariant compliance, and regression patterns.
+
+**Option B: Manual review in Claude Code**
+
+Open Claude Code and paste:
+```
+Review PR #42 in this repository. Fetch the diff with gh pr diff 42,
+read each changed file in full, read CLAUDE.md and REVIEW.md if they exist,
+and check for: correctness bugs, security issues, cross-boundary contract
+violations, and invariant compliance. Tag findings as Critical, Nit, or
+Pre-existing.
+```
+
+**Option C: REVIEW.md for consistent standards**
+
+Create a `REVIEW.md` at your repository root to encode what reviewers should flag or skip. Unlike `CLAUDE.md` (which guides all Claude Code interactions), `REVIEW.md` only applies during code reviews. See the [Code Review guide](CODE_REVIEW_AI.md#use-a-reviewmd-file-for-review-specific-rules) for the format.
+
+**Option D: GitHub Actions pipeline with inline comments**
+
+For fully automated reviews that post inline comments on the exact lines where issues are found — triggered on every PR push or manually with `@claude review` — use the DIY review pipeline.
+
+**Quickest setup**: Give the [setup-code-review-pipeline prompt](../prompts/setup-code-review-pipeline.md) to an LLM and it will create all files for you. One manual step remains: adding your API key to repo secrets.
+
+**Manual setup**:
+
+1. Copy `run_review.py` to your repository root ([template](../docs/templates/run_review.py))
+2. Copy the workflow to `.github/workflows/claude_review.yml` ([template](../docs/templates/claude_review.yml))
+3. Add `ANTHROPIC_API_KEY` to your repository secrets (Settings > Secrets and variables > Actions)
+
+The pipeline:
+- Fetches the PR diff via GitHub API
+- Reads your `CLAUDE.md` and `REVIEW.md` for custom rules
+- Sends the diff to Claude with a structured review prompt
+- Parses findings as JSON and posts inline comments on the exact lines
+- Posts a summary comment with finding counts by severity
+
+Trigger modes:
+- **Automatic**: Runs on every PR open and push (configured by default)
+- **Manual**: Comment `@claude review` on any open PR to trigger a review
+- Both modes use the same severity system: critical (bugs), nit (minor), pre-existing (not from this PR)
+
+**Security note**: For public repos, add a user allowlist to the workflow's `if` condition to prevent unauthorized users from triggering reviews and spending your API credits. See the comments in the workflow template.
+
+**Cost note**: Each review calls the Anthropic API once per PR. Cost scales with diff size. The pipeline uses `claude-sonnet-4-20250514` by default — change the model in `run_review.py` if you prefer a different cost/quality tradeoff.
+
 ---
 
 ## Static Analysis

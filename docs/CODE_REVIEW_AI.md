@@ -20,6 +20,48 @@ Even with excellent prompts and strong guardrails, LLMs make mistakes. Your job 
 
 ---
 
+## Classify Findings by Severity
+
+Not all issues are equal. Use a consistent severity system so reviewers and developers can prioritize:
+
+| Level | Meaning | Action |
+|-------|---------|--------|
+| **Critical** | A bug that should be fixed before merging — logic errors, security vulnerabilities, data corruption | Block merge |
+| **Nit** | A minor issue worth fixing but not blocking — style violations, missing edge case tests, slight inefficiency | Fix if easy, track if not |
+| **Pre-existing** | A bug in the codebase not introduced by this change | File separately, don't block this PR |
+
+This classification prevents two common failure modes: blocking PRs over trivial issues (reviewer fatigue) and letting real bugs through because they're buried in a wall of style nits.
+
+---
+
+## Use a REVIEW.md File for Review-Specific Rules
+
+Create a `REVIEW.md` file at your repository root to encode review rules that don't belong in your general project docs. This file is specifically for what reviewers (human or AI) should flag or skip.
+
+```markdown
+# Code Review Guidelines
+
+## Always check
+- New API endpoints have corresponding integration tests
+- Database migrations are backward-compatible
+- Error messages don't leak internal details to users
+- New fields added to data models are reflected in persistence and serialization
+
+## Style
+- Prefer early returns over nested conditionals
+- Use structured logging, not f-string interpolation in log calls
+
+## Skip
+- Generated files under src/gen/
+- Formatting-only changes in *.lock files
+```
+
+**Why separate from CLAUDE.md?** Your `CLAUDE.md` contains general development instructions that apply during coding. `REVIEW.md` contains rules that only matter during review — what to flag, what to skip, what severity to assign. Keeping them separate prevents review noise from cluttering development context and vice versa.
+
+For a structured code review prompt that uses both files, see the [Code Review prompt](../prompts/code-review.md).
+
+---
+
 ## The AI Code Review Checklist
 
 ### 1. Does It Actually Work?
@@ -332,6 +374,56 @@ drawdown = (cumulative_pnl - peak) / peak  # ❌ First peak could be negative
 ```
 
 **Red flag**: Starting `cumsum` without a zero origin means the first "peak" could be negative, making drawdown percentages meaningless. **Prepend a zero: `np.concatenate([[0], np.cumsum(pnls)])`.** Any cumulative metric needs an explicit starting point.
+
+---
+
+## Cross-Boundary Review: Where AI Code Actually Breaks
+
+The most dangerous bugs in AI-generated code aren't inside modules — they're **between** them. LLMs generate each file in relative isolation. Each module may work correctly on its own, but the contracts between modules are implicit and sometimes contradictory. This is LLM code's characteristic failure mode.
+
+### Think in Arrows, Not Boxes
+
+Visualize your system as a data pipeline:
+
+```
+Input Source → Data Objects → State → Filters → Calculations → Serialization → Output
+```
+
+The bugs live on the **arrows** (boundaries between components), not in the **boxes** (individual modules). Review code at every boundary crossing.
+
+### Cross-Boundary Review Checklist
+
+**Data shape preservation across layers:**
+- When Component A produces data and Component B consumes it, do they agree on the exact fields, types, and semantics?
+- If you added a field to a data model, does every layer that touches that model (persistence, serialization, API, tests) know about it?
+- Does a round-trip (serialize → deserialize, save → restore, API request → response) preserve all fields and types? Check for: boolean flags lost in persistence, `Decimal` leaking into JSON serialization, `datetime` objects not handled by serializers, `Optional` fields silently defaulting
+
+**State corruption on partial failure:**
+- If an operation fails midway (step 3 of 5), what state is the system in? Is it rolled back to the previous clean state, or left partially modified?
+- If a multi-page API fetch fails on page 3 of 5, are pages 1-2 kept (potentially confusing) or discarded (clean but lossy)?
+- If input validation fails after state has already been modified, is the state rolled back?
+
+**Type consistency across boundaries:**
+- If one module accumulates values using `Decimal` for precision, does it convert back to `float` before passing to the next module? Can a `Decimal` leak into a JSON response and crash serialization?
+- Do all producers of a given type string (e.g., trade type: "Buy"/"Sell") agree on exact values, casing, and semantics? A filter expecting `"Buy"` won't match `"BUY"` or `"Market Buy"`
+- When multiple modules group data by the same concept (e.g., "market"), do they all use the same key (slug vs. display name)?
+
+**Mixed-source calculations:**
+- When combining data from multiple sources, are units compatible? Summing USD and USDC amounts as if identical may be approximately correct but is not semantically sound
+- Does a "global summary" function actually separate incompatible categories, or does it silently merge them?
+- If sources use different PnL semantics (realized vs. unrealized, FIFO vs. settlement-based), does the aggregation acknowledge this?
+
+**Filtering side effects on downstream calculations:**
+- If a user filters to "only sells" and then requests a PnL summary, the sells have no corresponding buys — are the numbers meaningful or misleading?
+- After filtering, do all downstream functions operate on the filtered set, or do some accidentally read from the unfiltered source?
+- When filters are cleared, is the state reset to "all data" or to "empty"?
+
+### How to Review Cross-Boundary Code
+
+1. **Pick a data object** (e.g., a Trade, a User, an Order) and trace it through every layer: creation, storage, retrieval, filtering, calculation, serialization, output
+2. **At each boundary**, verify: Does the receiving module handle every field, type, and edge case the producing module can generate?
+3. **Specifically check**: What happens when the data is empty? One item? Contains special values (zero, None, NaN, Infinity, unicode)?
+4. **Check round-trips**: Save and restore. Serialize and deserialize. Does everything survive?
 
 ---
 

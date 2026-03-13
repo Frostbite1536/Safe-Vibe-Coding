@@ -51,6 +51,7 @@ Covers terminal setup, running multiple Claudes, Plan mode, CLAUDE.md, slash com
 | [Automation & Testing]({{ site.baseurl }}/docs/AUTOMATION_TESTING) | CI/CD, hooks, and verification loops |
 | [Context Management]({{ site.baseurl }}/docs/CONTEXT_MANAGEMENT) | Managing LLM sessions effectively |
 | [Code Review for AI]({{ site.baseurl }}/docs/CODE_REVIEW_AI) | Reviewing AI-generated code |
+| [Setting Up AI Code Review]({{ site.baseurl }}/docs/CODE_REVIEW_SETUP) | Tutorial: zero to automated PR reviews |
 | [Version Control]({{ site.baseurl }}/docs/VERSION_CONTROL) | Git workflow for AI development |
 
 ---
@@ -82,7 +83,7 @@ Tell the LLM explicitly: boring, predictable, production-grade solutions. Creati
 Keep files under ~1,500 lines. Smaller modules improve correctness and AI comprehension.
 
 ### 9. Run Bug Hunts
-Regularly ask the LLM to review changes, check edge cases, and find regressions.
+Regularly ask the LLM to review changes, check edge cases, find regressions, and **audit data at component boundaries** — where AI code most often breaks.
 
 ### 10. Give Claude Verification
 **The most important pattern**: Give Claude a way to verify its work. This 2-3x the quality of output.

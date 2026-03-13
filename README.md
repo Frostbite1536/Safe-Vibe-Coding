@@ -161,14 +161,24 @@ Good modularity directly supports:
 
 **In short: modular code is not just cleaner—it is more AI-compatible.**
 
-### 9. Run Frequent Bug Hunts
+### 9. Run Frequent Bug Hunts — Especially at Component Boundaries
 
 In addition to automated tests, regularly ask the LLM to:
 - Review recent changes for bugs
 - Check edge cases
 - Look for regressions against earlier assumptions
+- **Audit data as it crosses component boundaries** (the most important and most overlooked)
 
-This can be done incrementally—after each feature or group of changes. Treat bug hunts as routine hygiene, not emergency response.
+LLM-generated code has a characteristic failure mode: **each module works correctly in isolation, but the contracts between modules are implicit and sometimes contradictory.** This happens because different modules are often generated in separate sessions with no shared memory of the exact agreements between them.
+
+The highest-value bug hunts focus on the **arrows** between components, not the components themselves:
+- Does every layer that touches a data model agree on its fields, types, and semantics?
+- Does a round-trip (save → restore, serialize → deserialize) preserve all fields?
+- If an operation fails midway, is state rolled back or left half-modified?
+- When combining data from multiple sources, are units and semantics compatible?
+- After fixing a bug, does the same bug class exist in other files generated during different sessions?
+
+Treat bug hunts as routine hygiene, not emergency response. Run them incrementally after each feature or group of changes.
 
 ### 10. Maintain a Prompt Library Inside the Codebase
 
@@ -279,10 +289,15 @@ Before you start vibe coding, read these critical documents. They address common
   - Session continuity patterns
 
 - **[Code Review for AI](./docs/CODE_REVIEW_AI.md)** - How to review AI-generated code
-  - AI-specific code smells
-  - Security review checklist
+  - AI-specific code smells and cross-boundary review
+  - Severity classification (Critical / Nit / Pre-existing)
+  - REVIEW.md convention for review-specific rules
   - Human review checkpoints (non-negotiable)
-  - Iterative refinement techniques
+
+- **[Setting Up AI Code Review](./docs/CODE_REVIEW_SETUP.md)** - Tutorial: from zero to automated PR reviews
+  - Level 1: One-off reviews in your terminal (zero setup)
+  - Level 2: `/review-pr` slash command (2 min setup)
+  - Level 3: GitHub Actions pipeline with inline PR comments (10 min setup)
 
 - **[Anti-Patterns & Warning Signs](./docs/ANTI_PATTERNS.md)** - When AI development goes wrong
   - Recognizing when LLM is leading you astray
