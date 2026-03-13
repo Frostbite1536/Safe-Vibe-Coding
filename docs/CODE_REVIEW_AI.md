@@ -20,6 +20,48 @@ Even with excellent prompts and strong guardrails, LLMs make mistakes. Your job 
 
 ---
 
+## Classify Findings by Severity
+
+Not all issues are equal. Use a consistent severity system so reviewers and developers can prioritize:
+
+| Level | Meaning | Action |
+|-------|---------|--------|
+| **Critical** | A bug that should be fixed before merging — logic errors, security vulnerabilities, data corruption | Block merge |
+| **Nit** | A minor issue worth fixing but not blocking — style violations, missing edge case tests, slight inefficiency | Fix if easy, track if not |
+| **Pre-existing** | A bug in the codebase not introduced by this change | File separately, don't block this PR |
+
+This classification prevents two common failure modes: blocking PRs over trivial issues (reviewer fatigue) and letting real bugs through because they're buried in a wall of style nits.
+
+---
+
+## Use a REVIEW.md File for Review-Specific Rules
+
+Create a `REVIEW.md` file at your repository root to encode review rules that don't belong in your general project docs. This file is specifically for what reviewers (human or AI) should flag or skip.
+
+```markdown
+# Code Review Guidelines
+
+## Always check
+- New API endpoints have corresponding integration tests
+- Database migrations are backward-compatible
+- Error messages don't leak internal details to users
+- New fields added to data models are reflected in persistence and serialization
+
+## Style
+- Prefer early returns over nested conditionals
+- Use structured logging, not f-string interpolation in log calls
+
+## Skip
+- Generated files under src/gen/
+- Formatting-only changes in *.lock files
+```
+
+**Why separate from CLAUDE.md?** Your `CLAUDE.md` contains general development instructions that apply during coding. `REVIEW.md` contains rules that only matter during review — what to flag, what to skip, what severity to assign. Keeping them separate prevents review noise from cluttering development context and vice versa.
+
+For a structured code review prompt that uses both files, see the [Code Review prompt](../prompts/code-review.md).
+
+---
+
 ## The AI Code Review Checklist
 
 ### 1. Does It Actually Work?

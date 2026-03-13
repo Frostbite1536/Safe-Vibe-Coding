@@ -94,6 +94,16 @@ Use this as a lightweight guardrail when building with LLMs. Print it, pin it, r
 | Invariant Check | Verify against contracts | [prompts/invariant-check.md](./prompts/invariant-check.md) |
 | User Feedback Simulation | Usability testing | [prompts/user-feedback-simulation.md](./prompts/user-feedback-simulation.md) |
 | Performance Review | Optimization | [prompts/performance-review.md](./prompts/performance-review.md) |
+| Code Review | Multi-pass PR review | [prompts/code-review.md](./prompts/code-review.md) |
+
+---
+
+## Code Review Setup
+
+- [ ] Create `REVIEW.md` at repo root with review-specific rules ([guide](./docs/CODE_REVIEW_AI.md))
+- [ ] Use consistent severity levels: Critical (block merge), Nit (fix if easy), Pre-existing (file separately)
+- [ ] Review changed files in full, not just the diff
+- [ ] Run the [code review prompt](./prompts/code-review.md) on PRs (copy to `.claude/commands/review-pr.md` for slash command access)
 
 ---
 

@@ -522,6 +522,41 @@ jobs:
 
 **Pro tip**: During code review, tag `@claude` on coworkers' PRs to add learnings to the team's CLAUDE.md. This creates a compounding knowledge base—mistakes made once are never repeated.
 
+### DIY Code Review with Claude Code CLI
+
+If you don't have access to managed code review services (Teams/Enterprise plans), you can replicate the multi-pass review approach using Claude Code's built-in tools. This works on any plan that includes Claude Code.
+
+**Option A: Slash command (recommended)**
+
+Copy the [code review prompt](../prompts/code-review.md) into your project as a custom command:
+
+```bash
+mkdir -p .claude/commands
+cp prompts/code-review.md .claude/commands/review-pr.md
+```
+
+Then invoke it from Claude Code:
+```
+/review-pr 42
+```
+
+Claude will use `gh pr diff`, read the changed files in full, check your `CLAUDE.md`, `REVIEW.md`, and `INVARIANTS.md`, and run a multi-pass analysis covering correctness, security, cross-boundary contracts, invariant compliance, and regression patterns.
+
+**Option B: Manual review in Claude Code**
+
+Open Claude Code and paste:
+```
+Review PR #42 in this repository. Fetch the diff with gh pr diff 42,
+read each changed file in full, read CLAUDE.md and REVIEW.md if they exist,
+and check for: correctness bugs, security issues, cross-boundary contract
+violations, and invariant compliance. Tag findings as Critical, Nit, or
+Pre-existing.
+```
+
+**Option C: REVIEW.md for consistent standards**
+
+Create a `REVIEW.md` at your repository root to encode what reviewers should flag or skip. Unlike `CLAUDE.md` (which guides all Claude Code interactions), `REVIEW.md` only applies during code reviews. See the [Code Review guide](CODE_REVIEW_AI.md#use-a-reviewmd-file-for-review-specific-rules) for the format.
+
 ---
 
 ## Static Analysis
