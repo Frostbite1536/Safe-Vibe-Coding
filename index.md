@@ -51,6 +51,7 @@ Covers terminal setup, running multiple Claudes, Plan mode, CLAUDE.md, slash com
 | [Automation & Testing]({{ site.baseurl }}/docs/AUTOMATION_TESTING) | CI/CD, hooks, and verification loops |
 | [Context Management]({{ site.baseurl }}/docs/CONTEXT_MANAGEMENT) | Managing LLM sessions effectively |
 | [Code Review for AI]({{ site.baseurl }}/docs/CODE_REVIEW_AI) | Reviewing AI-generated code |
+| [Setting Up AI Code Review]({{ site.baseurl }}/docs/CODE_REVIEW_SETUP) | Tutorial: zero to automated PR reviews |
 | [Version Control]({{ site.baseurl }}/docs/VERSION_CONTROL) | Git workflow for AI development |
 
 ---

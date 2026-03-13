@@ -289,10 +289,15 @@ Before you start vibe coding, read these critical documents. They address common
   - Session continuity patterns
 
 - **[Code Review for AI](./docs/CODE_REVIEW_AI.md)** - How to review AI-generated code
-  - AI-specific code smells
-  - Security review checklist
+  - AI-specific code smells and cross-boundary review
+  - Severity classification (Critical / Nit / Pre-existing)
+  - REVIEW.md convention for review-specific rules
   - Human review checkpoints (non-negotiable)
-  - Iterative refinement techniques
+
+- **[Setting Up AI Code Review](./docs/CODE_REVIEW_SETUP.md)** - Tutorial: from zero to automated PR reviews
+  - Level 1: One-off reviews in your terminal (zero setup)
+  - Level 2: `/review-pr` slash command (2 min setup)
+  - Level 3: GitHub Actions pipeline with inline PR comments (10 min setup)
 
 - **[Anti-Patterns & Warning Signs](./docs/ANTI_PATTERNS.md)** - When AI development goes wrong
   - Recognizing when LLM is leading you astray

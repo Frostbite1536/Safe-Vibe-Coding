@@ -81,6 +81,16 @@ Git workflow for AI-assisted development. Covers:
 
 **Read this to**: Use git effectively as a safety net for AI development.
 
+### [Setting Up AI Code Review](./CODE_REVIEW_SETUP.md)
+Step-by-step tutorial for automated code review with Claude Code. Covers:
+- Level 1: Zero-setup one-off reviews in your terminal
+- Level 2: Reusable `/review-pr` slash command (2 min setup)
+- Level 3: Fully automated GitHub Actions pipeline with inline PR comments
+- REVIEW.md convention for project-specific review rules
+- Cost expectations and security considerations
+
+**Read this to**: Get automated code review working in your project, from simple to fully automated.
+
 ### [Automation & Testing](./AUTOMATION_TESTING.md)
 Comprehensive automation and CI/CD for AI-assisted projects. Covers:
 - GitHub Actions workflows for automated testing
