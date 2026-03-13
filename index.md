@@ -82,7 +82,7 @@ Tell the LLM explicitly: boring, predictable, production-grade solutions. Creati
 Keep files under ~1,500 lines. Smaller modules improve correctness and AI comprehension.
 
 ### 9. Run Bug Hunts
-Regularly ask the LLM to review changes, check edge cases, and find regressions.
+Regularly ask the LLM to review changes, check edge cases, find regressions, and **audit data at component boundaries** — where AI code most often breaks.
 
 ### 10. Give Claude Verification
 **The most important pattern**: Give Claude a way to verify its work. This 2-3x the quality of output.

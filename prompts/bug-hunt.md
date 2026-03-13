@@ -77,6 +77,32 @@ You are conducting a thorough bug hunt on recent code changes. Your goal is to f
     - Does this code maintain all system invariants?
     - Are there new code paths that bypass existing checks?
 
+11. **Cross-Boundary Contract Bugs**:
+    - Trace data across component boundaries (producer → consumer)
+    - Do all layers agree on the exact fields, types, and semantics of shared data objects?
+    - Does serialization → deserialization (or save → restore) preserve all fields and types?
+    - Are there type mismatches at boundaries (e.g., `Decimal` leaking into JSON, `datetime` not handled by serializer)?
+    - After adding a field to a data model, does every consumer (persistence, API, filters, serializers, tests) know about it?
+    - If data comes from multiple sources, are units and semantics compatible when combined?
+
+12. **State Machine & Partial Failure**:
+    - If an operation fails midway, is the system state rolled back or left partially modified?
+    - Can a user reach a state (via error or unusual sequence) that no code path was designed to handle?
+    - After an error, are filters/settings preserved, reset, or left in an invalid state?
+    - For multi-step operations, is new state built in a temporary variable and swapped atomically on success?
+
+13. **Regression Pattern Search**:
+    - For each bug found, search the **entire codebase** for the same pattern
+    - Common patterns that repeat across files: `vars(obj)` instead of `obj.to_dict()`, hardcoded format strings, silent `except: pass`, inconsistent `ddof` in statistics, sentinel value checks (`== 0.0` instead of explicit flag)
+    - If you fixed a bug in one file, assume it exists in others generated during different LLM sessions
+
+14. **Degenerate Input Scenarios**:
+    - Empty collection after filtering → division by zero in averages/ratios?
+    - Single element → `std(ddof=1)` produces NaN, ratios divide by zero?
+    - All identical values → zero variance, degenerate statistics?
+    - Extremely large values → does capping/sanitization silently corrupt legitimate data?
+    - Zero-quantity items → infinite loops in matching algorithms?
+
 **Output format**:
 
 For each potential bug found:

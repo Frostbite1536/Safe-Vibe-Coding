@@ -55,6 +55,15 @@ Use this as a lightweight guardrail when building with LLMs. Print it, pin it, r
 - [ ] Prefer clarity over cleverness
 - [ ] Keep files modular and focused (< ~1,500 lines)
 
+## Cross-Boundary Integrity
+
+- [ ] Adding a field? Grep for every site that creates, stores, restores, or serializes the data model
+- [ ] Data round-trips (save/restore, serialize/deserialize) preserve all fields and types
+- [ ] Multi-step operations build new state in temp variables, swap atomically on success
+- [ ] No type leakage across boundaries (Decimal into JSON, datetime into dicts)
+- [ ] Multi-source data has compatible units/semantics before aggregation
+- [ ] After fixing a bug, search entire codebase for the same pattern class
+
 ## Validation & Stability
 
 - [ ] Run bug hunts frequently ([prompt](./prompts/bug-hunt.md))

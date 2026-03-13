@@ -335,6 +335,56 @@ drawdown = (cumulative_pnl - peak) / peak  # ❌ First peak could be negative
 
 ---
 
+## Cross-Boundary Review: Where AI Code Actually Breaks
+
+The most dangerous bugs in AI-generated code aren't inside modules — they're **between** them. LLMs generate each file in relative isolation. Each module may work correctly on its own, but the contracts between modules are implicit and sometimes contradictory. This is LLM code's characteristic failure mode.
+
+### Think in Arrows, Not Boxes
+
+Visualize your system as a data pipeline:
+
+```
+Input Source → Data Objects → State → Filters → Calculations → Serialization → Output
+```
+
+The bugs live on the **arrows** (boundaries between components), not in the **boxes** (individual modules). Review code at every boundary crossing.
+
+### Cross-Boundary Review Checklist
+
+**Data shape preservation across layers:**
+- When Component A produces data and Component B consumes it, do they agree on the exact fields, types, and semantics?
+- If you added a field to a data model, does every layer that touches that model (persistence, serialization, API, tests) know about it?
+- Does a round-trip (serialize → deserialize, save → restore, API request → response) preserve all fields and types? Check for: boolean flags lost in persistence, `Decimal` leaking into JSON serialization, `datetime` objects not handled by serializers, `Optional` fields silently defaulting
+
+**State corruption on partial failure:**
+- If an operation fails midway (step 3 of 5), what state is the system in? Is it rolled back to the previous clean state, or left partially modified?
+- If a multi-page API fetch fails on page 3 of 5, are pages 1-2 kept (potentially confusing) or discarded (clean but lossy)?
+- If input validation fails after state has already been modified, is the state rolled back?
+
+**Type consistency across boundaries:**
+- If one module accumulates values using `Decimal` for precision, does it convert back to `float` before passing to the next module? Can a `Decimal` leak into a JSON response and crash serialization?
+- Do all producers of a given type string (e.g., trade type: "Buy"/"Sell") agree on exact values, casing, and semantics? A filter expecting `"Buy"` won't match `"BUY"` or `"Market Buy"`
+- When multiple modules group data by the same concept (e.g., "market"), do they all use the same key (slug vs. display name)?
+
+**Mixed-source calculations:**
+- When combining data from multiple sources, are units compatible? Summing USD and USDC amounts as if identical may be approximately correct but is not semantically sound
+- Does a "global summary" function actually separate incompatible categories, or does it silently merge them?
+- If sources use different PnL semantics (realized vs. unrealized, FIFO vs. settlement-based), does the aggregation acknowledge this?
+
+**Filtering side effects on downstream calculations:**
+- If a user filters to "only sells" and then requests a PnL summary, the sells have no corresponding buys — are the numbers meaningful or misleading?
+- After filtering, do all downstream functions operate on the filtered set, or do some accidentally read from the unfiltered source?
+- When filters are cleared, is the state reset to "all data" or to "empty"?
+
+### How to Review Cross-Boundary Code
+
+1. **Pick a data object** (e.g., a Trade, a User, an Order) and trace it through every layer: creation, storage, retrieval, filtering, calculation, serialization, output
+2. **At each boundary**, verify: Does the receiving module handle every field, type, and edge case the producing module can generate?
+3. **Specifically check**: What happens when the data is empty? One item? Contains special values (zero, None, NaN, Infinity, unicode)?
+4. **Check round-trips**: Save and restore. Serialize and deserialize. Does everything survive?
+
+---
+
 ## Lessons from LLM Audit Cycles
 
 Real-world audits of AI-generated codebases consistently reveal patterns that single-file reviews miss. These lessons come from structured audit-and-fix cycles on production code.

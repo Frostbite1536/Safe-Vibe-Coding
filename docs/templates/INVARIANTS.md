@@ -129,6 +129,42 @@ This document defines the **non-negotiable truths** of the system: rules that mu
 
 ---
 
+## Cross-Component Contract Invariants
+
+These invariants govern data as it crosses boundaries between components. LLM-generated code characteristically fails at these seams — each module works in isolation, but the contracts between modules are implicit and sometimes contradictory.
+
+### INV-XCOMP-001: [Data Round-Trip Integrity]
+
+**Rule**: [e.g., "Serializing and deserializing a Trade object must preserve all 14 fields with identical values and types"]
+
+**Rationale**: Fields silently lost in persistence, serialization, or API round-trips cause data corruption that may not be detected until much later.
+
+**Boundaries to verify**:
+- Database save → restore
+- JSON serialize → deserialize
+- API request → response → client parse
+- File export → import
+
+**Enforcement**: [e.g., "Round-trip test for each data type that crosses a boundary"]
+
+### INV-XCOMP-002: [Type Consistency Across Layers]
+
+**Rule**: [e.g., "All monetary calculations use Decimal internally but convert to float before serialization"]
+
+**Rationale**: Type leakage across boundaries (e.g., `Decimal` into JSON, `datetime` into a dict) causes serialization crashes or silent data loss.
+
+**Enforcement**: [e.g., "Serializer tests with Decimal, datetime, None, and NaN inputs"]
+
+### INV-XCOMP-003: [State Atomicity on Failure]
+
+**Rule**: [e.g., "If any multi-step operation fails partway, the system state must be rolled back to its pre-operation state"]
+
+**Rationale**: Partial state after a failure leaves the system in a state no code path was designed to handle.
+
+**Enforcement**: [e.g., "Build new state in temporary variables; swap atomically on success"]
+
+---
+
 ## API Contract Invariants
 
 ### INV-API-001: [Invariant Name]
