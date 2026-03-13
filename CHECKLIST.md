@@ -104,6 +104,7 @@ Use this as a lightweight guardrail when building with LLMs. Print it, pin it, r
 - [ ] Use consistent severity levels: Critical (block merge), Nit (fix if easy), Pre-existing (file separately)
 - [ ] Review changed files in full, not just the diff
 - [ ] Run the [code review prompt](./prompts/code-review.md) on PRs (copy to `.claude/commands/review-pr.md` for slash command access)
+- [ ] For automated reviews: set up the [GitHub Actions pipeline](./docs/templates/claude_review.yml) with inline comments
 
 ---
 

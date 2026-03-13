@@ -557,6 +557,30 @@ Pre-existing.
 
 Create a `REVIEW.md` at your repository root to encode what reviewers should flag or skip. Unlike `CLAUDE.md` (which guides all Claude Code interactions), `REVIEW.md` only applies during code reviews. See the [Code Review guide](CODE_REVIEW_AI.md#use-a-reviewmd-file-for-review-specific-rules) for the format.
 
+**Option D: GitHub Actions pipeline with inline comments**
+
+For fully automated reviews that post inline comments on the exact lines where issues are found — triggered on every PR push or manually with `@claude review` — use the DIY review pipeline:
+
+1. Copy `run_review.py` to your repository root ([template](../docs/templates/run_review.py))
+2. Copy the workflow to `.github/workflows/claude_review.yml` ([template](../docs/templates/claude_review.yml))
+3. Add `ANTHROPIC_API_KEY` to your repository secrets (Settings > Secrets and variables > Actions)
+
+The pipeline:
+- Fetches the PR diff via GitHub API
+- Reads your `CLAUDE.md` and `REVIEW.md` for custom rules
+- Sends the diff to Claude with a structured review prompt
+- Parses findings as JSON and posts inline comments on the exact lines
+- Posts a summary comment with finding counts by severity
+
+Trigger modes:
+- **Automatic**: Runs on every PR open and push (configured by default)
+- **Manual**: Comment `@claude review` on any open PR to trigger a review
+- Both modes use the same severity system: critical (bugs), nit (minor), pre-existing (not from this PR)
+
+**Security note**: For public repos, add a user allowlist to the workflow's `if` condition to prevent unauthorized users from triggering reviews and spending your API credits. See the comments in the workflow template.
+
+**Cost note**: Each review calls the Anthropic API once per PR. Cost scales with diff size. The pipeline uses `claude-sonnet-4-20250514` by default — change the model in `run_review.py` if you prefer a different cost/quality tradeoff.
+
 ---
 
 ## Static Analysis

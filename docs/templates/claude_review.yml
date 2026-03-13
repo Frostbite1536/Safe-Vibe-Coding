@@ -1,0 +1,72 @@
+# DIY Claude Code Review — GitHub Actions Workflow
+#
+# Triggers on PR open/push and manual "@claude review" comments.
+# Posts inline comments on the exact lines where issues are found.
+#
+# Setup:
+#   1. Copy this file to .github/workflows/claude_review.yml
+#   2. Copy run_review.py to the root of your repository
+#   3. Add ANTHROPIC_API_KEY to your repository secrets
+#      (Settings > Secrets and variables > Actions > New repository secret)
+#
+# Security note:
+#   Anyone who can comment on your repo can trigger a review and spend API credits.
+#   For public repos, add a user allowlist to the 'if' condition (see comment below).
+
+name: Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+  issue_comment:
+    types: [created]
+
+jobs:
+  review:
+    # Runs on PR push OR when someone comments "@claude review" on an open PR.
+    # For public repos, add a user allowlist:
+    #   && contains(fromJson('["your_username"]'), github.event.comment.user.login)
+    if: >
+      github.event_name == 'pull_request' ||
+      (github.event_name == 'issue_comment' &&
+       github.event.issue.pull_request &&
+       startsWith(github.event.comment.body, '@claude review'))
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+
+    steps:
+      # Normalize PR_NUMBER and COMMIT_SHA regardless of trigger type.
+      # Comment events don't include the commit SHA, so we fetch it via gh CLI.
+      - name: Get PR Context
+        id: pr-context
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+            echo "COMMIT_SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
+          else
+            PR_NUMBER=${{ github.event.issue.number }}
+            echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
+            SHA=$(gh api repos/${{ github.repository }}/pulls/$PR_NUMBER --jq .head.sha)
+            echo "COMMIT_SHA=$SHA" >> $GITHUB_ENV
+          fi
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Dependencies
+        run: pip install requests anthropic
+
+      - name: Run Claude Review
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python run_review.py
