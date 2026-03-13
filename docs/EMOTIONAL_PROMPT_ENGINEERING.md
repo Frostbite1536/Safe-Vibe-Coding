@@ -509,8 +509,8 @@ errors here could cause financial loss and legal liability.
 
 ### Related Guides in This Repository
 - **[Context Management](./CONTEXT_MANAGEMENT.md)** - Maintaining quality across sessions
-- **[LLM Coding Templates](../prompts/llm-coding-templates.md)** - Battle-tested prompts with persona framing
-- **[Engineering Prompt](../prompts/engineering-prompt.md)** - Example of role-based prompting
+- **[LLM Coding Templates](../prompts/llm-coding-templates.html)** - Battle-tested prompts with persona framing
+- **[Engineering Prompt](../prompts/engineering-prompt.html)** - Example of role-based prompting
 
 ---
 

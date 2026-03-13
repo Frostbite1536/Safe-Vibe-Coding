@@ -528,7 +528,7 @@ If you don't have access to managed code review services (Teams/Enterprise plans
 
 **Option A: Slash command (recommended)**
 
-Copy the [code review prompt](../prompts/code-review.md) into your project as a custom command:
+Copy the [code review prompt](../prompts/code-review.html) into your project as a custom command:
 
 ```bash
 mkdir -p .claude/commands
@@ -561,7 +561,7 @@ Create a `REVIEW.md` at your repository root to encode what reviewers should fla
 
 For fully automated reviews that post inline comments on the exact lines where issues are found — triggered on every PR push or manually with `@claude review` — use the DIY review pipeline.
 
-**Quickest setup**: Give the [setup-code-review-pipeline prompt](../prompts/setup-code-review-pipeline.md) to an LLM and it will create all files for you. One manual step remains: adding your API key to repo secrets.
+**Quickest setup**: Give the [setup-code-review-pipeline prompt](../prompts/setup-code-review-pipeline.html) to an LLM and it will create all files for you. One manual step remains: adding your API key to repo secrets.
 
 **Manual setup**:
 

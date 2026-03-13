@@ -175,7 +175,7 @@ You are a frontend engineer reviewing client-side code for bugs. Your goal is to
 
 ### 10. Security (Client-Side)
 
-**This is critical.** 9 out of 10 vibe-coded apps leak credentials. See [API Key Security Guide](../docs/API_KEY_SECURITY.md).
+**This is critical.** 9 out of 10 vibe-coded apps leak credentials. See [API Key Security Guide](../docs/API_KEY_SECURITY.html).
 
 **Check for**:
 - **API keys in frontend code** - Search for `sk-`, `api_key`, `secret`, `token`
