@@ -48,6 +48,7 @@ Covers terminal setup, running multiple Claudes, Plan mode, CLAUDE.md, slash com
 |:------|:------------------|
 | [Quick Reference Checklist]({{ site.baseurl }}/CHECKLIST) | Print-friendly checklist for daily use |
 | [Anti-Patterns & Warning Signs]({{ site.baseurl }}/docs/ANTI_PATTERNS) | When AI development goes wrong |
+| [Audit Findings & Lessons]({{ site.baseurl }}/docs/AUDIT_FINDINGS) | Real security audit of AI-generated code |
 | [Automation & Testing]({{ site.baseurl }}/docs/AUTOMATION_TESTING) | CI/CD, hooks, and verification loops |
 | [Context Management]({{ site.baseurl }}/docs/CONTEXT_MANAGEMENT) | Managing LLM sessions effectively |
 | [Code Review for AI]({{ site.baseurl }}/docs/CODE_REVIEW_AI) | Reviewing AI-generated code |
