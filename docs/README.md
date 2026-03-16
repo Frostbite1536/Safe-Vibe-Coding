@@ -91,6 +91,15 @@ Step-by-step tutorial for automated code review with Claude Code. Covers:
 
 **Read this to**: Get automated code review working in your project, from simple to fully automated.
 
+### [Audit Findings & Lessons](./AUDIT_FINDINGS.md)
+Real findings from a security audit of an AI-generated app. Covers:
+- 11 real vulnerabilities (XSS, domain bypass, unpinned deps, cleartext traffic)
+- 3 LLM root causes: "local fix, global miss", shortcut matching, "make it work" mindset
+- Audit checklist for vibe-coded projects
+- Prompt templates for catching these patterns
+
+**Read this to**: Learn the predictable security mistakes LLMs make and how to catch them.
+
 ### [Automation & Testing](./AUTOMATION_TESTING.md)
 Comprehensive automation and CI/CD for AI-assisted projects. Covers:
 - GitHub Actions workflows for automated testing
