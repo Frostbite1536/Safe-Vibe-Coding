@@ -114,6 +114,28 @@ Comprehensive automation and CI/CD for AI-assisted projects. Covers:
 
 **Read this to**: Set up automated quality gates that catch issues humans miss.
 
+### [MCP Tool Grouping](./MCP_TOOL_GROUPING.md)
+How to scale MCP servers beyond 20 tools without burning tokens. Covers:
+- Why tool schemas cost thousands of tokens per turn at scale
+- Enable/disable meta-tools with per-session group state
+- The critical deadlock bug every implementation hits (and the fix)
+- HTTP mode global state traps
+- Design principles: groups map to domains, not access levels
+- Complete checklist for group definitions, meta-tools, startup, runtime, and testing
+
+**Read this to**: Keep token costs manageable as your MCP server grows, without breaking agent functionality.
+
+### [Plan-Driven Development](./PLAN_DRIVEN_DEVELOPMENT.md)
+A structured workflow for human-agent paired development. Covers:
+- Six-phase process: ideation, plan creation, plan audit, prompt sequencing, execution, code audit
+- Why implementation plans always have 1-3+ bugs and how to catch them before coding
+- Prompt sequencing for large projects that span multiple sessions
+- CLAUDE.md as a plan accelerator
+- When to scrap and replan (the rule of three)
+- Templates for plan requests, audits, prompt sequencing, and code reviews
+
+**Read this to**: Get reliable, auditable results from coding agents on projects of any size.
+
 ---
 
 ## Templates

@@ -54,6 +54,8 @@ Covers terminal setup, running multiple Claudes, Plan mode, CLAUDE.md, slash com
 | [Code Review for AI]({{ site.baseurl }}/docs/CODE_REVIEW_AI) | Reviewing AI-generated code |
 | [Setting Up AI Code Review]({{ site.baseurl }}/docs/CODE_REVIEW_SETUP) | Tutorial: zero to automated PR reviews |
 | [Version Control]({{ site.baseurl }}/docs/VERSION_CONTROL) | Git workflow for AI development |
+| [MCP Tool Grouping]({{ site.baseurl }}/mcp-tool-grouping) | Scaling MCP servers beyond 20 tools |
+| [Plan-Driven Development]({{ site.baseurl }}/plan-driven-development) | Structured planning workflow for coding agents |
 
 ---
 

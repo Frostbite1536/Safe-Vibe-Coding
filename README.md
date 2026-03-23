@@ -334,6 +334,20 @@ Before you start vibe coding, read these critical documents. They address common
   - Design-time practices that prevent MCP bugs later
   - Complete build/review checklist
 
+- **[MCP Tool Grouping](./docs/MCP_TOOL_GROUPING.md)** - Scaling MCP servers beyond 20 tools
+  - Reducing token cost by 50-95% with tool grouping
+  - Enable/disable meta-tools and per-session state
+  - The critical deadlock bug every implementation hits
+  - HTTP mode global state traps and fixes
+  - Design principles and complete checklist
+
+- **[Plan-Driven Development](./docs/PLAN_DRIVEN_DEVELOPMENT.md)** - Reliable results from coding agents through structured planning
+  - Six-phase workflow: ideation, plan, audit, sequencing, execution, code audit
+  - Why plans always have bugs and how to catch them
+  - Prompt sequencing for large projects
+  - CLAUDE.md as a plan accelerator
+  - Templates for plan requests, audits, and code reviews
+
 **Start here**: If you only read one, read [Anti-Patterns & Warning Signs](./docs/ANTI_PATTERNS.md). It will save you from the most common mistakes.
 
 ---
