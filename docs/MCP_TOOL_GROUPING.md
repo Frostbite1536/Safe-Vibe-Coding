@@ -389,3 +389,10 @@ Eight TypeScript compilation errors were dismissed as "pre-existing, not introdu
 ### 6. Self-review requires treating your own code as unfamiliar.
 
 Six issues were found during audit that should have been caught before the first commit. The hardest part of self-review is questioning things that "obviously work" because you just wrote them. **Audit your own work as if someone else wrote it.**
+
+---
+
+## Related Guides
+
+- **[Building MCP Servers](./MCP_DEVELOPMENT.md)** — Foundational guide covering tool descriptions, input validation, error handling, and the 15 most common MCP bug patterns. Start here if you're new to MCP development.
+- **[Audit Findings & Lessons](./AUDIT_FINDINGS.md)** — Real findings from security audits of AI-generated code. The "Lessons From Getting It Wrong" section above echoes several of the same root causes — particularly "local fix, global miss" and the "make it work" mindset.
