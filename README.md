@@ -348,6 +348,13 @@ Before you start vibe coding, read these critical documents. They address common
   - CLAUDE.md as a plan accelerator
   - Templates for plan requests, audits, and code reviews
 
+- **[Dependency Safety](./docs/DEPENDENCY_SAFETY.md)** - Evaluating and managing AI-suggested packages
+  - Hallucinated packages and supply chain attacks
+  - The 60-second package evaluation check
+  - When you don't need a dependency at all
+  - Pinning, lockfiles, and version discipline
+  - CLAUDE.md rules to prevent bad suggestions
+
 **Start here**: If you only read one, read [Anti-Patterns & Warning Signs](./docs/ANTI_PATTERNS.md). It will save you from the most common mistakes.
 
 ---

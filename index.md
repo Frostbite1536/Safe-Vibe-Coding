@@ -56,6 +56,7 @@ Covers terminal setup, running multiple Claudes, Plan mode, CLAUDE.md, slash com
 | [Version Control]({{ site.baseurl }}/docs/VERSION_CONTROL) | Git workflow for AI development |
 | [MCP Tool Grouping]({{ site.baseurl }}/mcp-tool-grouping) | Scaling MCP servers beyond 20 tools |
 | [Plan-Driven Development]({{ site.baseurl }}/plan-driven-development) | Structured planning workflow for coding agents |
+| [Dependency Safety]({{ site.baseurl }}/dependency-safety) | Evaluating and managing AI-suggested packages |
 
 ---
 

@@ -136,6 +136,17 @@ A structured workflow for human-agent paired development. Covers:
 
 **Read this to**: Get reliable, auditable results from coding agents on projects of any size.
 
+### [Dependency Safety](./DEPENDENCY_SAFETY.md)
+How to evaluate, vet, and manage dependencies when an LLM is picking your packages. Covers:
+- The three ways AI gets dependencies wrong (hallucinated, abandoned, unnecessary)
+- The 60-second package evaluation check
+- Hallucinated packages as a supply chain attack vector
+- Pinning, lockfiles, and CDN version discipline
+- CLAUDE.md rules to prevent bad dependency suggestions
+- Decision framework: when to add a package vs. write it yourself
+
+**Read this to**: Stop blindly installing whatever the AI suggests and keep your dependency tree secure.
+
 ---
 
 ## Templates
