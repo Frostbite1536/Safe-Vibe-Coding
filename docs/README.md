@@ -171,6 +171,19 @@ Deployment, monitoring, and production readiness for AI-generated code. Covers:
 
 **Read this to**: Ship AI-generated code to production without waking up at 3 AM.
 
+### [Team Workflows](./TEAM_WORKFLOWS.md)
+Patterns for teams using AI-assisted development together. Covers:
+- Shared CLAUDE.md as the team's constitution for conventions and decisions
+- Code ownership rules: whoever prompts the AI owns the output
+- The double-AI problem: when AI writes code and AI reviews it
+- Branching discipline, parallel AI sessions, and merge conflict handling
+- Onboarding new team members to AI-assisted workflows
+- Knowledge sharing: the mistake-to-rule pipeline
+- Scaling patterns for small (2-5), medium (6-15), and large (15+) teams
+- Team-specific anti-patterns and how to avoid them
+
+**Read this to**: Coordinate AI-assisted development across your team without diverging into chaos.
+
 ---
 
 ## Templates

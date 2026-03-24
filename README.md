@@ -370,6 +370,14 @@ Before you start vibe coding, read these critical documents. They address common
   - Production hardening checklist (timeouts, rate limits, error handling)
   - CLAUDE.md rules for production-safe code generation
 
+- **[Team Workflows](./docs/TEAM_WORKFLOWS.md)** - AI-assisted development with multiple developers
+  - Shared CLAUDE.md as team constitution
+  - Code ownership rules for AI-generated code
+  - Review workflow and the double-AI problem
+  - Branching, parallel sessions, and merge conflict handling
+  - Onboarding new team members to AI workflows
+  - Scaling patterns for small, medium, and large teams
+
 **Start here**: If you only read one, read [Anti-Patterns & Warning Signs](./docs/ANTI_PATTERNS.md). It will save you from the most common mistakes.
 
 ---
