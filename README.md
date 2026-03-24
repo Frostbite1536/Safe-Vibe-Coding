@@ -386,6 +386,14 @@ Before you start vibe coding, read these critical documents. They address common
   - Working with large files the AI can't reason about at once
   - Anti-patterns specific to AI + legacy code
 
+- **[Expert Panel Evaluation](./docs/EXPERT_PANEL_EVALUATION.md)** - Using simulated expert committees to find what bug hunts miss
+  - Assembling virtual expert panels (economists, security engineers, game theorists, etc.)
+  - Six-step workflow: identify experts, prime context, evaluate, consolidate, plan, build
+  - Adversarial personas for finding exploits and attack surfaces
+  - Anti-sycophancy techniques to keep findings honest
+  - Mapping expert panels to different system types
+  - Integrating findings into the plan-driven development workflow
+
 **Start here**: If you only read one, read [Anti-Patterns & Warning Signs](./docs/ANTI_PATTERNS.md). It will save you from the most common mistakes.
 
 ---

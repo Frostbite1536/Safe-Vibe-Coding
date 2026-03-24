@@ -196,6 +196,17 @@ Introducing AI-assisted development into existing, mature codebases. Covers:
 
 **Read this to**: Get AI working safely on code that's been in production for years.
 
+### [Expert Panel Evaluation](./EXPERT_PANEL_EVALUATION.md)
+Using simulated expert committees to find architectural, economic, and systemic problems before they calcify. Covers:
+- The core idea: assembling virtual expert panels to critique what you've built
+- Six-step workflow: identify domains, prime context, run evaluations, consolidate, plan, build
+- Adversarial personas for finding exploits, attack surfaces, and gaming strategies
+- Anti-sycophancy techniques: demand asymmetry, minimum finding counts, failure scenarios
+- Expert panel templates for different system types (games, payments, auth, ML, APIs)
+- Integration points with the vibe coding workflow and plan-driven development
+
+**Read this to**: Discover the problems in your system that code review and bug hunts don't catch.
+
 ---
 
 ## Templates
