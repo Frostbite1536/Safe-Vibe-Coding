@@ -307,3 +307,9 @@ The fix is not cleverness. It is discipline:
 - Test with realistic, imperfect inputs
 
 Build these habits into the implementation process from the start — not as an audit step after the fact.
+
+---
+
+## Next Steps
+
+Once your MCP server grows beyond 20 tools, see **[MCP Tool Grouping](./MCP_TOOL_GROUPING.md)** for how to reduce token costs by 50-95% through dynamic tool visibility.

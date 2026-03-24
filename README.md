@@ -334,6 +334,58 @@ Before you start vibe coding, read these critical documents. They address common
   - Design-time practices that prevent MCP bugs later
   - Complete build/review checklist
 
+- **[MCP Tool Grouping](./docs/MCP_TOOL_GROUPING.md)** - Scaling MCP servers beyond 20 tools
+  - Reducing token cost by 50-95% with tool grouping
+  - Enable/disable meta-tools and per-session state
+  - The critical deadlock bug every implementation hits
+  - HTTP mode global state traps and fixes
+  - Design principles and complete checklist
+
+- **[Plan-Driven Development](./docs/PLAN_DRIVEN_DEVELOPMENT.md)** - Reliable results from coding agents through structured planning
+  - Six-phase workflow: ideation, plan, audit, sequencing, execution, code audit
+  - Why plans always have bugs and how to catch them
+  - Prompt sequencing for large projects
+  - CLAUDE.md as a plan accelerator
+  - Templates for plan requests, audits, and code reviews
+
+- **[Dependency Safety](./docs/DEPENDENCY_SAFETY.md)** - Evaluating and managing AI-suggested packages
+  - Hallucinated packages and supply chain attacks
+  - The 60-second package evaluation check
+  - When you don't need a dependency at all
+  - Pinning, lockfiles, and version discipline
+  - CLAUDE.md rules to prevent bad suggestions
+
+- **[Refactoring with AI](./docs/REFACTORING_WITH_AI.md)** - Changing code safely with AI assistance
+  - Risk spectrum: low, medium, and high-risk refactoring
+  - The incremental method: one change at a time
+  - Six failure modes specific to AI refactoring
+  - Patterns that work vs. patterns that don't
+  - Scope control and verification discipline
+
+- **[After the Merge](./docs/AFTER_THE_MERGE.md)** - Deployment & production for AI-generated code
+  - Pre-deployment checklist (config, deps, build, database)
+  - Deployment strategies (rolling, blue-green, feature flags)
+  - AI-specific monitoring: silent failures, cross-boundary data, resource leaks
+  - Rollback planning and incident response
+  - Production hardening checklist (timeouts, rate limits, error handling)
+  - CLAUDE.md rules for production-safe code generation
+
+- **[Team Workflows](./docs/TEAM_WORKFLOWS.md)** - AI-assisted development with multiple developers
+  - Shared CLAUDE.md as team constitution
+  - Code ownership rules for AI-generated code
+  - Review workflow and the double-AI problem
+  - Branching, parallel sessions, and merge conflict handling
+  - Onboarding new team members to AI workflows
+  - Scaling patterns for small, medium, and large teams
+
+- **[Legacy Codebases](./docs/LEGACY_CODEBASES.md)** - Introducing AI into existing, mature codebases
+  - Codebase survey and building CLAUDE.md from existing code
+  - Adding tests to untested code (characterization tests)
+  - Safe modification patterns (expansion, strangler fig, seams)
+  - Incremental migration strategies with AI
+  - Working with large files the AI can't reason about at once
+  - Anti-patterns specific to AI + legacy code
+
 **Start here**: If you only read one, read [Anti-Patterns & Warning Signs](./docs/ANTI_PATTERNS.md). It will save you from the most common mistakes.
 
 ---

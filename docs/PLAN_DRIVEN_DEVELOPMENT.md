@@ -13,6 +13,8 @@ The fastest way to build something wrong is to skip the plan. The fastest way to
 
 This guide covers a workflow for human-agent paired development where the agent writes detailed implementation plans, the plans are audited for accuracy before a line of code is written, and the agent then follows its own plans to build. The result is faster, more reliable, and produces fewer bugs than "just start coding."
 
+> **How this relates to the main guide:** The [Safe Vibe Coding workflow](../README.md) describes a 13-step process starting with a product conversation, co-designing the prompt, producing a roadmap, and defining invariants. This guide goes deeper on those early phases — turning steps 1-4 into a rigorous six-phase planning and execution discipline. If the main guide is "what to do," this guide is "how to do the planning part well."
+
 ---
 
 ## Table of Contents
@@ -478,3 +480,11 @@ Please evaluate:
 
 Our constraints: [list your codebase constraints, scale, tech stack]
 ```
+
+---
+
+## Related Guides
+
+- **[Anti-Patterns & Warning Signs](./ANTI_PATTERNS.md)** — Several anti-patterns described there — particularly "stream of consciousness" coding, The God File, and scope creep — are exactly the failure modes that plan-driven development prevents. If you want to understand what goes wrong *without* this workflow, that guide catalogs the wreckage.
+- **[Audit Findings & Lessons](./AUDIT_FINDINGS.md)** — Real security audit findings from AI-generated code. The Phase 6 code audit in this guide is designed to catch the same class of bugs documented there.
+- **[Context Management](./CONTEXT_MANAGEMENT.md)** — Complements the prompt sequencing phase (Phase 4). When plans are too large for a single session, context management practices keep the agent coherent across sessions.

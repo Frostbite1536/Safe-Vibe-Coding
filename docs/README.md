@@ -114,6 +114,88 @@ Comprehensive automation and CI/CD for AI-assisted projects. Covers:
 
 **Read this to**: Set up automated quality gates that catch issues humans miss.
 
+### [MCP Tool Grouping](./MCP_TOOL_GROUPING.md)
+How to scale MCP servers beyond 20 tools without burning tokens. Covers:
+- Why tool schemas cost thousands of tokens per turn at scale
+- Enable/disable meta-tools with per-session group state
+- The critical deadlock bug every implementation hits (and the fix)
+- HTTP mode global state traps
+- Design principles: groups map to domains, not access levels
+- Complete checklist for group definitions, meta-tools, startup, runtime, and testing
+
+**Read this to**: Keep token costs manageable as your MCP server grows, without breaking agent functionality.
+
+### [Plan-Driven Development](./PLAN_DRIVEN_DEVELOPMENT.md)
+A structured workflow for human-agent paired development. Covers:
+- Six-phase process: ideation, plan creation, plan audit, prompt sequencing, execution, code audit
+- Why implementation plans always have 1-3+ bugs and how to catch them before coding
+- Prompt sequencing for large projects that span multiple sessions
+- CLAUDE.md as a plan accelerator
+- When to scrap and replan (the rule of three)
+- Templates for plan requests, audits, prompt sequencing, and code reviews
+
+**Read this to**: Get reliable, auditable results from coding agents on projects of any size.
+
+### [Dependency Safety](./DEPENDENCY_SAFETY.md)
+How to evaluate, vet, and manage dependencies when an LLM is picking your packages. Covers:
+- The three ways AI gets dependencies wrong (hallucinated, abandoned, unnecessary)
+- The 60-second package evaluation check
+- Hallucinated packages as a supply chain attack vector
+- Pinning, lockfiles, and CDN version discipline
+- CLAUDE.md rules to prevent bad dependency suggestions
+- Decision framework: when to add a package vs. write it yourself
+
+**Read this to**: Stop blindly installing whatever the AI suggests and keep your dependency tree secure.
+
+### [Refactoring with AI](./REFACTORING_WITH_AI.md)
+How to refactor safely with AI assistance. Covers:
+- The risk spectrum: low, medium, and high-risk refactoring operations
+- The incremental method: one change, one test run, one commit
+- Six specific failure modes (collapsed duplication, execution order, lost error context, scope creep, silent contract changes, circular dependencies)
+- Refactoring patterns that work well with AI vs. patterns that don't
+- Scope control techniques to prevent the AI from expanding beyond your request
+- When NOT to refactor with AI (no tests, don't understand the code, under time pressure)
+
+**Read this to**: Keep refactoring from turning into a rewrite that introduces subtle bugs.
+
+### [After the Merge](./AFTER_THE_MERGE.md)
+Deployment, monitoring, and production readiness for AI-generated code. Covers:
+- Pre-deployment checklist (environment, dependencies, build, database)
+- Deployment strategies (rolling, blue-green, canary, feature flags)
+- The four monitoring signals and AI-specific monitoring priorities
+- Structured logging rules to surface silent failures
+- Rollback planning and decision framework
+- Incident response for systems you didn't fully write
+- Production hardening checklist (timeouts, rate limits, error handling, security)
+- CLAUDE.md rules to prevent common production issues at generation time
+
+**Read this to**: Ship AI-generated code to production without waking up at 3 AM.
+
+### [Team Workflows](./TEAM_WORKFLOWS.md)
+Patterns for teams using AI-assisted development together. Covers:
+- Shared CLAUDE.md as the team's constitution for conventions and decisions
+- Code ownership rules: whoever prompts the AI owns the output
+- The double-AI problem: when AI writes code and AI reviews it
+- Branching discipline, parallel AI sessions, and merge conflict handling
+- Onboarding new team members to AI-assisted workflows
+- Knowledge sharing: the mistake-to-rule pipeline
+- Scaling patterns for small (2-5), medium (6-15), and large (15+) teams
+- Team-specific anti-patterns and how to avoid them
+
+**Read this to**: Coordinate AI-assisted development across your team without diverging into chaos.
+
+### [Legacy Codebases](./LEGACY_CODEBASES.md)
+Introducing AI-assisted development into existing, mature codebases. Covers:
+- Codebase survey: assessing architecture, conventions, test coverage, and debt
+- Building CLAUDE.md from existing code (document reality, not aspirations)
+- Adding tests to untested code: characterization tests and the test-first-then-change rule
+- Safe modification patterns: expansion, strangler fig, and seam patterns
+- Migration strategies: incremental batch migration, database migrations, dependency upgrades
+- Working with large files: structural overview, targeted analysis, safe splitting
+- Legacy-specific anti-patterns ("let the AI rewrite it", "quick modernization")
+
+**Read this to**: Get AI working safely on code that's been in production for years.
+
 ---
 
 ## Templates
