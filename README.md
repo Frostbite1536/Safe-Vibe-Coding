@@ -362,6 +362,14 @@ Before you start vibe coding, read these critical documents. They address common
   - Patterns that work vs. patterns that don't
   - Scope control and verification discipline
 
+- **[After the Merge](./docs/AFTER_THE_MERGE.md)** - Deployment & production for AI-generated code
+  - Pre-deployment checklist (config, deps, build, database)
+  - Deployment strategies (rolling, blue-green, feature flags)
+  - AI-specific monitoring: silent failures, cross-boundary data, resource leaks
+  - Rollback planning and incident response
+  - Production hardening checklist (timeouts, rate limits, error handling)
+  - CLAUDE.md rules for production-safe code generation
+
 **Start here**: If you only read one, read [Anti-Patterns & Warning Signs](./docs/ANTI_PATTERNS.md). It will save you from the most common mistakes.
 
 ---

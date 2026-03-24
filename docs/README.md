@@ -158,6 +158,19 @@ How to refactor safely with AI assistance. Covers:
 
 **Read this to**: Keep refactoring from turning into a rewrite that introduces subtle bugs.
 
+### [After the Merge](./AFTER_THE_MERGE.md)
+Deployment, monitoring, and production readiness for AI-generated code. Covers:
+- Pre-deployment checklist (environment, dependencies, build, database)
+- Deployment strategies (rolling, blue-green, canary, feature flags)
+- The four monitoring signals and AI-specific monitoring priorities
+- Structured logging rules to surface silent failures
+- Rollback planning and decision framework
+- Incident response for systems you didn't fully write
+- Production hardening checklist (timeouts, rate limits, error handling, security)
+- CLAUDE.md rules to prevent common production issues at generation time
+
+**Read this to**: Ship AI-generated code to production without waking up at 3 AM.
+
 ---
 
 ## Templates
