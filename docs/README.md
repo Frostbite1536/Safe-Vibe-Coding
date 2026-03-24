@@ -147,6 +147,17 @@ How to evaluate, vet, and manage dependencies when an LLM is picking your packag
 
 **Read this to**: Stop blindly installing whatever the AI suggests and keep your dependency tree secure.
 
+### [Refactoring with AI](./REFACTORING_WITH_AI.md)
+How to refactor safely with AI assistance. Covers:
+- The risk spectrum: low, medium, and high-risk refactoring operations
+- The incremental method: one change, one test run, one commit
+- Six specific failure modes (collapsed duplication, execution order, lost error context, scope creep, silent contract changes, circular dependencies)
+- Refactoring patterns that work well with AI vs. patterns that don't
+- Scope control techniques to prevent the AI from expanding beyond your request
+- When NOT to refactor with AI (no tests, don't understand the code, under time pressure)
+
+**Read this to**: Keep refactoring from turning into a rewrite that introduces subtle bugs.
+
 ---
 
 ## Templates

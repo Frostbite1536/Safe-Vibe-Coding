@@ -57,6 +57,7 @@ Covers terminal setup, running multiple Claudes, Plan mode, CLAUDE.md, slash com
 | [MCP Tool Grouping]({{ site.baseurl }}/mcp-tool-grouping) | Scaling MCP servers beyond 20 tools |
 | [Plan-Driven Development]({{ site.baseurl }}/plan-driven-development) | Structured planning workflow for coding agents |
 | [Dependency Safety]({{ site.baseurl }}/dependency-safety) | Evaluating and managing AI-suggested packages |
+| [Refactoring with AI]({{ site.baseurl }}/refactoring-with-ai) | Changing code safely with AI assistance |
 
 ---
 

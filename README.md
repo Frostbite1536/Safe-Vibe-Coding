@@ -355,6 +355,13 @@ Before you start vibe coding, read these critical documents. They address common
   - Pinning, lockfiles, and version discipline
   - CLAUDE.md rules to prevent bad suggestions
 
+- **[Refactoring with AI](./docs/REFACTORING_WITH_AI.md)** - Changing code safely with AI assistance
+  - Risk spectrum: low, medium, and high-risk refactoring
+  - The incremental method: one change at a time
+  - Six failure modes specific to AI refactoring
+  - Patterns that work vs. patterns that don't
+  - Scope control and verification discipline
+
 **Start here**: If you only read one, read [Anti-Patterns & Warning Signs](./docs/ANTI_PATTERNS.md). It will save you from the most common mistakes.
 
 ---
