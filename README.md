@@ -378,6 +378,14 @@ Before you start vibe coding, read these critical documents. They address common
   - Onboarding new team members to AI workflows
   - Scaling patterns for small, medium, and large teams
 
+- **[Legacy Codebases](./docs/LEGACY_CODEBASES.md)** - Introducing AI into existing, mature codebases
+  - Codebase survey and building CLAUDE.md from existing code
+  - Adding tests to untested code (characterization tests)
+  - Safe modification patterns (expansion, strangler fig, seams)
+  - Incremental migration strategies with AI
+  - Working with large files the AI can't reason about at once
+  - Anti-patterns specific to AI + legacy code
+
 **Start here**: If you only read one, read [Anti-Patterns & Warning Signs](./docs/ANTI_PATTERNS.md). It will save you from the most common mistakes.
 
 ---

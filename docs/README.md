@@ -184,6 +184,18 @@ Patterns for teams using AI-assisted development together. Covers:
 
 **Read this to**: Coordinate AI-assisted development across your team without diverging into chaos.
 
+### [Legacy Codebases](./LEGACY_CODEBASES.md)
+Introducing AI-assisted development into existing, mature codebases. Covers:
+- Codebase survey: assessing architecture, conventions, test coverage, and debt
+- Building CLAUDE.md from existing code (document reality, not aspirations)
+- Adding tests to untested code: characterization tests and the test-first-then-change rule
+- Safe modification patterns: expansion, strangler fig, and seam patterns
+- Migration strategies: incremental batch migration, database migrations, dependency upgrades
+- Working with large files: structural overview, targeted analysis, safe splitting
+- Legacy-specific anti-patterns ("let the AI rewrite it", "quick modernization")
+
+**Read this to**: Get AI working safely on code that's been in production for years.
+
 ---
 
 ## Templates
