@@ -6,9 +6,9 @@ parent: Guides
 description: "A real incident where an AI auditor, an AI fixer, and a git baseline disagreement sent everyone chasing a phantom problem — and the layered lessons it revealed."
 ---
 
-# When AI Audits Go Wrong: A Three-Act Debugging Story
+# When AI Audits Go Wrong: A Four-Act Debugging Story
 
-What happens when you use one AI to fix code and another AI to review those fixes? This guide documents a real incident that unfolded in three acts, each revealing a different failure mode. Every person and every AI involved was acting in good faith. Everyone was wrong about something.
+What happens when you use one AI to fix code and another AI to review those fixes? This guide documents a real incident that unfolded in four acts, each revealing a different failure mode. Every person and every AI involved was acting in good faith. Everyone was wrong about something.
 
 ---
 
@@ -79,6 +79,41 @@ After the fix branch was created from commit `39f9ca5`, the maintainer pushed ne
 **The real bug was a baseline comparison error.** The auditing agent used the wrong reference point. In git terms, it did `git diff main..branch` (which includes changes to main since branching) instead of `git diff main...branch` (which shows only the branch's changes). This is a mistake even experienced human developers make.
 
 **Lesson 3: When two AIs disagree, the answer is usually in the data, not in either AI's narrative.** Neither agent lied. Neither hallucinated in the traditional sense. They were looking at different baselines and both reporting accurately on what they saw. The human needed to check `git log` to understand why.
+
+---
+
+## Act 4: The Resolution
+
+With the root cause identified, the fix was straightforward: rebase the fix branch onto current `main` so it included the maintainer's new features.
+
+```
+$ git rebase origin/main
+CONFLICT (content): Merge conflict in chat_engine.py
+CONFLICT (content): Merge conflict in rag.py
+```
+
+Two merge conflicts appeared — exactly where the fix branch and the maintainer's commits had touched the same code:
+
+1. **rag.py**: The maintainer had changed the resolution order (`user_text` first, then `expanded`). The fix branch had added a `match=` parameter to the same function calls. The correct resolution: keep the maintainer's ordering AND the fix branch's `match=` parameter.
+
+2. **chat_engine.py**: A trivial trailing whitespace conflict at the end of the file.
+
+After resolving and pushing, the diff told the real story:
+
+```
+# Before rebase (against current main): ~900 lines changed, "massive deletions"
+# After rebase (against current main): 29 lines changed across 2 files
+```
+
+The fix branch went from looking destructive to looking like what it actually was: a small, focused set of remaining fixes. Most of the original 13 findings had already been independently applied by the maintainer in commit `726bf74` — which meant the audit findings were genuinely valid. The fix branch's work had real value; the maintainer had simply gotten there first for most of them.
+
+**Lesson 4: The rebase proved the diagnosis.** When the diff shrinks from 900 lines to 29 after rebasing onto current main, it confirms the "deletions" were just branch divergence. This is the fastest way to verify a baseline comparison error — rebase and see if the alarming diff disappears.
+
+### A Note on Merge Conflicts as Evidence
+
+The merge conflicts themselves were informative. They appeared in `rag.py` and `chat_engine.py` — exactly the files where both the fix branch and the maintainer's commits had made changes. The conflicts showed that the maintainer and the fixing agent had independently identified and fixed some of the same issues, which is strong evidence that the 13 audit findings were legitimate.
+
+When a human resolves merge conflicts, they're doing something no AI in this story did: looking at both versions simultaneously and making a judgment call about how to combine them. The `rag.py` resolution — keeping the maintainer's resolution order while adding the fix branch's `match=` parameter — required understanding the intent of both changes. This is the kind of nuanced decision that justified having a human in the loop.
 
 ---
 
