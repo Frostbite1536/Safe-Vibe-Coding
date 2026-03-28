@@ -7,6 +7,7 @@ description: "A real incident where an AI auditor, an AI fixer, and a git baseli
 ---
 
 # When AI Audits Go Wrong: A Four-Act Debugging Story
+### *Trust the Diff*
 
 What happens when you use one AI to fix code and another AI to review those fixes? This guide documents a real incident that unfolded in four acts, each revealing a different failure mode. Every person and every AI involved was acting in good faith. Everyone was wrong about something.
 

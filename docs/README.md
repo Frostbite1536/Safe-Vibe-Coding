@@ -196,7 +196,7 @@ Introducing AI-assisted development into existing, mature codebases. Covers:
 
 **Read this to**: Get AI working safely on code that's been in production for years.
 
-### [When AI Audits Go Wrong](./SILENT_SCOPE_CREEP.md)
+### [When AI Audits Go Wrong](./AI_AUDIT_FAILURES.md)
 A three-act debugging story where an AI auditor, an AI fixer, and a git baseline error sent everyone chasing a phantom problem. Covers:
 - Three distinct failure layers: trusting AI reports, wrong diff baselines, AI agents debugging each other in circles
 - Why `git diff main..branch` vs `git diff main...branch` matters for AI reviews
