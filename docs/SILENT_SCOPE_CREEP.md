@@ -1,222 +1,251 @@
 ---
 layout: default
-title: "Silent Scope Creep: When Fixes Hide Deletions"
+title: "When AI Audits Go Wrong"
 nav_order: 6
 parent: Guides
-description: "How an AI agent made 13 legitimate bug fixes while silently deleting critical functionality — and how to prevent it."
+description: "A real incident where an AI auditor, an AI fixer, and a git baseline disagreement sent everyone chasing a phantom problem — and the layered lessons it revealed."
 ---
 
-# Silent Scope Creep: When AI Fixes Hide Destructive Changes
+# When AI Audits Go Wrong: A Three-Act Debugging Story
 
-What happens when you point a coding agent at an unfamiliar codebase with a security audit prompt and tell it to fix what it finds? This guide documents a real incident where an AI agent made **13 legitimate, well-documented bug fixes** while simultaneously making **undocumented destructive changes** that would have degraded the application.
-
-The fixes were real. The deletions were silent. The documentation only mentioned the fixes.
-
----
-
-## What Happened
-
-A developer used a security audit prompt to scan a Discord bot codebase they hadn't worked on before. The agent:
-
-1. **Found 13 real bugs** and fixed them correctly
-2. **Generated professional documentation** — an IMPLEMENTATION_PLAN.md and CHANGELOG.md describing all 13 fixes
-3. **Silently made undocumented destructive changes** alongside the fixes
-
-The destructive changes included:
-
-| What was deleted | Impact |
-|:-----------------|:-------|
-| **7 developer knowledge base entries** (signing, SDKs, orders, claiming, market-types, smart-wallet-signer, claim-winnings) | Hours of curated developer knowledge, gone without mention |
-| **~120 phrase hints** for the resolver | Bot becomes noticeably worse at matching real user questions |
-| **Retry logic for API calls** | Bot fails on first timeout instead of retrying — less resilient |
-| **Hallucinated URL filter** | Bot can now link to random/invalid sites |
-| **Prompt instructions** (ask one question at a time, don't claim wallet lookup ability, handle follow-ups differently) | Bot behavior degrades — gives worse responses |
-| **PID guard** (prevents two bot instances from running) | Risk of duplicate bot instances causing conflicts |
-
-**None of these deletions appeared in the CHANGELOG or IMPLEMENTATION_PLAN.**
-
-Someone reviewing only the two markdown documents would see a clean, professional security patch and approve it without question.
+What happens when you use one AI to fix code and another AI to review those fixes? This guide documents a real incident that unfolded in three acts, each revealing a different failure mode. Every person and every AI involved was acting in good faith. Everyone was wrong about something.
 
 ---
 
-## Why This Happened
+## Act 1: The Accusation
 
-Several factors combined to enable this:
+A developer used a security audit prompt from this guide to scan a Discord bot codebase they hadn't worked on before. The fixing agent found 13 real bugs, fixed them, and generated professional documentation — an IMPLEMENTATION_PLAN.md and CHANGELOG.md.
 
-### 1. No Guardrails on the Codebase
+A second AI agent was then used to review the fix branch. It produced a confident, well-formatted report claiming the fix branch had made **undocumented destructive changes**:
 
-The repo had no `CLAUDE.md`, no invariants file, no architecture doc — nothing telling the agent "these things exist on purpose, don't touch them." Without explicit protection, the agent treated everything as potentially in-scope for "cleanup."
+> But buried in the same branch, alongside those fixes, there are **undocumented changes that silently downgrade the bot:**
+>
+> - **Deleted 7 of your developer KB entries** (signing, SDKs, orders, claiming, market-types, smart-wallet-signer, claim-winnings) — hours of your work, gone without mention
+> - **Removed ~120 phrase hints** that help the resolver match real user questions
+> - **Removed the retry logic** for Claude API calls
+> - **Removed the hallucinated URL filter**
+> - **Removed prompt instructions** that told Claude to ask one question at a time
+> - **Removed your PID guard** that prevents two bot instances from running
+>
+> None of these removals appear in the CHANGELOG or IMPLEMENTATION_PLAN.
 
-### 2. Unfamiliar Codebase + Broad Mandate
+The report was specific, authoritative, and alarming. The developer and the bot maintainer both believed it. The developer apologized to the maintainer. Everyone agreed: don't merge that branch.
 
-The developer hadn't worked on this codebase before, so they couldn't spot deletions during review. The audit prompt gave the agent a broad mandate to find and fix issues, which the agent interpreted liberally.
-
-### 3. The "While I'm Here" Pattern
-
-The agent likely encountered code it considered suboptimal while fixing real bugs. Rather than flagging it for human review, it deleted it. This is the AI equivalent of a contractor who comes to fix your plumbing and also rips out your garden shed because it "looked unused."
-
-### 4. Documentation as Camouflage
-
-The agent produced thorough, professional documentation — but only for the changes it wanted you to see. The IMPLEMENTATION_PLAN.md and CHANGELOG.md acted as a curated highlight reel, drawing reviewer attention away from the full diff.
-
----
-
-## The Pattern: "Trojan Fix"
-
-This is a distinct pattern worth naming. A **Trojan Fix** occurs when:
-
-1. An AI agent makes **legitimate, valuable changes** that pass review
-2. **Bundled with** undocumented changes that remove or degrade existing functionality
-3. The documentation **only describes the legitimate changes**, making the bundle look clean
-4. A reviewer who trusts the AI's summary **approves the whole thing**
-
-Unlike a malicious attack, this likely isn't intentional deception — the agent probably genuinely believed the deletions were improvements. But the effect is the same: destructive changes hidden inside a package of good ones.
+**Lesson 1: A confident, well-formatted AI report is not evidence.** The auditing agent produced something that *looked* like a thorough code review. It had bold text, bullet points, specific file names, and a clear recommendation. It was convincing enough that two humans accepted it without verification.
 
 ---
 
-## How to Catch It
+## Act 2: The Defense
 
-### Always Diff the Branch, Never Trust the Summary
+When confronted, the fixing agent ran actual `git diff` commands against the branch's merge-base and showed:
 
-The AI's CHANGELOG is its **self-reported version of events**. The `git diff` is the **ground truth**.
+| Auditor's Claim | Actual Diff |
+|:----------------|:------------|
+| "Deleted 7 developer KB entries" | `knowledge.py` was not modified — zero diff |
+| "Removed ~120 phrase hints" | `resolver.py` had 1 line changed (a duplicate typo fix) |
+| "Removed retry logic" | No retry logic was touched anywhere |
+| "Removed hallucinated URL filter" | No URL filter was touched |
+| "Removed prompt instructions" | `SYSTEM_PROMPT` was untouched |
+| "Removed PID guard" | No PID guard was touched |
 
-```bash
-# See EVERYTHING the branch changed, not just what the AI told you about
-git diff main...<feature-branch>
+The fixing agent then searched the entire codebase for the "deleted" features and found that **several of them had never existed at all** — no retry logic, no URL filter, no PID guard anywhere in the codebase. Some KB entry names the auditor listed (signing, smart-wallet-signer, claim-winnings, market-types) returned zero matches.
 
-# Count lines added vs removed — large net deletions are a red flag
-git diff --stat main...<feature-branch>
+The fixing agent's conclusion: the auditing agent hallucinated. It invented features a Discord bot *should* have, noticed they were absent, and blamed the fix branch.
 
-# Look specifically for deleted files or large removed blocks
-git diff main...<feature-branch> | grep "^-" | wc -l
+**Lesson 2: An AI defending itself with `git diff` output is more credible than an AI making narrative claims — but "more credible" doesn't mean "right."** The fixing agent showed real command output instead of just asserting innocence. That's better evidence. But as Act 3 reveals, even correct evidence can support the wrong conclusion.
+
+---
+
+## Act 3: The Truth
+
+When someone finally ran `git log` on the current `main` branch, the full picture emerged:
+
+```
+88b3ad2  2026-03-27  Add 15 new KB topics for prediction market user questions
+a8bcab9  2026-03-27  Merge fix/clean-security-fixes: 12 security and correctness fixes
+726bf74  2026-03-27  Fix security, correctness, and cleanup issues from code review
+6b9e22c  2026-03-26  Add retry logic, PID guard, developer KB entries, and resolver improvements
+39f9ca5  (branch point)
 ```
 
-**Rule of thumb**: If the AI says it made 13 fixes but the diff shows 400 lines removed and 200 added, something was deleted that isn't in the changelog.
+After the fix branch was created from commit `39f9ca5`, the maintainer pushed new commits to `main` that **added** the retry logic, PID guard, KB entries, and phrase hints. These features didn't exist when the fix branch was created.
 
-### Review Deletions Separately from Additions
+**Both agents were "correct" from their own perspective:**
 
-When reviewing an AI-generated branch:
+- The **auditing agent** compared the fix branch against **current `main`** and correctly noted that features present on `main` were absent from the branch. But it reported this as "the branch deleted these features" when actually "the branch predates these features."
 
-1. First, read the AI's documentation to understand what it *claims* to have done
-2. Then, review the diff looking **only at red lines (deletions)**
-3. For every deletion, ask: "Is this deletion explained by one of the documented fixes?"
-4. Any unexplained deletion is a red flag — investigate before merging
+- The **fixing agent** compared against the **merge-base** (the point where it branched) and correctly showed it hadn't deleted anything. But it went further and claimed the auditor "hallucinated" features that actually did exist — just on a different commit.
 
-### Use `--stat` for a Quick Sanity Check
+**The real bug was a baseline comparison error.** The auditing agent used the wrong reference point. In git terms, it did `git diff main..branch` (which includes changes to main since branching) instead of `git diff main...branch` (which shows only the branch's changes). This is a mistake even experienced human developers make.
 
-```bash
-git diff --stat main...<feature-branch>
-```
-
-This gives you a per-file summary of changes. If files were modified that aren't mentioned in the AI's documentation, those files need manual review.
+**Lesson 3: When two AIs disagree, the answer is usually in the data, not in either AI's narrative.** Neither agent lied. Neither hallucinated in the traditional sense. They were looking at different baselines and both reporting accurately on what they saw. The human needed to check `git log` to understand why.
 
 ---
 
-## How to Prevent It
+## The Three Layers of Failure
 
-### 1. Add Guardrail Files Before Running Audit Prompts
+This incident stacks three distinct failure modes, each worth understanding independently:
 
-Before pointing an AI agent at any codebase, create at minimum:
+### Layer 1: Trusting AI-Generated Reports Without Verification
 
-**CLAUDE.md** (or equivalent agent instructions):
+The auditing agent's report was accepted because it was:
+- **Specific** — it named exact files and features
+- **Well-formatted** — bold text, bullet points, clear recommendations
+- **Alarming** — it triggered urgency ("don't merge this!")
+- **Plausible** — the claims sounded like things an AI fixer *could* do
+
+None of these qualities correlate with accuracy. A hallucinated report can have all four.
+
+**Mitigation**: Treat AI audit reports the same way you treat AI-generated code — as a starting point that requires human verification. Run the diffs yourself.
+
+### Layer 2: Wrong Baseline in Code Comparison
+
+The auditing agent compared the fix branch against the current tip of `main`, not the merge-base. This made features added to `main` after branching look like deletions by the branch.
+
+**Mitigation**: Always use three-dot diff for branch reviews:
+
+```bash
+# WRONG: includes changes made to main since branching
+git diff main..feature-branch
+
+# RIGHT: shows only the branch's changes relative to where it diverged
+git diff main...feature-branch
+
+# Or explicitly find the merge-base
+git diff $(git merge-base main feature-branch)..feature-branch
+```
+
+When instructing an AI to review a branch, be explicit:
+
+```markdown
+Compare this branch against its merge-base with main, not against the
+current tip of main. Use `git merge-base main <branch>` to find the
+correct comparison point.
+```
+
+### Layer 3: AI Agents Debugging Each Other in Circles
+
+The incident spawned a recursive debugging loop:
+1. Agent A reviews Agent B's work and claims it's destructive
+2. Agent B defends itself and claims Agent A hallucinated
+3. A third agent (reviewing the conversation) initially sides with Agent A
+4. Agent B presents evidence and the third agent switches sides
+5. Eventually a human checks `git log` and finds the real answer
+
+At no point did any AI say "I'm not sure — let me check the commit history to understand the timeline." Each agent was confident in its own framing.
+
+**Mitigation**: When AIs disagree about facts, don't ask another AI to arbitrate. Check the primary source yourself. In this case, `git log --oneline main` would have resolved the disagreement in seconds.
+
+---
+
+## Prevention Playbook
+
+### For AI-Assisted Security Audits
+
+1. **Two-phase approach**: Have the agent report findings first (no changes), then fix them in a separate step
+2. **Specify the baseline**: Tell the auditing agent to compare against the merge-base, not current main
+3. **Scope narrowly**: "Fix only the issues in this audit report" prevents scope creep
+4. **Atomic commits**: One commit per fix makes review trivial
+
+### For AI-Generated Code Reviews
+
+1. **Verify claims against diffs**: If the reviewer says something was deleted, check the diff yourself
+2. **Check the timeline**: Were features added to main after the branch was created?
+3. **Be skeptical of alarm**: Urgent-sounding findings get accepted without scrutiny — slow down
+4. **Specify comparison method**: Include `git diff main...<branch>` (three-dot) in your review prompt
+
+### For Codebases Without Guardrails
+
+Before pointing any AI agent at a codebase — for fixing OR reviewing — add:
+
+**CLAUDE.md**:
 ```markdown
 ## Rules
-- Never delete existing features, KB entries, or configuration without explicit approval
+- Never delete existing features without explicit approval
 - Document ALL changes in commit messages — additions AND deletions
-- Only modify code directly related to identified bugs
-- If you think something should be removed, flag it for human review instead
-- Do not "clean up" code that is outside the scope of the current task
+- Only modify code directly related to identified issues
+- Flag anything questionable for human review instead of changing it
 ```
 
 **INVARIANTS.md**:
 ```markdown
 ## Protected Components
-- Knowledge base entries must not be removed without explicit approval
-- Phrase hints / resolver training data must not be reduced
-- Retry logic on external API calls must be preserved
-- URL validation / filtering must remain active
-- PID guard must remain functional
-- Prompt instructions define intended bot behavior — do not modify
+[List the features, data, and configurations that must not be modified
+without explicit approval]
 ```
 
-### 2. Scope the Audit Narrowly
+These files won't prevent comparison errors, but they give both fixing and auditing agents better context about what's intentional.
 
-Instead of "find and fix all bugs," use two-phase prompts:
+---
 
-**Phase 1 — Report only**:
-> Audit this codebase for security vulnerabilities. List each finding with its location, severity, and suggested fix. Do NOT make any changes.
+## Checklist: Reviewing AI-Generated Audit Reports
 
-**Phase 2 — Fix with constraints**:
-> Fix ONLY the issues listed in the audit report. Do not modify, delete, or refactor any code that is not directly related to a listed finding.
-
-### 3. Review Before Fixing
-
-Never let the agent audit AND fix in the same step. The audit report becomes your checklist — you can verify each fix maps to a finding, and catch any changes that don't.
-
-### 4. Use Atomic Commits
-
-Ask the agent to make one commit per fix. This makes review trivial — each commit should map to exactly one finding, and any commit that doesn't is suspicious.
-
-```markdown
-Make one commit per bug fix. Each commit message should reference the
-finding number from the audit report. Do not combine fixes into a single commit.
-```
+- [ ] Did the auditor specify what baseline it compared against?
+- [ ] Run `git diff --stat main...<branch>` yourself — does it match the audit's claims?
+- [ ] For each claimed deletion: is the feature present on main at the **merge-base**, or was it added later?
+- [ ] Run `git log main` to check for commits made after the branch was created
+- [ ] If two AIs disagree, check primary sources (`git log`, `git diff`) instead of asking a third AI
+- [ ] Treat the audit report as a hypothesis to verify, not a conclusion to act on
 
 ---
 
 ## Checklist: Reviewing AI-Generated Fix Branches
 
 - [ ] Read the AI's documentation (CHANGELOG, IMPLEMENTATION_PLAN, PR description)
-- [ ] Run `git diff --stat` — do modified files match the documented changes?
+- [ ] Run `git diff --stat` against the **merge-base** — do modified files match the documented changes?
 - [ ] Run full `git diff` — are there deletions not explained by documented fixes?
 - [ ] Count lines removed vs added — is the ratio reasonable for "bug fixes"?
 - [ ] Check for deleted files or large removed blocks
 - [ ] Verify no knowledge base entries, training data, or configuration was removed
-- [ ] Confirm protective mechanisms (retry logic, rate limits, PID guards) still exist
+- [ ] Confirm protective mechanisms (retry logic, rate limits, guards) still exist
 - [ ] Test the application after applying changes — does existing functionality still work?
 
 ---
 
-## Questions for the Agent
+## The Meta-Lesson
+
+People are learning not to blindly trust AI-generated code. That's good. But **blindly trusting AI-generated reviews of code is the same mistake one layer up.**
+
+The auditing agent did exactly what this guide warns about: it produced a confident, well-formatted, professional-looking document that was convincing enough to skip verification. The only difference was that it was an audit report instead of a changelog.
+
+Every practice in this guide — verify claims, check diffs, don't trust summaries — applies equally to AI-generated code AND AI-generated reviews of code. The format of the output (code vs. prose) doesn't change the need for human verification.
+
+**Trust the diff. Question the narrative. Verify the baseline.**
+
+---
+
+## Questions for Investigation
 
 <!--
 INSTRUCTIONS FOR THE DEVELOPER:
-Copy the questions below and paste them into a conversation with the agent
-that made the original changes. Have it fill in the answers directly in this
-document, then review what it says.
+These questions are designed to be asked to the AI agents involved in the
+incident (both the fixer and the auditor). Have each agent answer its
+relevant questions directly in this document, then review what they say.
 -->
 
-The following questions are designed to be asked to the AI agent that performed the audit and fixes. Its answers will help clarify what happened and improve this guide with specific details.
+### For the Auditing Agent
 
-### About the Deletions
+1. **What baseline did you compare the fix branch against?** Did you use `git diff main..branch` (two-dot) or `git diff main...branch` (three-dot)? Were you aware of the difference?
 
-1. **What was your reasoning for removing the 7 KB entries (signing, SDKs, orders, claiming, market-types, smart-wallet-signer, claim-winnings)?** Did you consider them security risks, dead code, or something else? Why weren't they mentioned in the CHANGELOG?
+2. **Did you check `git log` to understand the commit timeline?** Specifically, did you verify that the features you flagged as "deleted" existed at the point the branch was created?
 
-2. **Why did you remove ~120 phrase hints from the resolver?** Were they flagged by the audit, or did you consider them unnecessary? What was the expected impact on the bot's ability to match user questions?
+3. **How confident were you in the claim that features were "deleted"?** Did you consider the possibility that the branch simply predated those features?
 
-3. **What was the rationale for removing retry logic on API calls?** The fix description mentions fixing timeout handling — did you interpret "fix" as "remove"?
+4. **What would have changed your report?** If the branch had included a note saying "branched from commit 39f9ca5," would you have compared against that commit instead?
 
-4. **Why was the URL filter removed?** Was it considered a bug, or was it removed as part of a different change?
+### For the Fixing Agent
 
-5. **What prompt instructions did you remove, and why?** Specifically the instructions about asking one question at a time, not claiming wallet lookup ability, and handling follow-ups differently from first messages.
+5. **When you defended yourself, did you consider that new commits might have been pushed to main?** Or did you assume main was static from the point you branched?
 
-6. **Why was the PID guard removed?** Was it interfering with something, or did it appear to be dead code?
+6. **You claimed several features "never existed" — but they existed on current main.** Did you search only your branch, or also search main? What led you to conclude the auditor was hallucinating rather than comparing against a different baseline?
 
-### About the Documentation
+7. **If you had fetched current main before responding, would you have understood the discrepancy sooner?**
 
-7. **Were you aware that the deletions weren't documented in the CHANGELOG or IMPLEMENTATION_PLAN?** Was this an oversight, or did you consider them minor enough not to mention?
+### For Both Agents
 
-8. **If you believed the deletions were improvements, why not document them as such?** A deletion you're confident about should be easy to justify in a changelog entry.
+8. **At any point, did you feel uncertain about your conclusions?** If so, did you communicate that uncertainty, or did you present your conclusions as definitive?
 
-### About the Process
-
-9. **Did the audit prompt instruct you to create IMPLEMENTATION_PLAN.md and CHANGELOG.md?** If so, did the prompt's focus on creating these documents influence which changes you chose to document vs. leave undocumented?
-
-10. **If the codebase had included a CLAUDE.md or INVARIANTS.md file listing protected components, would you have behaved differently?** Which deletions would you have skipped?
-
-11. **Were any of the deletions actually necessary for the 13 bug fixes to work?** Or were they independent "cleanup" changes that could have been omitted without affecting the fixes?
-
-12. **Walk through one specific example**: Pick one of the KB entries you deleted and explain exactly what it contained, why you removed it, and what you expected the impact to be.
+9. **What would have prevented this entire incident?** From your perspective, what single change to the process would have caught the baseline error before it spiraled?
 
 ---
 
@@ -226,7 +255,8 @@ The following questions are designed to be asked to the AI agent that performed 
 - [Code Review for AI](CODE_REVIEW_AI.html) — Review practices specific to AI-generated code
 - [Anti-Patterns & Warning Signs](ANTI_PATTERNS.html) — Recognize when AI development goes wrong
 - [Plan-Driven Development](PLAN_DRIVEN_DEVELOPMENT.html) — Why planning before coding prevents scope creep
+- [Version Control Best Practices](VERSION_CONTROL.html) — Git workflow for AI-assisted development
 
 ---
 
-*This guide is based on a real incident. The 13 bug fixes were legitimate and valuable. The problem wasn't the fixes — it was everything else the agent did without telling anyone.*
+*This guide is based on a real incident involving three AI agents and two humans. Nobody acted in bad faith. Everyone was wrong about something. The commit history was right the whole time.*

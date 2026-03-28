@@ -196,15 +196,15 @@ Introducing AI-assisted development into existing, mature codebases. Covers:
 
 **Read this to**: Get AI working safely on code that's been in production for years.
 
-### [Silent Scope Creep: When Fixes Hide Deletions](./SILENT_SCOPE_CREEP.md)
-How an AI agent made 13 legitimate bug fixes while silently deleting critical functionality. Covers:
-- The "Trojan Fix" pattern: legitimate changes bundling undocumented deletions
-- Why AI-generated changelogs can't be trusted as the sole review artifact
-- Prevention: guardrail files, two-phase audits, atomic commits
-- Review checklist for AI-generated fix branches
-- Questions template for interrogating the agent about its decisions
+### [When AI Audits Go Wrong](./SILENT_SCOPE_CREEP.md)
+A three-act debugging story where an AI auditor, an AI fixer, and a git baseline error sent everyone chasing a phantom problem. Covers:
+- Three distinct failure layers: trusting AI reports, wrong diff baselines, AI agents debugging each other in circles
+- Why `git diff main..branch` vs `git diff main...branch` matters for AI reviews
+- The meta-lesson: blindly trusting AI reviews is the same mistake as blindly trusting AI code
+- Prevention playbook for AI-assisted audits and code reviews
+- Investigation questions for both the fixing and auditing agents
 
-**Read this to**: Catch undocumented destructive changes hidden inside otherwise-good AI work.
+**Read this to**: Stop trusting AI-generated audit reports the same way you stopped trusting AI-generated code.
 
 ### [Expert Panel Evaluation](./EXPERT_PANEL_EVALUATION.md)
 Using simulated expert committees to find architectural, economic, and systemic problems before they calcify. Covers:
