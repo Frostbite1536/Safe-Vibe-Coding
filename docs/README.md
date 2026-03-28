@@ -196,6 +196,16 @@ Introducing AI-assisted development into existing, mature codebases. Covers:
 
 **Read this to**: Get AI working safely on code that's been in production for years.
 
+### [When AI Audits Go Wrong](./AI_AUDIT_FAILURES.md)
+A three-act debugging story where an AI auditor, an AI fixer, and a git baseline error sent everyone chasing a phantom problem. Covers:
+- Three distinct failure layers: trusting AI reports, wrong diff baselines, AI agents debugging each other in circles
+- Why `git diff main..branch` vs `git diff main...branch` matters for AI reviews
+- The meta-lesson: blindly trusting AI reviews is the same mistake as blindly trusting AI code
+- Prevention playbook for AI-assisted audits and code reviews
+- Investigation questions for both the fixing and auditing agents
+
+**Read this to**: Stop trusting AI-generated audit reports the same way you stopped trusting AI-generated code.
+
 ### [Expert Panel Evaluation](./EXPERT_PANEL_EVALUATION.md)
 Using simulated expert committees to find architectural, economic, and systemic problems before they calcify. Covers:
 - The core idea: assembling virtual expert panels to critique what you've built
