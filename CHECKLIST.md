@@ -96,6 +96,7 @@ Use this as a lightweight guardrail when building with LLMs. Print it, pin it, r
 | Performance Review | Optimization | [prompts/performance-review.md](./prompts/performance-review.md) |
 | Code Review | Multi-pass PR review | [prompts/code-review.md](./prompts/code-review.md) |
 | Setup Review Pipeline | Automated PR reviews | [prompts/setup-code-review-pipeline.md](./prompts/setup-code-review-pipeline.md) |
+| Smart Contract Audit | Solidity security audit | [prompts/smart-contract-audit.md](./prompts/smart-contract-audit.md) |
 
 ---
 
@@ -123,6 +124,26 @@ Use this as a lightweight guardrail when building with LLMs. Print it, pin it, r
 - [ ] Inputs validated at the boundary: enums, non-finite numbers, required refs, types
 - [ ] LLM-specific input test suite exists (lowercase enums, NaN, extra whitespace)
 - [ ] Full checklist: [Building MCP Servers guide](./docs/MCP_DEVELOPMENT.md#mcp-server-checklist)
+
+---
+
+## Smart Contracts (Solidity)
+
+- [ ] Every `whenNotPaused` function justified — defensive actions (challenge, renew, withdraw) exempt from pause
+- [ ] No deadline/window that ticks during pause without user recourse
+- [ ] No `safeTransfer` to non-`msg.sender` in functions other users depend on (use pull-over-push)
+- [ ] Every admin setter has min/max validation; zero-value behavior analyzed
+- [ ] Config affecting already-committed funds is snapshotted at commitment time
+- [ ] Sentinel values for "unset" (`0`) don't collide with valid values
+- [ ] Maximum single-block damage documented for every privileged role
+- [ ] Destructive privileged actions rate-limited; no-ops don't consume cooldown
+- [ ] Every array has bounded growth or a deletion strategy
+- [ ] Terminal states distinguishable from active states (use enum, not timestamps)
+- [ ] Upgradeable: new struct fields at END only, storage gap adjusted
+- [ ] Upgradeable: migration plan for existing data when structures change
+- [ ] Cross-contract: same vulnerability pattern checked across all sibling contracts
+- [ ] Two-pass audit completed: external audit → self-audit of fixes
+- [ ] Full checklist: [Smart Contract Auditing guide](./docs/SMART_CONTRACT_AUDIT.md#smart-contract-audit-checklist)
 
 ---
 

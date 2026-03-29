@@ -217,6 +217,17 @@ Using simulated expert committees to find architectural, economic, and systemic 
 
 **Read this to**: Discover the problems in your system that code review and bug hunts don't catch.
 
+### [Smart Contract Auditing](./SMART_CONTRACT_AUDIT.md)
+Lessons from a real multi-agent audit of 4 UUPS-upgradeable Solidity contracts. Covers:
+- Five vulnerability categories: pause-weaponized time, mutable config on committed funds, external calls in critical paths, privileged role abuse, state lifecycle gaps
+- What AI auditors get right and wrong — including bugs in their own fix suggestions
+- The two-pass audit workflow: external audit → self-audit of the fixes
+- Human-agent collaboration lessons for security-critical code
+- Comprehensive smart contract deployment checklist
+- Prompt templates for audits, fix implementation, and cross-contract consistency checks
+
+**Read this to**: Audit AI-generated smart contracts and run effective multi-agent security reviews.
+
 ---
 
 ## Templates
