@@ -127,6 +127,17 @@ Use this as a lightweight guardrail when building with LLMs. Print it, pin it, r
 
 ---
 
+## Multi-Agent Git Safety
+
+- [ ] Each agent's work committed from its own tab before switching tasks
+- [ ] `git status` run before every commit to find ALL untracked/modified files (not just the agent's own)
+- [ ] Parallel agents use separate branches or git worktrees, not tabs-on-main
+- [ ] No `git pull` or `git checkout` with uncommitted work from other agents — stash first
+- [ ] `git status` run after every push to verify nothing was left behind
+- [ ] CLAUDE.md includes multi-agent git safety rules ([guide](./docs/VERSION_CONTROL.md#multi-agent-git-safety))
+
+---
+
 ## Smart Contracts (Solidity)
 
 - [ ] Every `whenNotPaused` function justified — defensive actions (challenge, renew, withdraw) exempt from pause

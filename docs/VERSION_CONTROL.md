@@ -256,6 +256,158 @@ git push
 
 ---
 
+## Multi-Agent Git Safety
+
+### The Problem: Parallel Agents, Shared Working Directory
+
+When you run multiple Claude Code tabs (or any coding agents) against the same repository, each agent can create, modify, and delete files — but none of them know what the others are doing. This creates a predictable and devastating failure mode:
+
+```
+Tab 1: Creates 9 mock data files in src/lib/mock/data/
+Tab 2: Creates components that import those mock data files
+Tab 3: You ask it to "commit and push to main"
+Tab 3: Runs git add on the files it knows about → misses Tab 1's files
+Tab 3: Commits and pushes
+You: Pull from main on another machine → mock data files don't exist
+The components from Tab 2 are broken. Tab 1's work is gone.
+```
+
+This is **not** a git problem. Git is working correctly. The problem is that the committing agent doesn't know about files created by other agents because it has no record of them in its conversation context.
+
+### Why This Happens
+
+1. **Agents track their own changes, not the working directory.** When you tell an agent to "commit and push," it commits what *it* knows about — the files it created or modified. It doesn't run `git status` to discover files from other sessions (or if it does, it may not recognize them as important).
+
+2. **`git add <specific files>` is the safe default for single-agent work** — it prevents accidentally staging secrets, build artifacts, or scratch files. But with multiple agents, it becomes the mechanism for losing work.
+
+3. **No agent has the full picture.** Each tab's context window contains only its own conversation. Tab 3 has no idea that Tab 1 created mock data files, so it has no reason to stage them.
+
+### The Rules
+
+#### Rule 1: Never ask one agent to commit another agent's work
+
+The committing agent doesn't know what the other agents created, why, or whether it's ready. Instead:
+
+```bash
+# ❌ In Tab 3: "commit and push everything to main"
+# Tab 3 will miss files it doesn't know about
+
+# ✅ Stop all agents. Open a fresh terminal. Commit manually.
+git status                    # See EVERYTHING in the working directory
+git diff                      # Review all changes
+git add -A                    # Stage everything (after reviewing)
+git commit -m "..."
+git push
+```
+
+If you're going to use an agent to commit, give it explicit instructions to discover all changes:
+
+```
+Before committing, run git status to find ALL untracked and modified files
+in the entire repository — not just files you created. List every file
+and confirm with me before staging.
+```
+
+#### Rule 2: Commit each agent's work from its own tab before moving on
+
+When an agent finishes a unit of work, commit it immediately from that tab — while the agent still has full context of what it created.
+
+```
+Tab 1 finishes mock data → commit from Tab 1
+Tab 2 finishes components → commit from Tab 2
+Tab 3 finishes integration → commit from Tab 3
+```
+
+Each agent knows exactly what it created, so each commit is complete.
+
+#### Rule 3: Use branches, not tabs-on-main
+
+If you have multiple agents working in parallel, each should be on its own branch:
+
+```bash
+Tab 1: git checkout -b feature/mock-data
+Tab 2: git checkout -b feature/dashboard-components
+Tab 3: git checkout -b feature/integration
+```
+
+Merge them together when all are complete. This eliminates the "one agent commits and wipes another's work" problem entirely — because each branch is isolated.
+
+**Important:** Git worktrees let multiple branches share the same repo without switching. This is the ideal setup for parallel agent work:
+
+```bash
+# Create worktrees for each agent
+git worktree add ../project-mock-data feature/mock-data
+git worktree add ../project-components feature/dashboard-components
+
+# Point each agent tab at its own worktree directory
+# Tab 1 works in ../project-mock-data/
+# Tab 2 works in ../project-components/
+```
+
+#### Rule 4: Run `git status` before AND after every push
+
+Before pushing, check for unstaged files that shouldn't be lost:
+
+```bash
+git status
+# Look for:
+# - Untracked files that should be committed
+# - Modified files not staged for commit
+# - Files in directories you didn't create yourself
+```
+
+After pushing, verify the remote has everything:
+
+```bash
+git log --stat HEAD~1..HEAD  # What was actually pushed?
+# Compare against what you expected to push
+```
+
+#### Rule 5: Never `git pull` or `git checkout` with uncommitted work
+
+This is the most common way multi-agent work gets destroyed. Agent A creates files. You switch to main or pull from remote. Uncommitted files in tracked directories may be overwritten.
+
+```bash
+# ❌ Pull with uncommitted changes from other agents
+git pull origin main  # May silently discard uncommitted work
+
+# ✅ Stash first, always
+git stash --include-untracked  # Saves everything, including new files
+git pull origin main
+git stash pop                  # Restore your work
+```
+
+### Recovery: When Work Is Already Lost
+
+If files were created but never committed, and you've since pulled or checked out:
+
+1. **Check `git stash list`** — you may have stashed them earlier
+2. **Check your editor's local history** — VS Code and JetBrains keep local file history independent of git
+3. **Check `/tmp` or OS-level recovery** — some systems keep recently deleted files
+4. **Ask the agent that created them to recreate** — if the agent's tab is still open, it has the conversation context and can regenerate the files. This is the most reliable recovery path.
+5. **Check `git reflog`** — if the files were ever committed (even in a commit that was later reset), they're recoverable
+
+### CLAUDE.md Rule for Multi-Agent Safety
+
+Add this to your project's CLAUDE.md to make agents aware of the risk:
+
+```markdown
+## Git Safety for Multi-Agent Sessions
+
+Before committing:
+1. Run `git status` to find ALL untracked and modified files, not just your own
+2. List any files you didn't create and flag them to the user
+3. Never run `git add .` or `git add -A` without first showing `git status` output
+4. If you see untracked files you don't recognize, ask before committing
+
+Before pulling or checking out:
+1. Run `git status` to check for uncommitted work
+2. If there are untracked or modified files, stash them first
+3. Never discard changes you didn't create
+```
+
+---
+
 ## Reviewing AI-Generated Diffs
 
 ### Use Visual Diff Tools
