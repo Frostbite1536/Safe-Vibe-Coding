@@ -332,17 +332,58 @@ Tab 3: git checkout -b feature/integration
 
 Merge them together when all are complete. This eliminates the "one agent commits and wipes another's work" problem entirely — because each branch is isolated.
 
-**Important:** Git worktrees let multiple branches share the same repo without switching. This is the ideal setup for parallel agent work:
+**The problem with branches alone:** If all agents share the same directory, `git checkout` in one tab changes the files every other tab is working on. You can't have Tab 1 on `feature/mock-data` and Tab 2 on `feature/dashboard-components` in the same folder.
+
+**Git worktrees solve this.** A worktree lets you check out a branch into a separate directory while sharing the same git history, commits, and remotes. Instead of one directory that switches between branches, you get multiple directories — each with its own branch and its own files:
+
+```
+~/my-project/                    ← main branch (original clone)
+~/my-project-mock-data/          ← feature/mock-data branch
+~/my-project-components/         ← feature/dashboard-components branch
+```
+
+All three directories share the same `.git` history. A commit made in any worktree is visible from all others. But the working files are completely isolated — agents in different worktrees can't step on each other.
+
+**Setting up worktrees for parallel agents:**
 
 ```bash
-# Create worktrees for each agent
-git worktree add ../project-mock-data feature/mock-data
-git worktree add ../project-components feature/dashboard-components
+# From your repo root
+cd ~/my-project
 
-# Point each agent tab at its own worktree directory
-# Tab 1 works in ../project-mock-data/
-# Tab 2 works in ../project-components/
+# Create a worktree + new branch in one command (-b creates the branch)
+git worktree add -b feature/mock-data ../my-project-mock-data
+git worktree add -b feature/dashboard-components ../my-project-components
+
+# Now point each agent tab at its own directory:
+# Tab 1 → ~/my-project-mock-data/
+# Tab 2 → ~/my-project-components/
+# Tab 3 → ~/my-project/ (main)
+
+# Each agent commits and pushes its branch independently. No conflicts.
 ```
+
+**When all agents are done, merge the branches:**
+
+```bash
+cd ~/my-project
+git merge feature/mock-data
+git merge feature/dashboard-components
+```
+
+**Clean up when finished:**
+
+```bash
+git worktree remove ../my-project-mock-data
+git worktree remove ../my-project-components
+# See all active worktrees:
+git worktree list
+```
+
+**Key things to know about worktrees:**
+- Each branch can only be checked out in **one** worktree at a time (git enforces this)
+- Worktrees are lightweight — they share git history, they don't duplicate it
+- `git worktree list` shows all your active worktrees
+- If you forget to clean up, `git worktree prune` removes stale entries
 
 #### Rule 4: Run `git status` before AND after every push
 
