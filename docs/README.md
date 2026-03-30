@@ -228,6 +228,17 @@ Lessons from a real multi-agent audit of 4 UUPS-upgradeable Solidity contracts. 
 
 **Read this to**: Audit AI-generated smart contracts and run effective multi-agent security reviews.
 
+### [Auditing at Scale](./EXTERNAL_AUDIT_TOOLS.md)
+When your AI-generated codebase outgrows a single agent's context window. Covers:
+- Why agent self-review breaks down at scale (contextual drift, context window limits)
+- Four tool categories: repository-wide reasoning, security scanning (SAST), noise reduction/triage, code quality
+- Decision framework for choosing tools based on your primary concern
+- Building a layered audit stack (continuous, periodic, milestone)
+- Integration patterns: feeding tool output back into AI agent workflows
+- Step-by-step first audit setup (security scan, quality baseline, architecture review)
+
+**Read this to**: Choose and set up external auditing tools when your codebase is too large for AI agents to review alone.
+
 ---
 
 ## Templates
