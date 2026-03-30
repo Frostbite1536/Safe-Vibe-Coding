@@ -64,6 +64,16 @@ Use this as a lightweight guardrail when building with LLMs. Print it, pin it, r
 - [ ] Multi-source data has compatible units/semantics before aggregation
 - [ ] After fixing a bug, search entire codebase for the same pattern class
 
+## Auditing at Scale (Large Codebases)
+
+- [ ] SAST scanner running in CI/CD on every PR (Snyk, Semgrep, CodeQL, or similar)
+- [ ] Code quality gate in CI (SonarQube/SonarCloud or similar)
+- [ ] Dependency vulnerability scanning enabled
+- [ ] Security findings triaged for reachability (real vs. false positive)
+- [ ] Repository-wide architecture review run before major releases
+- [ ] External tool findings fed back to agents as focused investigation tasks
+- [ ] Full guide: [Auditing at Scale](./docs/EXTERNAL_AUDIT_TOOLS.md)
+
 ## Validation & Stability
 
 - [ ] Run bug hunts frequently ([prompt](./prompts/bug-hunt.md))

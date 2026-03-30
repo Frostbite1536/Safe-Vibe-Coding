@@ -59,6 +59,7 @@ Covers terminal setup, running multiple Claudes, Plan mode, CLAUDE.md, slash com
 | [Dependency Safety]({{ site.baseurl }}/dependency-safety) | Evaluating and managing AI-suggested packages |
 | [Refactoring with AI]({{ site.baseurl }}/refactoring-with-ai) | Changing code safely with AI assistance |
 | [Smart Contract Auditing]({{ site.baseurl }}/docs/SMART_CONTRACT_AUDIT) | Multi-agent audit workflow for Solidity contracts |
+| [Auditing at Scale]({{ site.baseurl }}/docs/EXTERNAL_AUDIT_TOOLS) | External tools for large AI-generated codebases |
 
 ---
 
