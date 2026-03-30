@@ -63,7 +63,7 @@ These tools index your entire codebase, build a code graph, and follow data flow
 **When you need this:** When your main concern is logic bugs, architectural inconsistencies, or the "hidden" bugs that occur when AI agents make assumptions about shared utilities.
 
 **Example tools (as of early 2026):**
-- **Greptile** — Indexes your full codebase and builds a code graph. Uses multi-hop investigation to follow data flows across the project. Particularly good at finding the architectural drift that accumulates across many AI sessions.
+- **[Greptile](https://www.greptile.com)** — Indexes your full codebase and builds a code graph. Uses multi-hop investigation to follow data flows across the project. Particularly good at finding the architectural drift that accumulates across many AI sessions.
 
 ### Category 2: Security Scanning (SAST/DAST)
 
@@ -81,10 +81,10 @@ Static Application Security Testing (SAST) tools analyze source code for vulnera
 **When you need this:** Always, for any project heading to production. This is the non-negotiable category. The [Automation & Testing guide](./AUTOMATION_TESTING) covers integrating these into CI/CD.
 
 **Example tools (as of early 2026):**
-- **Snyk (DeepCode AI)** — Developer-friendly, provides auto-fix PRs. Scans patterns across millions of open-source projects. Good first choice for teams that want actionable results fast.
-- **Checkmarx One** — Enterprise-grade. Explains attack paths showing exactly how a vulnerability can be exploited. More thorough but heavier setup.
-- **Semgrep** — Open-source option. Write custom rules for patterns specific to your codebase. Lightweight and CI/CD-friendly.
-- **CodeQL** — GitHub's analysis engine. Free for public repos. Good for custom query-based vulnerability detection.
+- **[Snyk](https://snyk.io)** (DeepCode AI) — Developer-friendly, provides auto-fix PRs. Scans patterns across millions of open-source projects. Good first choice for teams that want actionable results fast.
+- **[Checkmarx One](https://checkmarx.com)** — Enterprise-grade. Explains attack paths showing exactly how a vulnerability can be exploited. More thorough but heavier setup.
+- **[Semgrep](https://semgrep.dev)** — Open-source option. Write custom rules for patterns specific to your codebase. Lightweight and CI/CD-friendly.
+- **[CodeQL](https://codeql.github.com)** — GitHub's analysis engine. Free for public repos. Good for custom query-based vulnerability detection.
 
 ### Category 3: Noise Reduction & Triage (Reachability Analysis)
 
@@ -101,7 +101,7 @@ Large codebases generate enormous numbers of findings from security scanners. Mo
 **When you need this:** When your security scanner produces more findings than you can reasonably review — typically after the first full scan of a large AI-generated codebase.
 
 **Example tools (as of early 2026):**
-- **Aikido Security** — Auto-triages findings by reachability. Good for solo developers or small teams who need security monitoring without a dedicated security engineer.
+- **[Aikido Security](https://www.aikido.dev)** — Auto-triages findings by reachability. Good for solo developers or small teams who need security monitoring without a dedicated security engineer.
 
 ### Category 4: Code Quality & Maintainability
 
@@ -119,8 +119,8 @@ AI agents generate code that passes tests but often creates technical debt: dupl
 **When you need this:** When the codebase has grown large enough that you can't manually verify consistency, or when onboarding new team members who need to navigate AI-generated code.
 
 **Example tools (as of early 2026):**
-- **SonarQube/SonarCloud** — The established standard for code quality metrics. Higher setup effort (self-hosted option) but comprehensive analysis.
-- **Bito** — AI-powered line-by-line review focused on performance bottlenecks and code smells. Good at suggesting refactors for AI-generated spaghetti code.
+- **[SonarQube](https://www.sonarsource.com/products/sonarqube/) / [SonarCloud](https://www.sonarsource.com/products/sonarcloud/)** — The established standard for code quality metrics. Higher setup effort (self-hosted option) but comprehensive analysis.
+- **[Bito](https://bito.ai)** — AI-powered line-by-line review focused on performance bottlenecks and code smells. Good at suggesting refactors for AI-generated spaghetti code.
 
 ---
 
