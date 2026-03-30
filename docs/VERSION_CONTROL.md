@@ -256,6 +256,203 @@ git push
 
 ---
 
+## Multi-Agent Git Safety
+
+### The Problem: Parallel Agents, Shared Working Directory
+
+When you run multiple Claude Code tabs (or any coding agents) against the same repository, each agent can create, modify, and delete files — but none of them know what the others are doing. This creates a predictable and devastating failure mode:
+
+```
+Tab 1: Creates 9 mock data files in src/lib/mock/data/
+Tab 2: Creates components that import those mock data files
+Tab 3: You ask it to "commit and push to main"
+Tab 3: Runs git add on the files it knows about → misses Tab 1's files
+Tab 3: Commits and pushes
+You: Pull from main on another machine → mock data files don't exist
+The components from Tab 2 are broken. Tab 1's work is gone.
+```
+
+**The insidious variant:** Often the *index file* gets committed but the *data files it imports* don't. The commit looks correct — all the import paths are there, the routing logic references every module, the types are consistent. Nothing looks wrong in the diff. But the actual files behind those imports were never staged. You don't discover the problem until someone clones or pulls and the build fails with missing module errors. By then, the original agent tab that created the files may be closed, and the files only exist on the original developer's local machine.
+
+This is **not** a git problem. Git is working correctly. The problem is that the committing agent doesn't know about files created by other agents because it has no record of them in its conversation context.
+
+### Why This Happens
+
+1. **Agents track their own changes, not the working directory.** When you tell an agent to "commit and push," it commits what *it* knows about — the files it created or modified. It doesn't run `git status` to discover files from other sessions (or if it does, it may not recognize them as important).
+
+2. **`git add <specific files>` is the safe default for single-agent work** — it prevents accidentally staging secrets, build artifacts, or scratch files. But with multiple agents, it becomes the mechanism for losing work.
+
+3. **No agent has the full picture.** Each tab's context window contains only its own conversation. Tab 3 has no idea that Tab 1 created mock data files, so it has no reason to stage them.
+
+4. **`.gitignore` patterns match at any depth.** A `data/` entry in `.gitignore` doesn't just ignore the top-level `data/` directory — it ignores `src/lib/mock/data/` too. An agent creates the files, they exist locally, `git status` doesn't show them, and nobody notices because the agent that created them doesn't check. Even if you run `git add -A`, gitignored files are silently skipped. This is particularly dangerous with common directory names like `data/`, `dist/`, `build/`, or `logs/` that might appear as legitimate subdirectories deep in your source tree. The fix is to use path-anchored patterns (`/data/` only matches at the repo root) or add negation rules (`!src/**/data/`) for directories that should be tracked.
+
+### The Rules
+
+#### Rule 1: Never ask one agent to commit another agent's work
+
+The committing agent doesn't know what the other agents created, why, or whether it's ready. Instead:
+
+```bash
+# ❌ In Tab 3: "commit and push everything to main"
+# Tab 3 will miss files it doesn't know about
+
+# ✅ Stop all agents. Open a fresh terminal. Commit manually.
+git status                    # See EVERYTHING in the working directory
+git diff                      # Review all changes
+git add -A                    # Stage everything (after reviewing)
+git commit -m "..."
+git push
+```
+
+If you're going to use an agent to commit, give it explicit instructions to discover all changes:
+
+```
+Before committing, run git status to find ALL untracked and modified files
+in the entire repository — not just files you created. List every file
+and confirm with me before staging.
+```
+
+#### Rule 2: Commit each agent's work from its own tab before moving on
+
+When an agent finishes a unit of work, commit it immediately from that tab — while the agent still has full context of what it created.
+
+```
+Tab 1 finishes mock data → commit from Tab 1
+Tab 2 finishes components → commit from Tab 2
+Tab 3 finishes integration → commit from Tab 3
+```
+
+Each agent knows exactly what it created, so each commit is complete.
+
+#### Rule 3: Use branches, not tabs-on-main
+
+If you have multiple agents working in parallel, each should be on its own branch:
+
+```bash
+Tab 1: git checkout -b feature/mock-data
+Tab 2: git checkout -b feature/dashboard-components
+Tab 3: git checkout -b feature/integration
+```
+
+Merge them together when all are complete. This eliminates the "one agent commits and wipes another's work" problem entirely — because each branch is isolated.
+
+**The problem with branches alone:** If all agents share the same directory, `git checkout` in one tab changes the files every other tab is working on. You can't have Tab 1 on `feature/mock-data` and Tab 2 on `feature/dashboard-components` in the same folder.
+
+**Git worktrees solve this.** A worktree lets you check out a branch into a separate directory while sharing the same git history, commits, and remotes. Instead of one directory that switches between branches, you get multiple directories — each with its own branch and its own files:
+
+```
+~/my-project/                    ← main branch (original clone)
+~/my-project-mock-data/          ← feature/mock-data branch
+~/my-project-components/         ← feature/dashboard-components branch
+```
+
+All three directories share the same `.git` history. A commit made in any worktree is visible from all others. But the working files are completely isolated — agents in different worktrees can't step on each other.
+
+**Setting up worktrees for parallel agents:**
+
+```bash
+# From your repo root
+cd ~/my-project
+
+# Create a worktree + new branch in one command (-b creates the branch)
+git worktree add -b feature/mock-data ../my-project-mock-data
+git worktree add -b feature/dashboard-components ../my-project-components
+
+# Now point each agent tab at its own directory:
+# Tab 1 → ~/my-project-mock-data/
+# Tab 2 → ~/my-project-components/
+# Tab 3 → ~/my-project/ (main)
+
+# Each agent commits and pushes its branch independently. No conflicts.
+```
+
+**When all agents are done, merge the branches:**
+
+```bash
+cd ~/my-project
+git merge feature/mock-data
+git merge feature/dashboard-components
+```
+
+**Clean up when finished:**
+
+```bash
+git worktree remove ../my-project-mock-data
+git worktree remove ../my-project-components
+# See all active worktrees:
+git worktree list
+```
+
+**Key things to know about worktrees:**
+- Each branch can only be checked out in **one** worktree at a time (git enforces this)
+- Worktrees are lightweight — they share git history, they don't duplicate it
+- `git worktree list` shows all your active worktrees
+- If you forget to clean up, `git worktree prune` removes stale entries
+
+#### Rule 4: Run `git status` before AND after every push
+
+Before pushing, check for unstaged files that shouldn't be lost:
+
+```bash
+git status
+# Look for:
+# - Untracked files that should be committed
+# - Modified files not staged for commit
+# - Files in directories you didn't create yourself
+```
+
+After pushing, verify the remote has everything:
+
+```bash
+git log --stat HEAD~1..HEAD  # What was actually pushed?
+# Compare against what you expected to push
+```
+
+#### Rule 5: Never `git pull` or `git checkout` with uncommitted work
+
+This is the most common way multi-agent work gets destroyed. Agent A creates files. You switch to main or pull from remote. Uncommitted files in tracked directories may be overwritten.
+
+```bash
+# ❌ Pull with uncommitted changes from other agents
+git pull origin main  # May silently discard uncommitted work
+
+# ✅ Stash first, always
+git stash --include-untracked  # Saves everything, including new files
+git pull origin main
+git stash pop                  # Restore your work
+```
+
+### Recovery: When Work Is Already Lost
+
+If files were created but never committed, and you've since pulled or checked out:
+
+1. **Check `git stash list`** — you may have stashed them earlier
+2. **Check your editor's local history** — VS Code and JetBrains keep local file history independent of git
+3. **Check `/tmp` or OS-level recovery** — some systems keep recently deleted files
+4. **Ask the agent that created them to recreate** — if the agent's tab is still open, it has the conversation context and can regenerate the files. This is the most reliable recovery path.
+5. **Check `git reflog`** — if the files were ever committed (even in a commit that was later reset), they're recoverable
+
+### CLAUDE.md Rule for Multi-Agent Safety
+
+Add this to your project's CLAUDE.md to make agents aware of the risk:
+
+```markdown
+## Git Safety for Multi-Agent Sessions
+
+Before committing:
+1. Run `git status` to find ALL untracked and modified files, not just your own
+2. List any files you didn't create and flag them to the user
+3. Never run `git add .` or `git add -A` without first showing `git status` output
+4. If you see untracked files you don't recognize, ask before committing
+
+Before pulling or checking out:
+1. Run `git status` to check for uncommitted work
+2. If there are untracked or modified files, stash them first
+3. Never discard changes you didn't create
+```
+
+---
+
 ## Reviewing AI-Generated Diffs
 
 ### Use Visual Diff Tools
@@ -424,8 +621,8 @@ venv/
 .venv/
 
 # Build outputs
-dist/
-build/
+/dist/
+/build/
 *.pyc
 __pycache__/
 
@@ -445,7 +642,7 @@ Thumbs.db
 
 # Logs
 *.log
-logs/
+/logs/
 
 # Test coverage
 coverage/
@@ -455,6 +652,43 @@ coverage/
 .ai_session_logs/  # If you keep logs
 scratch/  # Experimental AI work
 ```
+
+### The Depth-Matching Trap
+
+`.gitignore` patterns without a leading `/` match at **any depth** in the repo. This silently swallows files that AI agents create in nested directories:
+
+```gitignore
+# ❌ These match at ANY depth — data/ ignores src/lib/mock/data/ too
+data/
+build/
+dist/
+logs/
+
+# ✅ Anchor to repo root with a leading slash
+/data/
+/build/
+/dist/
+/logs/
+```
+
+If you need a common name like `data/` ignored at the root but tracked inside your source tree, use a negation rule:
+
+```gitignore
+data/               # Ignore data/ everywhere
+!src/**/data/       # But track data/ directories inside src/
+```
+
+**How to check if this is happening to you:**
+
+```bash
+# List all ignored files to see if anything unexpected is being hidden
+git status --ignored
+
+# Check if a specific file is being ignored and which rule is doing it
+git check-ignore -v src/lib/mock/data/bots.ts
+```
+
+When an agent creates files and they don't show up in `git status`, this is the first thing to check.
 
 ---
 
