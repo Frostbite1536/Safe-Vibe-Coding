@@ -272,6 +272,8 @@ You: Pull from main on another machine → mock data files don't exist
 The components from Tab 2 are broken. Tab 1's work is gone.
 ```
 
+**The insidious variant:** Often the *index file* gets committed but the *data files it imports* don't. The commit looks correct — all the import paths are there, the routing logic references every module, the types are consistent. Nothing looks wrong in the diff. But the actual files behind those imports were never staged. You don't discover the problem until someone clones or pulls and the build fails with missing module errors. By then, the original agent tab that created the files may be closed, and the files only exist on the original developer's local machine.
+
 This is **not** a git problem. Git is working correctly. The problem is that the committing agent doesn't know about files created by other agents because it has no record of them in its conversation context.
 
 ### Why This Happens
