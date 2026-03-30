@@ -284,6 +284,8 @@ This is **not** a git problem. Git is working correctly. The problem is that the
 
 3. **No agent has the full picture.** Each tab's context window contains only its own conversation. Tab 3 has no idea that Tab 1 created mock data files, so it has no reason to stage them.
 
+4. **`.gitignore` patterns match at any depth.** A `data/` entry in `.gitignore` doesn't just ignore the top-level `data/` directory — it ignores `src/lib/mock/data/` too. An agent creates the files, they exist locally, `git status` doesn't show them, and nobody notices because the agent that created them doesn't check. Even if you run `git add -A`, gitignored files are silently skipped. This is particularly dangerous with common directory names like `data/`, `dist/`, `build/`, or `logs/` that might appear as legitimate subdirectories deep in your source tree. The fix is to use path-anchored patterns (`/data/` only matches at the repo root) or add negation rules (`!src/**/data/`) for directories that should be tracked.
+
 ### The Rules
 
 #### Rule 1: Never ask one agent to commit another agent's work
@@ -619,8 +621,8 @@ venv/
 .venv/
 
 # Build outputs
-dist/
-build/
+/dist/
+/build/
 *.pyc
 __pycache__/
 
@@ -640,7 +642,7 @@ Thumbs.db
 
 # Logs
 *.log
-logs/
+/logs/
 
 # Test coverage
 coverage/
@@ -650,6 +652,43 @@ coverage/
 .ai_session_logs/  # If you keep logs
 scratch/  # Experimental AI work
 ```
+
+### The Depth-Matching Trap
+
+`.gitignore` patterns without a leading `/` match at **any depth** in the repo. This silently swallows files that AI agents create in nested directories:
+
+```gitignore
+# ❌ These match at ANY depth — data/ ignores src/lib/mock/data/ too
+data/
+build/
+dist/
+logs/
+
+# ✅ Anchor to repo root with a leading slash
+/data/
+/build/
+/dist/
+/logs/
+```
+
+If you need a common name like `data/` ignored at the root but tracked inside your source tree, use a negation rule:
+
+```gitignore
+data/               # Ignore data/ everywhere
+!src/**/data/       # But track data/ directories inside src/
+```
+
+**How to check if this is happening to you:**
+
+```bash
+# List all ignored files to see if anything unexpected is being hidden
+git status --ignored
+
+# Check if a specific file is being ignored and which rule is doing it
+git check-ignore -v src/lib/mock/data/bots.ts
+```
+
+When an agent creates files and they don't show up in `git status`, this is the first thing to check.
 
 ---
 
