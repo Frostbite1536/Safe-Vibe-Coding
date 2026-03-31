@@ -26,8 +26,10 @@ A comprehensive, beginner-friendly guide to setting up Claude Code for safe, eff
 10. [Permissions: Security Without Friction](#permissions-security-without-friction)
 11. [MCP Servers: Connecting Claude to Your Tools](#mcp-servers-connecting-claude-to-your-tools)
 12. [Model Selection](#model-selection)
-13. [Verification: The Secret to Quality](#verification-the-secret-to-quality)
-14. [Quick Reference Cheatsheet](#quick-reference-cheatsheet)
+13. [Cost Tracking and Token Management](#cost-tracking-and-token-management)
+14. [Context Compression and Memory](#context-compression-and-memory)
+15. [Verification: The Secret to Quality](#verification-the-secret-to-quality)
+16. [Quick Reference Cheatsheet](#quick-reference-cheatsheet)
 
 ---
 
@@ -653,6 +655,34 @@ Claude uses subagents automatically when appropriate, or you can invoke explicit
 > Have verify-app check that everything works
 ```
 
+### Advanced: Worktree Isolation
+
+Subagents can run in isolated git worktrees via the `isolation: worktree` option. This creates a temporary copy of your repository so the subagent's file changes do not affect your working directory.
+
+**Why use worktree isolation?**
+
+- **Risky refactors**: Let a subagent attempt a large refactor without touching your working tree. If it fails, nothing is lost.
+- **Experimental approaches**: Try a completely different implementation strategy in isolation.
+- **Parallel feature development**: Run multiple subagents on different features simultaneously without conflicts.
+
+**How it works**
+
+When a subagent runs with worktree isolation, Git creates a lightweight worktree (a separate checkout of the same repo). The subagent operates entirely within that worktree. When it finishes, the worktree path and branch name are returned so you can review the changes before merging them into your main working directory.
+
+**Example usage**
+
+```
+> Use a subagent with worktree isolation to refactor the authentication module
+  to use JWT tokens instead of session cookies. Don't apply the changes to my
+  working directory yet --- I want to review them first.
+```
+
+You can then inspect the subagent's branch, run tests against it, and merge when you are satisfied:
+
+```
+> Show me the diff from the auth-refactor worktree, then merge it if the tests pass.
+```
+
 ### Managing Subagents
 
 ```
@@ -850,6 +880,33 @@ Commit `.claude/settings.json` to share safe permissions with your team.
 | `Read(*)` | Read any file |
 | `Edit(src/**)` | Edit files in src/ |
 
+### How Permissions Work Under the Hood
+
+Understanding how permissions are resolved internally helps you configure them effectively:
+
+**Permission Resolution Modes**
+
+Claude Code uses four permission resolution modes internally:
+
+| Mode | Behavior | When Used |
+|------|----------|-----------|
+| `default` | Prompts the user for approval | Normal interactive usage |
+| `plan` | Restricted tool access | When Plan mode is active |
+| `auto` | Automatic resolution based on policy | When allowlisted commands match |
+| `bypassPermissions` | Auto-allows everything | When launched with `--dangerously-skip-permissions` |
+
+**Organization Policy Limits**
+
+If your organization uses Claude Code's enterprise features, a separate `policyLimits` service can restrict which tools are available to users. This means an admin can prevent certain tools from being used regardless of local settings. If a tool you expect is unavailable, check with your org admin.
+
+**Why Pre-Allowing Commands Matters for Speed**
+
+Every single tool invocation passes through a permission check gate before execution. When you pre-allow safe commands (like `npm test` or `git status`), Claude skips the interactive approval prompt and executes immediately. This is why configuring permissions upfront has such a large impact on workflow speed --- it removes the pause-and-approve cycle for commands you trust.
+
+**IDE Mode Permission Handling**
+
+When running inside an IDE (VS Code or JetBrains), permission prompts are not shown in the terminal. Instead, they are forwarded to the IDE via a bridge system that uses JWT authentication. The IDE displays the prompt in its own UI, and the response is sent back to Claude Code through the same authenticated channel. This is seamless, but worth knowing about if you ever see permission-related issues in IDE mode.
+
 ---
 
 ## MCP Servers: Connecting Claude to Your Tools
@@ -963,6 +1020,85 @@ model: opus  # Best quality for reviews
 
 ---
 
+## Cost Tracking and Token Management
+
+Understanding and managing costs helps you use Claude Code efficiently, especially on large projects.
+
+### Viewing Current Costs
+
+The `/cost` command shows accumulated token usage and costs for the current session:
+
+```
+/cost
+```
+
+This displays:
+- Input tokens used (context sent to the model)
+- Output tokens used (responses generated)
+- Estimated dollar cost for the session
+
+### How Cost Estimation Works
+
+Claude Code has a built-in token estimation service that predicts costs before execution. This runs in the background so you always have an up-to-date view of your spending. The estimate accounts for the model you are using (Opus costs more than Haiku, for example).
+
+### Tips for Reducing Costs
+
+| Tip | Why It Helps |
+|-----|-------------|
+| Use `/compact` regularly | Compresses conversation history, reducing input tokens on every subsequent turn |
+| Use Haiku for exploration subagents | Haiku is significantly cheaper and fast enough for searching, reading, and simple analysis |
+| Keep `CLAUDE.md` focused | This file is included in every single turn's context --- a bloated CLAUDE.md adds cost to every interaction |
+| Break large tasks into sessions | Starting fresh avoids paying for a long conversation history |
+| Use Plan mode first | Planning before coding avoids expensive trial-and-error loops |
+
+---
+
+## Context Compression and Memory
+
+As conversations grow longer, the context window fills up. Claude Code provides tools to manage this proactively.
+
+### Compressing Context with `/compact`
+
+The `/compact` command compresses your conversation history to reclaim context window space:
+
+```
+/compact
+```
+
+You can also provide a focus topic to guide what gets preserved:
+
+```
+/compact focus on the database migration work
+```
+
+**When to use it:**
+- When you notice Claude's responses becoming less focused or repeating itself
+- After completing a subtask, before starting a new one
+- Proactively when sessions get long --- do not wait for quality degradation
+- When you see warnings about context window limits
+
+### Persistent Memory
+
+Claude Code has an automatic memory extraction service that identifies key information from your conversations --- things like project preferences, architectural decisions, and debugging insights.
+
+**Viewing and managing memories:**
+
+```
+/memory
+```
+
+This lets you view and manage persistent memories stored in `~/.claude/memory/`. Memories persist across sessions, so Claude remembers project-specific knowledge you have taught it. For example, if you tell Claude "our API always returns snake_case keys," it can remember this for future sessions.
+
+**How memories help:**
+- Claude remembers your coding style preferences
+- Project-specific conventions carry over between sessions
+- Debugging context (e.g., "the Redis connection requires SSL in production") persists
+- You do not have to re-explain the same things every time you start a new session
+
+**Tip:** Memories complement `CLAUDE.md` --- use `CLAUDE.md` for team-wide project knowledge and memories for your personal preferences and discoveries.
+
+---
+
 ## Verification: The Secret to Quality
 
 **The single most important thing for getting great results: give Claude a way to verify its work.**
@@ -1057,6 +1193,18 @@ After implementing this UI change:
 | `/agents` | Manage subagents |
 | `/terminal-setup` | Configure terminal |
 | `Shift+Tab` (×2) | Toggle plan mode |
+
+### Essential Commands (Advanced)
+
+| Command | Purpose |
+|---------|---------|
+| `/cost` | View token usage and costs |
+| `/compact` | Compress context to reclaim space |
+| `/memory` | View and manage persistent memories |
+| `/diff` | View changes Claude has made |
+| `/doctor` | Diagnose Claude Code issues |
+| `/resume` | Resume a previous session |
+| `/share` | Share your session |
 
 ### Essential Files
 
