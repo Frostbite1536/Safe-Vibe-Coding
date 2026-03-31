@@ -311,6 +311,87 @@ This won't be as thorough as a dedicated tool, but it's a free starting point.
 
 ---
 
+## What to Expect: Triaging Your First Scan
+
+When you first run a static analysis tool on a large AI-generated codebase, the results will be overwhelming. A 124,000-line TypeScript + Solidity codebase produced **4,700 findings** on its first DeepSource scan. Here's what that actually looked like and how to make sense of it.
+
+### The Raw Numbers Will Scare You
+
+| Category | Count | Action |
+|:---------|:------|:-------|
+| Anti-pattern | 3,600 | Mostly noise — `any` types, non-null assertions, style preferences |
+| Bug Risk | 1,000 | Skim — most are `console.log` in browser code and `async` without `await` |
+| Performance | 95 | Quick look — unused imports are real dead code but harmless |
+| Secrets | 32 | **Check immediately** — turned out to be placeholder credentials in docs |
+| Security | 0 | Clean |
+
+Of 4,700 findings, exactly **2** were worth clicking into (an infinite loop and a syntax error). Both turned out to be false positives — the "infinite loop" was a standard graceful shutdown pattern (`while (running)` with signal handlers), and the "syntax error" was ESM `export default` in a `.js` config file that the parser didn't recognize.
+
+### The Triage Process
+
+**Step 1: Check Secrets first.** This is the only category where a finding could mean "credentials are exposed right now." In the real scan, all 32 were placeholder values like `changeme_in_production` in documentation files. But verify every one — it only takes a few minutes and a real exposed secret is catastrophic.
+
+**Step 2: Check Bug Risk for the rare real bugs.** Filter out the expected noise:
+- `console.log` in browser code — expected if you use `console.log` in development
+- `async` without `await` — common when methods are async for interface consistency
+- "Rules of hooks" in non-React files — false positives from hook-like patterns
+- Array index as key — low risk in dashboard rendering
+
+What's worth investigating: infinite loops, syntax errors, and anything with only 1 occurrence (rare findings are more likely to be real).
+
+**Step 3: Skim Performance.** Unused imports are real dead code but harmless. Don't clean them up in a dedicated pass — just remove them when you're already editing those files.
+
+**Step 4: Ignore Anti-patterns** unless they're Critical severity. The `any` type (418 occurrences), non-null assertions (1,000+), and style preferences are not bugs. They're technical debt you can address incrementally, not in a panic sweep.
+
+### The Critical Lesson: What Static Analysis Cannot Find
+
+After running the scan and finding nothing alarming, you might think: "124,000 lines of AI-generated code and no major issues?" Be skeptical. Static analysis is a **hygiene check**, not a security audit. Here's what these tools fundamentally cannot catch:
+
+**Business logic bugs:**
+- Does the scoring formula compute correctly with edge-case inputs?
+- Does the distribution math work when there are zero winners?
+- Do financial calculations handle rounding correctly at scale?
+
+**Integration bugs:**
+- Do off-chain and on-chain systems coordinate correctly?
+- Does the event indexer recover after missing blocks?
+- Do API contracts match between services that were generated in different sessions?
+
+**Race conditions under load:**
+- Two users staking the same resource simultaneously
+- Two workers processing the same job from the queue
+- Concurrent database writes to the same row
+
+**Economic exploits:**
+- Can someone game the reputation system through circular endorsements?
+- Can timing manipulation front-run scoring or resolution?
+- Are there arbitrage loops between subsystems?
+
+**What actually finds these bugs:**
+1. End-to-end test suite against a real database (not mocks)
+2. Fuzz testing on financial services — random inputs to staking, scoring, slashing
+3. Manual adversarial review of the highest-risk services (anything involving funds or state transitions)
+4. Load testing with concurrent users hitting the same resources
+5. Professional security audit for smart contracts before mainnet
+
+**The bottom line:** A clean static analysis scan means your codebase has good hygiene — no secrets, no obvious anti-patterns, no known vulnerability signatures. It does **not** mean your business logic is correct, your integrations are sound, or your system is secure under adversarial conditions. Static analysis is Layer 1. It's necessary but nowhere near sufficient.
+
+### Common False Positives in AI-Generated Code
+
+These findings appear on almost every AI-generated codebase and are almost always safe to ignore:
+
+| Finding | Why It Appears | Real Risk |
+|:--------|:---------------|:----------|
+| `any` type usage | AI uses `any` for Prisma results, middleware, test mocks | None (but makes TypeScript less useful) |
+| Non-null assertions (`!`) | AI uses `!` after queries where it "knows" data exists | Low (but hides potential null bugs) |
+| `async` without `await` | Methods are async for interface consistency | None |
+| "Infinite loop" in signal handlers | Tools don't understand `process.on` closures | None — standard shutdown pattern |
+| "Syntax error" in config files | Parser doesn't recognize ESM in `.js` files | None — bundler handles it |
+| Secrets in documentation | Example credentials in setup guides | None (but verify every single one) |
+| Unused imports | AI imports types speculatively or for planned features | None (dead code, clean up incrementally) |
+
+---
+
 ## Related Guides
 
 - [Audit Findings & Lessons](./AUDIT_FINDINGS) — Real findings from auditing AI-generated code
