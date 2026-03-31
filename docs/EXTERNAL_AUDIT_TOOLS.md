@@ -63,7 +63,8 @@ These tools index your entire codebase, build a code graph, and follow data flow
 **When you need this:** When your main concern is logic bugs, architectural inconsistencies, or the "hidden" bugs that occur when AI agents make assumptions about shared utilities.
 
 **Example tools (as of early 2026):**
-- **[Greptile](https://www.greptile.com)** — Indexes your full codebase and builds a code graph. Uses multi-hop investigation to follow data flows across the project. Particularly good at finding the architectural drift that accumulates across many AI sessions.
+- **[Greptile](https://www.greptile.com)** — Indexes your full codebase and builds a code graph. Uses multi-hop investigation to follow data flows across the project. Strongest for ongoing PR enforcement with codebase-aware rules; can also do one-shot reviews but is optimized for continuous use.
+- **[CodeRabbit](https://coderabbit.ai)** — Has a "full repository review" mode, not just PR diffs. Can be triggered to scan entire codebases in a single pass, making it better suited for one-shot audits.
 
 ### Category 2: Security Scanning (SAST/DAST)
 
@@ -83,8 +84,9 @@ Static Application Security Testing (SAST) tools analyze source code for vulnera
 **Example tools (as of early 2026):**
 - **[Snyk](https://snyk.io)** (DeepCode AI) — Developer-friendly, provides auto-fix PRs. Scans patterns across millions of open-source projects. Good first choice for teams that want actionable results fast.
 - **[Checkmarx One](https://checkmarx.com)** — Enterprise-grade. Explains attack paths showing exactly how a vulnerability can be exploited. More thorough but heavier setup.
-- **[Semgrep](https://semgrep.dev)** — Open-source option. Write custom rules for patterns specific to your codebase. Lightweight and CI/CD-friendly.
+- **[Semgrep](https://semgrep.dev)** — Open-source option. Write custom rules that match your project's specific invariants (e.g., "every `findMany` needs a `take` limit"). Particularly powerful for encoding project-specific rules beyond generic vulnerability patterns. Lightweight and CI/CD-friendly.
 - **[CodeQL](https://codeql.github.com)** — GitHub's analysis engine. Free for public repos. Good for custom query-based vulnerability detection.
+- **[DeepSource](https://deepsource.com)** — Full repo analysis with auto-fix suggestions. Good for TypeScript codebases. Lower setup friction than SonarQube.
 
 ### Category 3: Noise Reduction & Triage (Reachability Analysis)
 
@@ -122,6 +124,40 @@ AI agents generate code that passes tests but often creates technical debt: dupl
 - **[SonarQube](https://www.sonarsource.com/products/sonarqube/) / [SonarCloud](https://www.sonarsource.com/products/sonarcloud/)** — The established standard for code quality metrics. Higher setup effort (self-hosted option) but comprehensive analysis.
 - **[Bito](https://bito.ai)** — AI-powered line-by-line review focused on performance bottlenecks and code smells. Good at suggesting refactors for AI-generated spaghetti code.
 
+### Category 5: Smart Contract Security (Solidity-Specific)
+
+**The problem they solve:** "Are there reentrancy bugs, unchecked return values, or economic exploits in my Solidity contracts?"
+
+General-purpose SAST tools don't understand Solidity's unique attack surface — reentrancy, storage collisions, gas optimization exploits, proxy patterns, and economic invariant violations. Smart contracts need specialized analyzers that understand the EVM and DeFi-specific vulnerability patterns.
+
+**What to look for:**
+- Reentrancy detection (cross-function, cross-contract, read-only)
+- Storage layout analysis (especially for upgradeable proxy contracts)
+- Symbolic execution (explores all possible execution paths, not just pattern matching)
+- Economic invariant checking (can a user extract more value than deposited?)
+- Gas optimization analysis
+
+**When you need this:** Any time you're deploying smart contracts that handle value. These tools complement — but don't replace — the [Smart Contract Auditing](./SMART_CONTRACT_AUDIT) guide's manual checklist and two-pass workflow.
+
+**Automated analyzers (as of early 2026):**
+- **[Slither](https://github.com/crytic/slither)** — The standard first-pass Solidity static analyzer, built by Trail of Bits. Fast, catches common vulnerability patterns (reentrancy, uninitialized storage, unchecked calls). Run this on every commit.
+- **[Mythril](https://github.com/Consensys/mythril)** — Symbolic execution engine that finds deeper bugs than pattern matching alone. Slower but more thorough — explores actual execution paths to find exploitable states.
+- **[Aderyn](https://github.com/Cyfrin/aderyn)** — Rust-based Solidity analyzer that catches different issues than Slither. Fast execution, good as a complementary second scanner.
+
+**Professional audit firms (for pre-mainnet):**
+
+Automated tools catch ~60-70% of vulnerabilities (see the [Smart Contract Auditing](./SMART_CONTRACT_AUDIT#the-audit-of-the-audit-what-ai-auditors-get-wrong) stats). For contracts handling significant value, professional human auditors are essential before mainnet deployment:
+
+- **[Trail of Bits](https://www.trailofbits.com)** — Built Slither. Deep expertise in complex DeFi protocols and novel attack vectors.
+- **[OpenZeppelin](https://www.openzeppelin.com)** — Maintains the most widely used Solidity library. Audits benefit from deep familiarity with standard patterns.
+- **[Consensys Diligence](https://consensys.io/diligence)** — Built Mythril. Strong on formal verification and symbolic analysis.
+- **[Spearbit](https://spearbit.com)** — Distributed network of independent security researchers. Often catches issues that single-firm audits miss due to diverse reviewer perspectives.
+
+**Recommended smart contract audit stack:**
+1. **Every commit:** Slither + Aderyn in CI (fast, catches low-hanging fruit)
+2. **Before testnet:** Mythril symbolic execution (slower, finds deeper bugs)
+3. **Before mainnet:** Professional audit firm + the [two-pass agent audit workflow](./SMART_CONTRACT_AUDIT#the-two-pass-audit-workflow)
+
 ---
 
 ## Decision Framework
@@ -134,7 +170,20 @@ AI agents generate code that passes tests but often creates technical debt: dupl
 | "Are there security vulnerabilities?" | SAST scanner | Security |
 | "Too many security alerts, can't tell what's real" | Reachability analysis | Noise Reduction |
 | "The code works but it's a mess" | Code quality scanner | Maintainability |
+| "Smart contracts going to mainnet" | Slither + Mythril + professional firm | Smart Contract Security |
 | "All of the above" | SAST first, then repository-wide reasoning | Security + Logic |
+
+### One-Shot Audit vs. Continuous Enforcement
+
+An important distinction: some tools are designed for **ongoing PR enforcement** (run on every PR, flag regressions) while others are better for **one-shot full-repo audits** (scan the entire codebase in a single pass).
+
+| Mode | Best Tools | When to Use |
+|:-----|:-----------|:------------|
+| **One-shot full audit** | CodeRabbit (full repo mode), SonarQube, Snyk, Mythril | Before releases, after major milestones, initial codebase assessment |
+| **Continuous PR enforcement** | Greptile, Semgrep, CodeQL, Slither, Aderyn | Every PR, catches regressions, enforces project-specific rules |
+| **Both** | Snyk, SonarCloud, DeepSource | Can run in CI and do periodic full scans |
+
+If you're doing your first audit of a large AI-generated codebase, start with a one-shot tool. Then set up continuous enforcement to prevent new issues.
 
 ### Build Your Audit Stack
 
@@ -259,6 +308,87 @@ each major module to identify patterns.
 ```
 
 This won't be as thorough as a dedicated tool, but it's a free starting point.
+
+---
+
+## What to Expect: Triaging Your First Scan
+
+When you first run a static analysis tool on a large AI-generated codebase, the results will be overwhelming. A 124,000-line TypeScript + Solidity codebase produced **4,700 findings** on its first DeepSource scan. Here's what that actually looked like and how to make sense of it.
+
+### The Raw Numbers Will Scare You
+
+| Category | Count | Action |
+|:---------|:------|:-------|
+| Anti-pattern | 3,600 | Mostly noise — `any` types, non-null assertions, style preferences |
+| Bug Risk | 1,000 | Skim — most are `console.log` in browser code and `async` without `await` |
+| Performance | 95 | Quick look — unused imports are real dead code but harmless |
+| Secrets | 32 | **Check immediately** — turned out to be placeholder credentials in docs |
+| Security | 0 | Clean |
+
+Of 4,700 findings, exactly **2** were worth clicking into (an infinite loop and a syntax error). Both turned out to be false positives — the "infinite loop" was a standard graceful shutdown pattern (`while (running)` with signal handlers), and the "syntax error" was ESM `export default` in a `.js` config file that the parser didn't recognize.
+
+### The Triage Process
+
+**Step 1: Check Secrets first.** This is the only category where a finding could mean "credentials are exposed right now." In the real scan, all 32 were placeholder values like `changeme_in_production` in documentation files. But verify every one — it only takes a few minutes and a real exposed secret is catastrophic.
+
+**Step 2: Check Bug Risk for the rare real bugs.** Filter out the expected noise:
+- `console.log` in browser code — expected if you use `console.log` in development
+- `async` without `await` — common when methods are async for interface consistency
+- "Rules of hooks" in non-React files — false positives from hook-like patterns
+- Array index as key — low risk in dashboard rendering
+
+What's worth investigating: infinite loops, syntax errors, and anything with only 1 occurrence (rare findings are more likely to be real).
+
+**Step 3: Skim Performance.** Unused imports are real dead code but harmless. Don't clean them up in a dedicated pass — just remove them when you're already editing those files.
+
+**Step 4: Ignore Anti-patterns** unless they're Critical severity. The `any` type (418 occurrences), non-null assertions (1,000+), and style preferences are not bugs. They're technical debt you can address incrementally, not in a panic sweep.
+
+### The Critical Lesson: What Static Analysis Cannot Find
+
+After running the scan and finding nothing alarming, you might think: "124,000 lines of AI-generated code and no major issues?" Be skeptical. Static analysis is a **hygiene check**, not a security audit. Here's what these tools fundamentally cannot catch:
+
+**Business logic bugs:**
+- Does the scoring formula compute correctly with edge-case inputs?
+- Does the distribution math work when there are zero winners?
+- Do financial calculations handle rounding correctly at scale?
+
+**Integration bugs:**
+- Do off-chain and on-chain systems coordinate correctly?
+- Does the event indexer recover after missing blocks?
+- Do API contracts match between services that were generated in different sessions?
+
+**Race conditions under load:**
+- Two users staking the same resource simultaneously
+- Two workers processing the same job from the queue
+- Concurrent database writes to the same row
+
+**Economic exploits:**
+- Can someone game the reputation system through circular endorsements?
+- Can timing manipulation front-run scoring or resolution?
+- Are there arbitrage loops between subsystems?
+
+**What actually finds these bugs:**
+1. End-to-end test suite against a real database (not mocks)
+2. Fuzz testing on financial services — random inputs to staking, scoring, slashing
+3. Manual adversarial review of the highest-risk services (anything involving funds or state transitions)
+4. Load testing with concurrent users hitting the same resources
+5. Professional security audit for smart contracts before mainnet
+
+**The bottom line:** A clean static analysis scan means your codebase has good hygiene — no secrets, no obvious anti-patterns, no known vulnerability signatures. It does **not** mean your business logic is correct, your integrations are sound, or your system is secure under adversarial conditions. Static analysis is Layer 1. It's necessary but nowhere near sufficient.
+
+### Common False Positives in AI-Generated Code
+
+These findings appear on almost every AI-generated codebase and are almost always safe to ignore:
+
+| Finding | Why It Appears | Real Risk |
+|:--------|:---------------|:----------|
+| `any` type usage | AI uses `any` for Prisma results, middleware, test mocks | None (but makes TypeScript less useful) |
+| Non-null assertions (`!`) | AI uses `!` after queries where it "knows" data exists | Low (but hides potential null bugs) |
+| `async` without `await` | Methods are async for interface consistency | None |
+| "Infinite loop" in signal handlers | Tools don't understand `process.on` closures | None — standard shutdown pattern |
+| "Syntax error" in config files | Parser doesn't recognize ESM in `.js` files | None — bundler handles it |
+| Secrets in documentation | Example credentials in setup guides | None (but verify every single one) |
+| Unused imports | AI imports types speculatively or for planned features | None (dead code, clean up incrementally) |
 
 ---
 
