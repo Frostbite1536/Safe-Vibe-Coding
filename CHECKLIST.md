@@ -168,6 +168,21 @@ Use this as a lightweight guardrail when building with LLMs. Print it, pin it, r
 
 ---
 
+## Claude Code Session Management
+
+- [ ] `/compact` used proactively when sessions exceed 30+ exchanges
+- [ ] `/cost` checked periodically to monitor token usage
+- [ ] `/memory` reviewed to verify persistent memories are accurate
+- [ ] CLAUDE.md kept focused — it's included in every turn's context budget
+- [ ] Subagents used for deep exploration to protect main context window
+- [ ] Worktree isolation used for risky or parallel agent operations
+- [ ] Stop hooks configured for automated verification on task completion
+- [ ] PostToolUse hooks configured for auto-formatting on Write/Edit
+- [ ] Permission allow-lists configured for safe commands (test, lint, build)
+- [ ] Full guide: [Claude Code Architecture Deep Dive](./docs/CLAUDE_CODE_ADVANCED.md)
+
+---
+
 ## After Each Major Change
 
 Generate a checkpoint summary:

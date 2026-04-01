@@ -392,6 +392,72 @@ Six issues were found during audit that should have been caught before the first
 
 ---
 
+## How Claude Code Solves This Internally
+
+Claude Code itself faces the exact same scaling problem this guide addresses. With ~40 built-in tools plus an unlimited number of MCP tools from external servers, exposing every tool schema on every turn would be prohibitively expensive. Here's how Claude Code handles it — and what you can learn from it.
+
+### Deferred Tool Loading (ToolSearch)
+
+Not all tools are loaded at conversation start. Claude Code uses a **deferred loading** pattern where some tools are registered by name only — no parameter schema, no description. When the agent needs a deferred tool, it calls `ToolSearch` to fetch the full schema on demand.
+
+This is the same principle as tool grouping, but applied at the individual tool level:
+
+| Approach | Granularity | Best For |
+|----------|------------|----------|
+| Tool grouping (this guide) | Groups of tools | MCP servers with domain clusters |
+| Deferred loading (ToolSearch) | Individual tools | Large tool sets with infrequent tools |
+| Both combined | Grouped + deferred | Maximum token efficiency |
+
+**Practical takeaway for MCP developers**: If your server has 10 tools that are used 90% of the time and 30 that are used rarely, consider making the 30 deferrable. The MCP SDK doesn't natively support deferred loading, but you can approximate it:
+
+1. Register rare tools with minimal descriptions (save tokens)
+2. Provide a `get_tool_help` meta-tool that returns detailed usage for a specific tool
+3. The agent calls `get_tool_help` only when it needs the rare tool
+
+### Zod v4 Schema Validation
+
+Claude Code validates every tool input with **Zod v4** schemas before execution. This is worth noting because:
+
+- **Malformed inputs are caught before execution.** The agent gets a validation error and can retry with correct parameters — this prevents silent failures.
+- **Schemas serve as documentation.** Well-written Zod schemas with `.describe()` on each field give the agent enough information to construct correct calls.
+- **Type coercion is explicit.** No implicit string-to-number conversion — if the schema says `z.number()`, the agent must send a number.
+
+If you're building MCP tools, use the strictest possible schemas. This isn't about restrictiveness — it's about giving the agent clear boundaries for self-correction:
+
+```typescript
+// Bad: loose schema, agent guesses
+{
+  query: z.string(),
+  limit: z.any().optional(),
+}
+
+// Good: strict schema with descriptions, agent knows exactly what to send
+{
+  query: z.string()
+    .min(1)
+    .describe('Search query. Supports regex syntax.'),
+  limit: z.number()
+    .int()
+    .min(1)
+    .max(100)
+    .default(20)
+    .describe('Maximum results to return. Default 20.'),
+}
+```
+
+### The Permission Gate Pattern
+
+Every tool invocation in Claude Code passes through a permission check *before* execution. This is a useful pattern for MCP servers that access sensitive resources:
+
+1. **Check permissions** — Does this session/user have access to this tool?
+2. **Validate input** — Does the input match the schema?
+3. **Execute** — Run the tool logic
+4. **Return result** — Send the result back to the agent
+
+If your MCP server interacts with databases, APIs, or file systems, consider adding a permission layer. The tool can check session context, validate scopes, or enforce rate limits before executing — protecting against both malicious prompts and honest agent mistakes.
+
+---
+
 ## Related Guides
 
 - **[Building MCP Servers](./MCP_DEVELOPMENT.md)** — Foundational guide covering tool descriptions, input validation, error handling, and the 15 most common MCP bug patterns. Start here if you're new to MCP development.

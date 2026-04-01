@@ -314,6 +314,106 @@ Add an AI-specific section to your team retrospectives:
 
 ---
 
+## Multi-Agent Team Patterns
+
+Claude Code's architecture includes built-in support for multi-agent team coordination. Understanding these capabilities opens up workflow patterns that go beyond "one developer, one Claude session."
+
+### Agent Coordination Architecture
+
+```mermaid
+graph TD
+    Lead[Lead Agent<br/>Orchestrates work] -->|Creates| Team[Team of Agents]
+    Team --> A1[Agent 1<br/>Auth Module]
+    Team --> A2[Agent 2<br/>Payment Module]
+    Team --> A3[Agent 3<br/>Testing]
+
+    A1 -->|SendMessage| A2
+    A2 -->|SendMessage| A1
+    A1 -->|Results| Lead
+    A2 -->|Results| Lead
+    A3 -->|Results| Lead
+
+    Sync[teamMemorySync] -.->|Shares learnings| A1
+    Sync -.->|Shares learnings| A2
+    Sync -.->|Shares learnings| A3
+
+    style Lead fill:#e1f5fe,stroke:#01579b
+    style Sync fill:#fff9c4,stroke:#fbc02d
+```
+
+Claude Code's coordinator system supports:
+
+- **TeamCreate/TeamDelete**: Spawn a team of agents for parallel work on a large task
+- **SendMessage**: Agents can communicate with each other during execution, sharing discoveries and coordinating changes
+- **teamMemorySync**: Automatically synchronizes learned knowledge (conventions, patterns, discoveries) across team agents
+
+### Worktree Isolation for Safe Parallel Work
+
+When multiple agents work on the same repository simultaneously, they can step on each other's changes. Claude Code solves this with **git worktree isolation**:
+
+```
+Main working directory: /project (Agent 1 works here)
+Worktree 1:            /tmp/project-worktree-abc (Agent 2)
+Worktree 2:            /tmp/project-worktree-def (Agent 3)
+```
+
+Each worktree is a complete, independent copy of the repository at the branch level. Agents can make changes, run tests, and even commit without affecting each other.
+
+**When to use worktree isolation:**
+- Parallel feature implementation across modules
+- Exploratory refactoring that might be discarded
+- Running destructive tests (dropping test databases, etc.)
+- Any task where you want to review changes before they touch the main working directory
+
+**Example workflow for a team lead:**
+```
+> I need to implement auth, payments, and notifications in parallel.
+> Spawn three agents in isolated worktrees:
+> - Agent 1: Implement OAuth login in src/auth/
+> - Agent 2: Implement Stripe integration in src/payments/
+> - Agent 3: Implement email notifications in src/notifications/
+> Each should write tests and commit when done.
+> I'll review and merge the worktree branches afterward.
+```
+
+### Team Memory: Shared Learning Across Agents
+
+The `teamMemorySync` service is Claude Code's mechanism for preventing the "invisible assumptions" problem at the agent level. When Agent 1 discovers that your project uses a specific error handling pattern, that knowledge is shared with Agent 2 and Agent 3 — preventing the convention divergence that plagues multi-developer teams.
+
+This maps directly to the team problem described at the start of this guide: **divergent conventions happen when agents (or developers) don't share context.** The fix is the same whether the agents are human or AI: establish shared knowledge and keep it synchronized.
+
+For human teams, this reinforces why **shared CLAUDE.md is critical**. When multiple developers run separate Claude sessions, CLAUDE.md is the only mechanism that keeps conventions synchronized — it's the human equivalent of `teamMemorySync`.
+
+### Practical Multi-Agent Workflows for Teams
+
+**Pattern 1: Divide and Verify**
+```
+Developer runs three Claude sessions:
+  Tab 1: Implement feature (general-purpose agent)
+  Tab 2: Write tests for the feature (separate context)
+  Tab 3: Review and verify (Explore agent reads both)
+```
+
+**Pattern 2: Parallel Module Development**
+```
+Two developers working on adjacent modules:
+  Dev A: Spawns agent in worktree for auth module
+  Dev B: Spawns agent in worktree for payments module
+  Both reference shared interface definitions
+  Merge worktrees after independent verification
+```
+
+**Pattern 3: Agent-Assisted Code Review**
+```
+PR submitted → Lead agent spawns:
+  Explore agent: Check for CLAUDE.md convention violations
+  General agent: Run tests and verify behavior
+  Plan agent: Assess architectural impact
+  Lead agent: Synthesize findings into review comments
+```
+
+---
+
 ## Anti-Patterns in Team AI Development
 
 ### "The AI Wrote It, Not Me"

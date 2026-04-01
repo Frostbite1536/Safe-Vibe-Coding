@@ -30,6 +30,19 @@ Comprehensive beginner-friendly guide to setting up Claude Code. Covers:
 
 **Read this to**: Get the most out of Claude Code from day one.
 
+### [Claude Code Architecture Deep Dive](./CLAUDE_CODE_ADVANCED.md) (New!)
+Understanding Claude Code's internals to write better prompts, hooks, and configurations. Covers:
+- How the QueryEngine processes requests (streaming, tool-call chaining, thinking mode)
+- The tool system: ~40 built-in tools with Zod-validated schemas and permission models
+- Deferred tool loading (ToolSearch) and why it matters for MCP developers
+- Multi-agent coordination: TeamCreate, SendMessage, teamMemorySync, worktree isolation
+- Context compression, memory extraction, and persistent memory across sessions
+- The hook lifecycle (PreToolUse, PostToolUse, Stop) and advanced patterns
+- IDE bridge architecture (VS Code, JetBrains) with JWT auth
+- Performance optimization: parallel prefetch, lazy loading, feature flags
+
+**Read this to**: Understand how Claude Code works under the hood so you can configure it more effectively.
+
 ### [Context Management](./CONTEXT_MANAGEMENT.md)
 How to maintain coherent context across LLM sessions. Covers:
 - Starting new sessions with proper warm-up

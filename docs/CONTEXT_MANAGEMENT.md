@@ -192,6 +192,48 @@ pie title LLM Context Budgeting
     "Response Buffer" : 20
 ```
 
+### Claude Code's Built-in Context Tools
+
+Claude Code provides built-in tools for managing context that align with the strategies above:
+
+**`/compact` — Context Compression**
+
+The `/compact` command triggers Claude Code's internal compression service, which summarizes conversation history while preserving key decisions, code changes, and context. Use it when:
+
+- You notice response quality degrading
+- The conversation has gone on for 30+ exchanges
+- You're about to switch to a different part of the codebase
+- Claude starts "forgetting" earlier decisions
+
+```
+> /compact
+Claude compresses the conversation, preserving key context while reclaiming token space.
+```
+
+**Pro tip**: You can provide a focus hint: `/compact focus on the auth module changes` to guide what gets preserved during compression.
+
+**`/memory` — Persistent Memory Across Sessions**
+
+Claude Code automatically extracts important information from your conversations and stores it in `~/.claude/memory/`. This means Claude remembers project-specific knowledge across sessions without you re-explaining it.
+
+View and manage memories:
+```
+> /memory
+Shows all stored memories for the current project and globally.
+```
+
+Memories bridge the gap between sessions. Instead of starting from zero, Claude loads relevant memories from previous work — reducing the warm-up template needed.
+
+**How memories interact with CLAUDE.md**: CLAUDE.md provides *explicit, structured* project knowledge. Memories provide *learned, organic* knowledge from past sessions. Together they form a comprehensive context baseline for each conversation.
+
+**`/cost` — Token Budget Awareness**
+
+```
+> /cost
+Shows token usage and estimated cost for the current session.
+```
+
+Use this to monitor how much context you're consuming. If costs seem high, it's a signal that context is bloated — consider `/compact` or starting a fresh session.
 
 ---
 
@@ -300,6 +342,50 @@ If using multiple LLM conversations in parallel (e.g., one for backend, one for 
 - Integration issues at boundaries
 
 **Best practice**: Use single LLM conversation per feature. Only parallelize for truly independent work.
+
+---
+
+## Context Management with Multi-Agent Sessions
+
+When Claude Code spawns subagents (via the Agent tool), each subagent gets its own context window. This has important implications for context management.
+
+### How Subagent Context Works
+
+```mermaid
+graph TD
+    Main[Main Agent<br/>Full conversation context] -->|Spawns| Sub1[Explore Agent<br/>Read-only, fresh context]
+    Main -->|Spawns| Sub2[General Agent<br/>Full tools, fresh context]
+    Main -->|Spawns| Sub3[Plan Agent<br/>Research context]
+
+    Sub1 -->|Returns summary| Main
+    Sub2 -->|Returns summary| Main
+    Sub3 -->|Returns summary| Main
+
+    style Main fill:#e1f5fe,stroke:#01579b
+    style Sub1 fill:#f3e5f5,stroke:#7b1fa2
+    style Sub2 fill:#e8f5e9,stroke:#2e7d32
+    style Sub3 fill:#fff9c4,stroke:#fbc02d
+```
+
+- **Subagents start fresh.** They don't inherit the main conversation's history. The main agent sends a task description, and the subagent works from that alone.
+- **Results are summarized.** The subagent's full exploration doesn't enter the main context — only the returned summary does. This is a *context-saving mechanism*.
+- **Use subagents to protect context.** When you need to explore a large codebase area or research a complex question, delegating to a subagent keeps the main conversation lean.
+
+### When to Delegate vs. Direct
+
+| Scenario | Approach | Why |
+|----------|----------|-----|
+| Quick file lookup | Direct (Glob/Grep) | Faster, minimal context cost |
+| Deep codebase exploration | Explore subagent | Keeps main context clean |
+| Multi-file research | General subagent | Prevents context bloat |
+| Architecture planning | Plan subagent | Separate reasoning space |
+| Risky changes | Worktree-isolated agent | Protects working directory |
+
+### Team Memory Synchronization
+
+When multiple agents work in parallel (e.g., via TeamCreate), Claude Code's `teamMemorySync` service can synchronize learned knowledge across agents. This means discoveries made by one agent (like a coding convention or a bug pattern) can be shared with sibling agents working on related tasks.
+
+This is most relevant for large tasks where you spawn multiple agents working on different modules simultaneously.
 
 ---
 
