@@ -14,7 +14,7 @@ Agents feel magical but fail for mundane reasons: vague scope, untested tool con
 
 > **Treat your agent as a contractor with a power tool**: capable and fast, but destructive without guardrails.
 
-This guide is being written in stages. The outline below is the working table of contents — each topic will become its own chapter in this directory. The source of truth for the overall structure is [`AGENT_GUIDE_OUTLINE.md`](../../AGENT_GUIDE_OUTLINE.md) at the repository root, which already contains the condensed workflow, anti-patterns, and checklists this guide expands on.
+All twenty-six chapters are now complete. The table of contents below links to each in order, and the source of truth for the overall structure is [`AGENT_GUIDE_OUTLINE.md`](../../AGENT_GUIDE_OUTLINE.md) at the repository root, which contains the condensed workflow, anti-patterns, and checklists the full guide expands on.
 
 ---
 
@@ -96,14 +96,14 @@ Each item below is a planned chapter. We'll write them in order, but they can be
 
 ---
 
-## Writing Order
+## Chapter Conventions
 
-We'll write the chapters roughly in the order listed above, but Parts I, II, and VI can be drafted in parallel since they don't depend on each other. Each chapter should:
+Every chapter in the guide follows the same shape so readers can drop in at any point:
 
-1. Stand alone — a reader landing from a search engine should get value without reading the rest.
-2. Link forward and back — reference adjacent chapters where the topic connects.
-3. Include at least one concrete example, one anti-pattern, and one checklist item.
-4. End with a "What to read next" pointer.
+1. Stands alone — a reader landing from a search engine should get value without reading the rest.
+2. Links forward and back — references adjacent chapters where the topic connects.
+3. Includes at least one concrete example, one anti-pattern, and one checklist item.
+4. Ends with a "What to read next" pointer.
 
 ---
 
