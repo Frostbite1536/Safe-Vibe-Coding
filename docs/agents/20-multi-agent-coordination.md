@@ -19,6 +19,8 @@ This chapter is about when multiple agents are the right design, how to coordina
 
 Recall the reliability table from [Chapter 3](./03-when-to-build-an-agent.md): at ~95% reliability per step, a 10-step trajectory ends up around 60% reliable end-to-end. That math was for a single agent. For a pipeline of agents, it gets *worse*, because you multiply not just across steps but across agent boundaries.
 
+The following numbers assume the simplest case — agents chained in series, each one's success independent of the others, and the overall task failing the moment any one step fails. Real systems are not always this clean (parallel fan-outs and redundant paths can do better; shared context and coupled failures can do worse), but the serial case is the load-bearing worst case and the one the design has to survive.
+
 Two 90%-reliable agents chained together give you ~81% reliability end-to-end.
 
 Three give you ~73%.

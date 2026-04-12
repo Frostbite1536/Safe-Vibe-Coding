@@ -38,9 +38,10 @@ A single real-world failure often sits at the intersection of two or three entri
 
 ## The Six Core Anti-Patterns
 
-These are the failure modes the source outline names explicitly. They are the ones you are most likely to encounter and the ones every team building agents should be able to recognize without looking them up.
+These are the six failure modes this guide treats as foundational — the ones you are most likely to encounter, the ones most commonly named in post-mortems, and the ones every team building agents should be able to recognize without looking them up. The [Extended Catalog](#extended-catalog) that follows covers additional named failure modes that each have their own full treatment elsewhere in the guide.
 
 ### 1. Tool Sprawl
+{: #1-tool-sprawl}
 
 **Symptom**: The agent has dozens of tools. Several have overlapping or near-identical purposes. New team members cannot explain which tool to use when. The tool-call logs show the agent picking the "wrong" tool often enough that you have started writing prompt text to nudge it toward the right one. A recent incident involved the agent calling a tool nobody on the current team remembered was there.
 
@@ -53,6 +54,7 @@ These are the failure modes the source outline names explicitly. They are the on
 **See also**: [Chapter 9 — Building a Minimal Tool Set First](./09-minimal-tool-set.md); [The `do_stuff` Tool](#the-do_stuff-tool) later in this catalog.
 
 ### 2. The God Prompt
+{: #2-the-god-prompt}
 
 **Symptom**: The system prompt is five thousand words long. It has grown by accretion — a new paragraph for every edge case that ever surprised the team. It tries to handle every situation with English-language instructions, including ones that should be enforced in code. Edits to the prompt are nerve-wracking because nobody is sure which paragraph is still load-bearing and which is vestigial. New team members avoid touching it.
 
@@ -65,6 +67,7 @@ These are the failure modes the source outline names explicitly. They are the on
 **See also**: [Chapter 6 — System Prompts as Contracts](./06-system-prompts-as-contracts.md); [Prompt-Only Safety](#prompt-only-safety); [Prompt-Only Authorization](#prompt-only-authorization).
 
 ### 3. Over-Autonomy
+{: #3-over-autonomy}
 
 **Symptom**: The agent takes irreversible actions — sending messages, making payments, merging pull requests, deleting files, calling APIs with real-world side effects — without a human checkpoint. It is framed as a feature: "the agent handles the whole loop end-to-end." It is discovered as a problem the first time the agent takes one of those actions on bad input and there is no way to undo it.
 
@@ -77,6 +80,7 @@ These are the failure modes the source outline names explicitly. They are the on
 **See also**: [Chapter 11 — Escalation Paths & Human-in-the-Loop](./11-escalation-and-hitl.md); [Chapter 12 — Authorization, Sandboxing & Isolation](./12-authorization-and-sandboxing.md); [Silent Failure](#4-silent-failure).
 
 ### 4. Silent Failure
+{: #4-silent-failure}
 
 **Symptom**: The agent returns a plausible-looking response every time, even when it could not complete the task. The response is well-formatted and confident. Only later — during a manual audit, or because a user complained, or because downstream systems got garbage input — does someone realize that the agent has been returning hallucinated "successes" for a class of failing cases.
 
@@ -89,6 +93,7 @@ These are the failure modes the source outline names explicitly. They are the on
 **See also**: [Chapter 11 — Escalation Paths & Human-in-the-Loop](./11-escalation-and-hitl.md); [Chapter 17 — Evaluation Frameworks](./17-evaluation-frameworks.md); [Over-Autonomy](#3-over-autonomy).
 
 ### 5. Testing in Production
+{: #5-testing-in-production}
 
 **Symptom**: The agent's first exposure to real inputs, real tools, and real systems is the day it goes live. There is no sandbox environment, or the sandbox exists but has drifted so far from production that nobody trusts it. The test suite — if it exists — exercises the happy path against mocked tools. Real correctness evidence comes from "we ran it on Alice's mailbox for a day and it seemed fine."
 
@@ -101,6 +106,7 @@ These are the failure modes the source outline names explicitly. They are the on
 **See also**: [Chapter 14 — Testing Strategies](./14-testing-strategies.md); [Chapter 16 — Chaos & Adversarial Testing](./16-chaos-and-adversarial-testing.md); [Chapter 18 — Deployment Patterns](./18-deployment-patterns.md); [Launch by Courage](#launch-by-courage).
 
 ### 6. Undocumented Scope Creep
+{: #undocumented-scope-creep}
 
 **Symptom**: The agent is now doing things that were never in its original design. When asked, nobody on the team can point to the decision that added the new capability. It "sort of started working" after a prompt tweak, or after a tool was repurposed, or after a model upgrade. The scope brief still describes the original design. The running system has quietly outgrown it.
 
@@ -143,6 +149,7 @@ These entries come from the chapters that make them up. They are shorter because
 **Fix**: [Chapter 4](./04-defining-purpose-and-scope.md) — write the one-page brief. Include the exclusion list. Refuse to proceed with design work until both are concrete enough to review.
 
 ### The `do_stuff` Tool
+{: #the-do_stuff-tool}
 
 **Symptom**: A tool is named something like `execute_action` or `do_stuff` or `call_api`. Its input schema is `{ "command": "string" }` and its output schema is `{ "result": "string" }`. It is described as "a flexible tool that lets the agent do anything."
 
@@ -247,6 +254,7 @@ These entries come from the chapters that make them up. They are shorter because
 **Fix**: [Chapter 20](./20-multi-agent-coordination.md) — use multi-agent only when the situation actually calls for it: scope separation for safety, parallelism for throughput, or genuine orchestrator/worker specialization. When in doubt, collapse the system into one agent with more tools and revisit later.
 
 ### "The Agent Has Always Worked This Way"
+{: #the-agent-has-always-worked-this-way}
 
 **Symptom**: A team member explains a behavior by saying it has always been there. Nobody is sure when it started or why. The design documents describe something different. Onboarding a new engineer takes weeks because the system's real behavior is passed down orally.
 

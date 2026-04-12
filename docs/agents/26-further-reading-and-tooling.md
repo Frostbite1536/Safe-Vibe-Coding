@@ -65,7 +65,7 @@ When reading adversarial research, pay attention to the threat model each paper 
 
 Building a good eval set is a distinct discipline, and the ecosystem around it has matured faster than most other parts of the agent space.
 
-- **Inspect AI** (UK AI Safety Institute). An open-source evaluation framework designed for LLMs and LLM agents, maintained at [github.com/UKGovernmentBEIS/inspect_ai](https://github.com/UKGovernmentBEIS/inspect_ai). Probably the most serious open-source eval harness currently available, with good support for scorers, multi-turn evaluations, and agent tasks.
+- **Inspect AI** (UK AI Security Institute, AISI — formerly the UK AI Safety Institute). An open-source evaluation framework designed for LLMs and LLM agents, maintained at [github.com/UKGovernmentBEIS/inspect_ai](https://github.com/UKGovernmentBEIS/inspect_ai). Probably the most serious open-source eval harness currently available, with good support for scorers, multi-turn evaluations, and agent tasks.
 - **OpenAI Evals** ([github.com/openai/evals](https://github.com/openai/evals)). The original open-source eval framework from OpenAI. Less actively developed than Inspect but still a useful reference for how to structure eval cases.
 - **Promptfoo** ([promptfoo.dev](https://www.promptfoo.dev/)). A CLI and framework oriented toward prompt and agent evaluation with good support for regression testing and side-by-side comparisons across models.
 - **LangSmith** (the evaluation product associated with LangChain). A hosted service for tracing, eval, and regression testing of LLM and agent applications. Useful if your team is already building on LangChain; worth understanding conceptually either way.
@@ -125,11 +125,11 @@ The bar for useful reading in this category is honesty, not production value. A 
 
 This guide is one of several in the broader Safe Vibe Coding project. Several of its other chapters are useful companions to the agents guide:
 
-- **Context Management** — the memory and state chapter ([Chapter 8](./08-memory-and-state.md)) in this guide is the agent-specific view; the project's [Context Management guide]({{ '/docs/CONTEXT_MANAGEMENT' | relative_url }}) covers the underlying principles for LLM applications more broadly.
-- **Prompt Engineering and Emotional Prompt Engineering** — the [Emotional Prompt Engineering guide]({{ '/docs/EMOTIONAL_PROMPT_ENGINEERING' | relative_url }}) and related prompt-craft material in this repository are good background for the system prompts covered in [Chapter 6](./06-system-prompts-as-contracts.md).
-- **Plan-Driven Development** — the [Plan-Driven Development guide]({{ '/docs/PLAN_DRIVEN_DEVELOPMENT' | relative_url }}) in this repository covers the discipline of writing plans before acting, which is the pre-agent-loop version of the scope brief discipline from [Chapter 4](./04-defining-purpose-and-scope.md).
-- **AI Audit Failures** — the [AI Audit Failures guide]({{ '/docs/AI_AUDIT_FAILURES' | relative_url }}) in this repository catalogs failure modes in AI-assisted workflows more broadly; many of its cases rhyme with the anti-patterns in [Chapter 22](./22-anti-patterns.md).
-- **The repository-level anti-patterns document** — [`ANTI_PATTERNS.md`]({{ '/docs/ANTI_PATTERNS' | relative_url }}) in the top-level docs directory is the non-agent version of this guide's anti-pattern chapter and a useful cross-reference.
+- **Context Management** — the memory and state chapter ([Chapter 8](./08-memory-and-state.md)) in this guide is the agent-specific view; the project's [Context Management guide](../CONTEXT_MANAGEMENT.md) covers the underlying principles for LLM applications more broadly.
+- **Prompt Engineering and Emotional Prompt Engineering** — the [Emotional Prompt Engineering guide](../EMOTIONAL_PROMPT_ENGINEERING.md) and related prompt-craft material in this repository are good background for the system prompts covered in [Chapter 6](./06-system-prompts-as-contracts.md).
+- **Plan-Driven Development** — the [Plan-Driven Development guide](../PLAN_DRIVEN_DEVELOPMENT.md) in this repository covers the discipline of writing plans before acting, which is the pre-agent-loop version of the scope brief discipline from [Chapter 4](./04-defining-purpose-and-scope.md).
+- **AI Audit Failures** — the [AI Audit Failures guide](../AI_AUDIT_FAILURES.md) in this repository catalogs failure modes in AI-assisted workflows more broadly; many of its cases rhyme with the anti-patterns in [Chapter 22](./22-anti-patterns.md).
+- **The repository-level anti-patterns document** — [`ANTI_PATTERNS.md`](../ANTI_PATTERNS.md) in the top-level docs directory is the non-agent version of this guide's anti-pattern chapter and a useful cross-reference.
 
 The agents guide is meant to stand alone, but readers who want to ground agent work in the broader practice of working safely with AI-assisted development will find most of what they need in the adjacent documents above.
 
