@@ -402,10 +402,11 @@ Before you start vibe coding, read these critical documents. They address common
 
 1. **Review the [quick-reference checklist](./CHECKLIST.md)** - Print it and keep it handy
 2. **Read [Essential Reading](#essential-reading)** - Understand critical practices and failure modes
-3. **Use the templates** in [`/docs/templates`](./docs/templates) to set up your project documentation
-4. **Browse example prompts** in [`/prompts`](./prompts) to see how to communicate effectively with LLMs
-5. **Start with the product conversation** before writing any code
-6. **Establish your invariants early** and refer to them often
+3. **[Incorporate into your repo](./INCORPORATE.md)** - Hand this to an LLM agent to audit your repo and add what's missing
+4. **Use the templates** in [`/docs/templates`](./docs/templates) to set up your project documentation
+5. **Browse example prompts** in [`/prompts`](./prompts) to see how to communicate effectively with LLMs
+6. **Start with the product conversation** before writing any code
+7. **Establish your invariants early** and refer to them often
 
 ---
 
