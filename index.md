@@ -47,6 +47,7 @@ Covers terminal setup, running multiple Claudes, Plan mode, CLAUDE.md, slash com
 | Guide | What You'll Learn |
 |:------|:------------------|
 | [Quick Reference Checklist]({{ site.baseurl }}/CHECKLIST) | Print-friendly checklist for daily use |
+| [Incorporate into Your Repo]({{ site.baseurl }}/INCORPORATE) | Agent-facing checklist to adopt these practices in any repo |
 | [Anti-Patterns & Warning Signs]({{ site.baseurl }}/docs/ANTI_PATTERNS) | When AI development goes wrong |
 | [Audit Findings & Lessons]({{ site.baseurl }}/docs/AUDIT_FINDINGS) | Real security audit of AI-generated code |
 | [Automation & Testing]({{ site.baseurl }}/docs/AUTOMATION_TESTING) | CI/CD, hooks, and verification loops |
