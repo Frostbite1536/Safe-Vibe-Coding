@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Incorporate into Your Repo
-nav_order: 3
+nav_order: 5
 description: "Agent-facing checklist for auditing a repository and incorporating Safe Vibe Coding practices."
 ---
 
