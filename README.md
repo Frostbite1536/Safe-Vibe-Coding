@@ -2,6 +2,16 @@
 
 This guide describes a collaborative, structured way to build software with LLMs while maintaining correctness, stability, and long-term maintainability. The goal is not novelty—it's shipping reliable systems without losing momentum. 
 
+> **📋 Just want the prompts?** → **[`prompts/`](prompts/)** — 18 ready-to-use templates covering the whole workflow:
+> [project bootstrap](prompts/project-bootstrap.md) ·
+> [feature implementation](prompts/feature-implementation.md) ·
+> [bug hunt](prompts/bug-hunt.md) ·
+> [root-cause isolation](prompts/root-cause-isolation.md) ·
+> [code review](prompts/code-review.md) ·
+> [invariant check](prompts/invariant-check.md) ·
+> [smart-contract audit](prompts/smart-contract-audit.md) ·
+> [+ 11 more](prompts/README.md)
+
 ---
 
 ## Core Principles
