@@ -3,6 +3,7 @@ layout: default
 title: 9. Building a Minimal Tool Set First
 nav_order: 9
 parent: Agents Guide
+grand_parent: Guides
 description: "The discipline of shipping with three tools instead of twenty. How every added tool expands the attack surface, testing burden, and chained-action risk — and how to decide which tools earn their place."
 permalink: /agents/minimal-tool-set
 ---

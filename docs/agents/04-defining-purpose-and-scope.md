@@ -3,6 +3,7 @@ layout: default
 title: 4. Defining Purpose & Scope
 nav_order: 4
 parent: Agents Guide
+grand_parent: Guides
 description: "How to write the one-page scope brief that becomes your agent's constitution. What the agent will do, what it will never do, who it interacts with, and why 'I can't describe what it won't do' is a red flag to stop building."
 permalink: /agents/purpose-and-scope
 ---

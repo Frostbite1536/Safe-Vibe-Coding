@@ -3,6 +3,7 @@ layout: default
 title: 7. Model Selection for Agents
 nav_order: 7
 parent: Agents Guide
+grand_parent: Guides
 description: "Picking the right model for the job. Reasoning-heavy orchestrators versus cheap fast workers, cost-per-run math, latency budgets, and when to mix models inside a single agent."
 permalink: /agents/model-selection
 ---

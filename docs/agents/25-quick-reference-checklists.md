@@ -3,6 +3,7 @@ layout: default
 title: 25. Quick-Reference Checklists
 nav_order: 25
 parent: Agents Guide
+grand_parent: Guides
 description: "Consolidated checklists for every phase of an agent's life — before building, during development, before production, and ongoing operations — each item tied to the chapter that explains it."
 permalink: /agents/quick-reference-checklists
 ---

@@ -3,6 +3,7 @@ layout: default
 title: 10. Observability from Day One
 nav_order: 10
 parent: Agents Guide
+grand_parent: Guides
 description: "Trace logging, decision audit trails, cost and latency tracking, and error categorization. Why logs are not optional, what to record for every tool call, and how to reconstruct any past agent decision."
 permalink: /agents/observability-from-day-one
 ---

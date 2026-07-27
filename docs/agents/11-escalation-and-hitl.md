@@ -3,6 +3,7 @@ layout: default
 title: 11. Escalation Paths & Human-in-the-Loop
 nav_order: 11
 parent: Agents Guide
+grand_parent: Guides
 description: "When the agent must stop and hand control back to a human. Ambiguous input, low confidence, irreversible actions, and unexpected tool output — treated as a first-class success state, not a fallback."
 permalink: /agents/escalation-and-hitl
 ---

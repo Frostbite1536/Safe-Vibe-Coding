@@ -3,6 +3,7 @@ layout: default
 title: 20. Multi-Agent Coordination
 nav_order: 20
 parent: Agents Guide
+grand_parent: Guides
 description: "Orchestrator versus worker patterns, handoff contracts between agents, avoiding shared mutable state, and why 90% × 90% = 81% reliability compounds badly in pipelines."
 permalink: /agents/multi-agent-coordination
 ---

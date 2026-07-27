@@ -3,6 +3,7 @@ layout: default
 title: 23. Prompt Library for Agent Development
 nav_order: 23
 parent: Agents Guide
+grand_parent: Guides
 description: "Reusable prompt scaffolds for system prompts, evaluation, red-teaming, debugging, and inter-agent handoffs — starting points you can adapt, not finished prompts you should copy unchanged."
 permalink: /agents/prompt-library
 ---

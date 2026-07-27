@@ -3,6 +3,7 @@ layout: default
 title: 5. Designing the Tool Interface
 nav_order: 5
 parent: Agents Guide
+grand_parent: Guides
 description: "Treat tools as a public API. How to write names, descriptions, schemas, and side-effect declarations that an LLM can actually use correctly — and why fewer precise tools beat many vague ones."
 permalink: /agents/tool-interface-design
 ---

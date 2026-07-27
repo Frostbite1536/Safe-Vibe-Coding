@@ -3,6 +3,7 @@ layout: default
 title: 18. Deployment Patterns
 nav_order: 18
 parent: Agents Guide
+grand_parent: Guides
 description: "Staged rollouts, shadow mode, canary agents, and feature-flagging new tools. How to graduate an agent from sandbox to production without a cliff."
 permalink: /agents/deployment-patterns
 ---

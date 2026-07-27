@@ -3,6 +3,7 @@ layout: default
 title: 21. Checkpoint Summaries & Capability Drift
 nav_order: 21
 parent: Agents Guide
+grand_parent: Guides
 description: "Documenting what the agent can and cannot do after each milestone. How to detect and correct capability drift before it becomes scope creep or silent regression."
 permalink: /agents/checkpoint-summaries
 ---

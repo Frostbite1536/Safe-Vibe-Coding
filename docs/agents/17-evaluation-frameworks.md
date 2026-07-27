@@ -3,6 +3,7 @@ layout: default
 title: 17. Evaluation Frameworks
 nav_order: 17
 parent: Agents Guide
+grand_parent: Guides
 description: "Golden datasets, LLM-as-judge scoring, regression suites, and the difference between 'it passed my tests' and 'it's actually reliable.' How to measure agents across distributions, not just individual inputs."
 permalink: /agents/evaluation-frameworks
 ---

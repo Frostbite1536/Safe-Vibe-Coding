@@ -3,6 +3,7 @@ layout: default
 title: 3. When to Build an Agent (and When Not To)
 nav_order: 3
 parent: Agents Guide
+grand_parent: Guides
 description: "A decision framework for choosing an agent over a deterministic pipeline, a simple LLM call, or a human-in-the-loop tool. Covers the cost, reliability, and risk trade-offs that should decide for you."
 permalink: /agents/when-to-build
 ---

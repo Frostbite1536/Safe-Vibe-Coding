@@ -3,6 +3,7 @@ layout: default
 title: 22. Anti-Patterns & Failure Modes
 nav_order: 22
 parent: Agents Guide
+grand_parent: Guides
 description: "The full catalog of agent failure modes — Tool Sprawl, The God Prompt, Over-Autonomy, Silent Failure, Testing in Production, Undocumented Scope Creep, and more — with symptoms, causes, and fixes."
 permalink: /agents/anti-patterns
 ---

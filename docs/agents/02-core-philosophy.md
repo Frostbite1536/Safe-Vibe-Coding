@@ -3,6 +3,7 @@ layout: default
 title: 2. Core Philosophy & Mental Model
 nav_order: 2
 parent: Agents Guide
+grand_parent: Guides
 description: "The contractor-with-a-power-tool analogy, the four pillars of safe agent design (Scope, Tool Contracts, Escalation, Observability), and why boundaries beat cleverness."
 permalink: /agents/core-philosophy
 ---

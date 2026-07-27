@@ -3,6 +3,7 @@ layout: default
 title: 13. Cost, Rate-Limiting & Latency Budgets
 nav_order: 13
 parent: Agents Guide
+grand_parent: Guides
 description: "Per-run token budgets, runaway-loop detection, circuit breakers, and kill switches. How to stop an agent that has lost the plot before it burns through your API quota or your user's patience."
 permalink: /agents/cost-and-kill-switches
 ---

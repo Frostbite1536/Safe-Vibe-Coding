@@ -3,6 +3,7 @@ layout: default
 title: 16. Chaos & Adversarial Testing
 nav_order: 16
 parent: Agents Guide
+grand_parent: Guides
 description: "Deliberately breaking the agent. Contradictory instructions, simulated tool failures, context exhaustion, and scope-escape attempts. Finding failure modes before production does."
 permalink: /agents/chaos-and-adversarial-testing
 ---

@@ -3,6 +3,7 @@ layout: default
 title: 26. Further Reading & Tooling
 nav_order: 26
 parent: Agents Guide
+grand_parent: Guides
 description: "Curated external resources for building safe, reliable agents — model-provider documentation, papers, frameworks, eval harnesses, and community write-ups, organized by topic."
 permalink: /agents/further-reading-and-tooling
 ---

@@ -3,6 +3,7 @@ layout: default
 title: 15. Hardening Against Prompt Injection
 nav_order: 15
 parent: Agents Guide
+grand_parent: Guides
 description: "Treat all external content as untrusted data, not instructions. Separating system and user content structurally, validating tool outputs before acting, and alerting on anomalous instruction patterns."
 permalink: /agents/prompt-injection-defense
 ---

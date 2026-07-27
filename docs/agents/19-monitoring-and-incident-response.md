@@ -3,6 +3,7 @@ layout: default
 title: 19. Monitoring & Incident Response
 nav_order: 19
 parent: Agents Guide
+grand_parent: Guides
 description: "What to alert on in production, how to triage a misbehaving agent, and the kill-switch playbook. Turning Chapter 10's observability into operational safety."
 permalink: /agents/monitoring-and-incident-response
 ---

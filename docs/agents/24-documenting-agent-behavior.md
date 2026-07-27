@@ -3,6 +3,7 @@ layout: default
 title: 24. Documenting Agent Behavior
 nav_order: 24
 parent: Agents Guide
+grand_parent: Guides
 description: "Behavior specs, tool registries, decision logs, and honest known-limitations sections — the documents that keep an agent's real behavior and its stated behavior in sync as the system evolves."
 permalink: /agents/documenting-agent-behavior
 ---

@@ -3,6 +3,7 @@ layout: default
 title: 8. Memory & State Management
 nav_order: 8
 parent: Agents Guide
+grand_parent: Guides
 description: "Conversation history, scratchpads, vector stores, and long-running state. How state becomes the single biggest source of agent bugs and how to bound, compact, and forget it deliberately."
 permalink: /agents/memory-and-state
 ---

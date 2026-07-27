@@ -3,6 +3,7 @@ layout: default
 title: 1. What Is an Agent?
 nav_order: 1
 parent: Agents Guide
+grand_parent: Guides
 description: "Defines the term precisely. Draws the line between a chatbot, a scripted LLM workflow, and a true autonomous agent, and explains why the distinction matters for design and safety."
 permalink: /agents/what-is-an-agent
 ---

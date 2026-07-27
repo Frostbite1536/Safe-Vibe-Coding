@@ -3,6 +3,7 @@ layout: default
 title: 14. Testing Strategies
 nav_order: 14
 parent: Agents Guide
+grand_parent: Guides
 description: "Happy path, edge cases, boundary conditions, and tool-failure tests. Building a sandbox and mock environment. Why you must not connect to production APIs until your test suite passes."
 permalink: /agents/testing-strategies
 ---

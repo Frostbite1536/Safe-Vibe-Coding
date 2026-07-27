@@ -3,6 +3,7 @@ layout: default
 title: 12. Authorization, Sandboxing & Isolation
 nav_order: 12
 parent: Agents Guide
+grand_parent: Guides
 description: "User-level vs. agent-level permissions, network egress controls, filesystem scoping, container isolation, and the principle of least privilege applied to autonomous agents."
 permalink: /agents/authorization-and-sandboxing
 ---

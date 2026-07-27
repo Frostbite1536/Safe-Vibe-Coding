@@ -3,6 +3,7 @@ layout: default
 title: 6. System Prompts as Contracts
 nav_order: 6
 parent: Agents Guide
+grand_parent: Guides
 description: "Structuring the system prompt as a contract — role, invariants, decision boundaries, output format, and prohibited behaviors. How to keep the prompt small, testable, and aligned with the scope brief."
 permalink: /agents/system-prompts-as-contracts
 ---
